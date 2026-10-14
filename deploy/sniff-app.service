@@ -1,0 +1,15 @@
+[Unit]
+Description=Sniff app (FastAPI) on 127.0.0.1:8080
+After=network-online.target docker.service
+
+[Service]
+User=ec2-user
+WorkingDirectory=/opt/lineage/app/src
+Environment=SNIFF_ENV_FILE=/opt/lineage/env/app.env
+Environment=SNIFF_LANDING_DIR=/opt/lineage/placeholder
+ExecStart=/opt/lineage/app/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8080 --proxy-headers --forwarded-allow-ips 127.0.0.1 --no-server-header
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,1 @@
+falkordb-bulk-loader==1.2.0

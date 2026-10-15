@@ -1,0 +1,246 @@
+{
+ "coin_dossier": [
+  {
+   "mint": "DLTiLKB7wuNcXQKkY5SUJkUDME7bsV1Ax8574xZ7pump",
+   "others": 66,
+   "other_grads": 0
+  },
+  {
+   "mint": "CMK7aMHNUv5pfAMYzhrJWovCBHqzsNwXpAzW6nXBpump",
+   "others": 6,
+   "other_grads": 0
+  },
+  {
+   "mint": "BDaSDdpyWYLR4caw7gB1dHs12qLvJ2d7t2XoVrfNpump",
+   "others": 14,
+   "other_grads": 0
+  },
+  {
+   "mint": "7WMrqbuHXsZgoa6VtJWRrZNmsneFapLhVkKGdqhPpump",
+   "others": 15,
+   "other_grads": 0
+  },
+  {
+   "mint": "9bKEuK8VuiTmaCvqvLbsXRR4hnDfehyyLpxk35avpump",
+   "others": 25,
+   "other_grads": 0
+  },
+  {
+   "mint": "FxPcBWZEnCKCz7NX33opbbPkNXuvmQUKr1NQDGGPpump",
+   "others": 8,
+   "other_grads": 0
+  }
+ ],
+ "funding_trail": [
+  {
+   "addr": "CaPwA4gndht45xSCMz7Sq8KuUGjq2W7JWe3mGj3UEpRw",
+   "paths": 1
+  },
+  {
+   "addr": "691nRgyAFfPbEGFUhf6uS3sg1jJjhxgCFuokf3jvvkcy",
+   "paths": 3
+  },
+  {
+   "addr": "2uRy4qE7DZnvqhsKFkx2J3tjSFwfttdYcYGAG5WDVsrA",
+   "paths": 2
+  },
+  {
+   "addr": "4TdgSTFvpordQtbxkBBZ3bNB8iguAcn71434pt4Zk9XP",
+   "paths": 2
+  },
+  {
+   "addr": "F2NEmQ42YcnRDhZdd38JshvPXFdLDq2rbEh5vpghFxn9",
+   "paths": 3
+  },
+  {
+   "addr": "CZiQkFUSoo5LAMSjPHT7qZNiBtwyTLYFE8CrYfS3TVAC",
+   "paths": 2
+  }
+ ],
+ "siblings": [
+  {
+   "mint": "7WMrqbuHXsZgoa6VtJWRrZNmsneFapLhVkKGdqhPpump",
+   "funders": 1,
+   "creators": 1
+  },
+  {
+   "mint": "FxPcBWZEnCKCz7NX33opbbPkNXuvmQUKr1NQDGGPpump",
+   "funders": 1,
+   "creators": 27
+  },
+  {
+   "mint": "7ZPqvWPXyzdzGEUxurGGFyHAxQFCXFEMLJdxkTHepump",
+   "funders": 1,
+   "creators": 5
+  },
+  {
+   "mint": "C36JgMWxCHzmfzqPPTKbUK4Y1G1JzRggcb62FYVCpump",
+   "funders": 1,
+   "creators": 67
+  },
+  {
+   "mint": "6TyX3yc5xZcdhK2KJuWbaaoFtP9RKmuWKB6nafQpump",
+   "funders": 1,
+   "creators": 6
+  },
+  {
+   "mint": "755pwkH34wmw96Fu9ZRGpatP9zDdJQSnfADwqeFgpump",
+   "funders": 1,
+   "creators": 14
+  }
+ ],
+ "shared_snipers": [
+  {
+   "mint": "GxsGqd6t7SGp6jthERiJQn1G9YF8xfQbc7LooDfTpump",
+   "coins": 89
+  },
+  {
+   "mint": "HK77paLjr3Ytd5LozNosqeMEuvNfb2vEFtQqzEjWpump",
+   "coins": 59
+  },
+  {
+   "mint": "Ga3vinfgGAHtXiRt2FbiaRFYUL97w9Jg2DuCnwULpump",
+   "coins": 20
+  },
+  {
+   "mint": "GgXgf6Wfr7SFe1r76KAdMErdWfM35AnM2djQmfnupump",
+   "coins": 123
+  },
+  {
+   "mint": "HHwjv63eQFNq1WCA7vfZSFqwbnogchDVqytTJaDPpump",
+   "coins": 89
+  },
+  {
+   "mint": "4L7m88t67eX33hVEjMPgGgy2eY38p6595ictuLTMpump",
+   "coins": 58
+  }
+ ],
+ "shared_handles": [
+  {
+   "mint": "FxPcBWZEnCKCz7NX33opbbPkNXuvmQUKr1NQDGGPpump",
+   "handles": {
+    "x:charrdev": 273,
+    "site:creditswap.fi": 269
+   }
+  },
+  {
+   "mint": "FxPcBWZEnCKCz7NX33opbbPkNXuvmQUKr1NQDGGPpump",
+   "handles": {
+    "x:charrdev": 273,
+    "site:creditswap.fi": 269
+   }
+  },
+  {
+   "mint": "FtQoRaVHQSbSUqeoXwn1sQBZmaXRP6Ry5TLHafQFpump",
+   "handles": {
+    "site:queroapoiar.com.br": 1,
+    "x:speltrd": 11
+   }
+  },
+  {
+   "mint": "HK77paLjr3Ytd5LozNosqeMEuvNfb2vEFtQqzEjWpump",
+   "handles": {
+    "x:gwr": 30
+   }
+  },
+  {
+   "mint": "9vKXCxBpwGukyA3xMHa771mk7vNPtmMBMmbYDKTopump",
+   "handles": {
+    "site:joshuavucelich.com": 1,
+    "x:batmanonchain__": 67
+   }
+  },
+  {
+   "mint": "755pwkH34wmw96Fu9ZRGpatP9zDdJQSnfADwqeFgpump",
+   "handles": {
+    "x:za_by_claude": 15
+   }
+  }
+ ],
+ "ring": [
+  {
+   "mint": "BDaSDdpyWYLR4caw7gB1dHs12qLvJ2d7t2XoVrfNpump",
+   "creators": 2,
+   "coins": 17
+  },
+  {
+   "mint": "7WMrqbuHXsZgoa6VtJWRrZNmsneFapLhVkKGdqhPpump",
+   "creators": 40,
+   "coins": 193
+  },
+  {
+   "mint": "FxPcBWZEnCKCz7NX33opbbPkNXuvmQUKr1NQDGGPpump",
+   "creators": 29,
+   "coins": 327
+  },
+  {
+   "mint": "268oC616gC8tBRD5iGn4xfBqgfxZhjHCjaTNys5Qpump",
+   "creators": 24,
+   "coins": 173
+  }
+ ],
+ "connect": [
+  {
+   "a": "EfaHBCo2A3bfwgyEtbMTP5ArgCSxdTJSFFWZ8megpump",
+   "b": "E69vztgU4JYFKsvzPAvVNWcPAAcV96Bx9rDTLD5Epump",
+   "hops": 4
+  },
+  {
+   "a": "2Thw5yR43BUpTA7AD7hmEDDNwZfWMbgSbQZRnfG8pump",
+   "b": "71MpaYG4aN2PKC2EipXk6pUbeqYXfrv1KcJcNssnpump",
+   "hops": 4
+  },
+  {
+   "a": "5AnxjWBJA6ecqBLtz45XnJJCWSEnKewQBtmbk3Ygpump",
+   "b": "GJR3t1VxkEwAbgwqLKcu8nS9a4y41NzBRVCcLkpipump",
+   "hops": 4
+  },
+  {
+   "a": "3Q9G2iokYpjNsGi8ovFzKVVYnM3hz1K4idrjoEuDpump",
+   "b": "DJG49mFo5oSKaxzFtTK3feLk8x2gceo5ngjx9szupump",
+   "hops": 4
+  },
+  {
+   "a": "4N17mL3b2EqBzTg9yyNkmVBqpYf94wfm5ABk16Pvpump",
+   "b": "2NizCyL5BC9SNixwQhQXWZkRG3ynW4zJKaRbqV1qpump",
+   "hops": 4
+  },
+  {
+   "a": "Banp5JPGJphqGWDCicM5Cy9H5LvJ4MA42Wk3h84gpump",
+   "b": "GjqQSAewLPtpeYjB7JxehfCQV9mGWhVdeTcA29Xxpump",
+   "hops": 4
+  }
+ ],
+ "top_operators": [
+  {
+   "funder": "CJvJXw2bX6wjWNtSvWFAWjFmt3CWNruWpXmD4tR1zr6e",
+   "creators": 51,
+   "coins": 102,
+   "graduated": 0
+  },
+  {
+   "funder": "rfzgPHA1cPifdMrPnuaf3xqCxYKAsb4JFQHaeerMeFF",
+   "creators": 44,
+   "coins": 88,
+   "graduated": 0
+  },
+  {
+   "funder": "EpBuA6DSCQR8JVRg8qMixuwjo4Us2YnEcrTENQxPTMo3",
+   "creators": 44,
+   "coins": 88,
+   "graduated": 0
+  },
+  {
+   "funder": "8n1uwCKz7QY4PH34bMxoZm65LHnFdxJcgHWHTac5q17B",
+   "creators": 37,
+   "coins": 37,
+   "graduated": 0
+  },
+  {
+   "funder": "43DbAvKxhXh1oSxkJSqGosNw3HpBnmsWiak6tB5wpecN",
+   "creators": 36,
+   "coins": 36,
+   "graduated": 0
+  }
+ ]
+}

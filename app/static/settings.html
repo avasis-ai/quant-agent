@@ -185,7 +185,7 @@
     } catch (e) { store.clear(); say($('youMsg'), e.message, 'err'); }
     busy($('youSave'), false, 'Use my key'); renderYou();
   };
-  $('youKey').onkeydown = e => e.key === 'Enter' && $('youSave').click();
+  $('youKey').addEventListener('keydown', e => { if (e.key === 'Enter') $('youSave').click(); });
   $('youForget').onclick = () => { store.clear(); say($('youMsg'), 'Forgotten. Nothing was saved on our side.'); renderYou(); };
   $('youTest').onclick = async () => {
     busy($('youTest'), true, 'Test');
@@ -203,7 +203,7 @@
     catch (e) { say($('ownMsg'), e.message, 'err'); }
     busy($('unlock'), false, 'Unlock');
   };
-  $('pass').onkeydown = e => e.key === 'Enter' && $('unlock').click();
+  $('pass').addEventListener('keydown', e => { if (e.key === 'Enter') $('unlock').click(); });
   $('ownSave').onclick = async () => {
     const k = $('ownKey').value.trim();
     if (!k) return;
@@ -217,7 +217,7 @@
     } catch (e) { say($('ownMsg'), e.message, 'err'); }
     busy($('ownSave'), false, label); renderOwner(); renderYou();
   };
-  $('ownKey').onkeydown = e => e.key === 'Enter' && $('ownSave').click();
+  $('ownKey').addEventListener('keydown', e => { if (e.key === 'Enter') $('ownSave').click(); });
   $('ownRemove').onclick = async () => {
     try { const r = await call('/api/settings/owner-key', { method: 'DELETE' }); status.owner = r.owner; say($('ownMsg'), 'Site key removed from the server.'); }
     catch (e) { say($('ownMsg'), e.message, 'err'); }

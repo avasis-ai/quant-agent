@@ -50,3 +50,12 @@ rsync build/out/<stamp>/ box:/opt/lineage/build/<stamp>/
 falkordb-bulk-insert lineage --enforce-schema --id-type STRING -x none -N Coin Coin.csv -N Wallet Wallet.csv -N Hub Hub.csv -N Handle Handle.csv -R CREATED CREATED.csv -R FUNDED FUNDED.csv -R SNIPED SNIPED.csv -R LINKS LINKS.csv
 python -m build.indexes && python -m build.rings
 ```
+
+## Agent tools (Day 2)
+`app/tools.py` wraps the 8 queries plus `search_coins`, a full-text search:
+`CALL db.idx.fulltext.queryNodes('Coin', $q)`, with the query cut to 4 alphanumeric words.
+
+- **Paths:** serialized with stable node keys, never FalkorDB internal ids. Results are capped at 6,000 characters (rows are halved until they fit).
+- **Counts:** FalkorDB returns `sum()` as a float, so the tools cast counts to integers.
+- **`top_operators` windows:** measured from the newest launch in the graph (`max(created_at)`), not the wall clock, so the snapshot answers sensibly.
+- **Base rate:** computed once per process. Snapshot 20261014T1845Z: 23,605 / 632,339 = 3.7%.

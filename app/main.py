@@ -1,7 +1,8 @@
-"""Sniff web app (FastAPI). Day 1: the landing page, /settings (owner key + visitor BYOK)."""
+"""Sniff web app (FastAPI): the landing page, /settings (owner key + visitor BYOK), /api/ask (the agent)."""
 from __future__ import annotations
 
 import hashlib
+import json
 import hmac
 import logging
 import os
@@ -11,10 +12,10 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
-from . import ai
+from . import agent, ai
 from .limits import Limiter
 from .secrets import check_passcode, install_log_masking, read_env, write_env
 
@@ -45,6 +46,10 @@ login_limit = Limiter(5, 15 * 60)
 key_limit = Limiter(10, 60 * 60)
 visitor_check_limit = Limiter(10, 60 * 60)
 owner_ping_limit = Limiter(20, 60 * 60)
+ask_owner_limit = Limiter(15, 60 * 60)        # per visitor IP, on the site's key
+ask_owner_daily = Limiter(300, 24 * 60 * 60)  # all visitors together, on the site's key
+ask_visitor_limit = Limiter(60, 60 * 60)      # per IP, on the visitor's own key
+ask_dossier_limit = Limiter(60, 60 * 60)      # per IP, no AI
 
 
 def _session_secret() -> bytes:
@@ -59,7 +64,14 @@ def _session_secret() -> bytes:
 # ---- helpers -------------------------------------------------------------------
 
 def ip(req: Request) -> str:
-    return req.client.host if req.client else "?"
+    """The visitor's IP. Behind Caddy every request comes from 127.0.0.1; Caddy replaces any
+    X-Forwarded-For the client sent with the real address, so trust it only from loopback."""
+    host = req.client.host if req.client else "?"
+    if host in ("127.0.0.1", "::1"):
+        fwd = req.headers.get("x-forwarded-for", "").split(",")[0].strip()
+        if fwd:
+            return fwd
+    return host
 
 
 def same_origin(req: Request) -> None:
@@ -230,3 +242,55 @@ async def ping(req: Request):
         raise HTTPException(502, f"The AI call failed ({type(e).__name__}).")
     text = "".join(getattr(b, "text", "") for b in msg.content).strip()
     return {"ok": True, "using": who, "model": model, "reply": text[:80]}
+
+
+# ---- the agent ---------------------------------------------------------------------------------
+
+class Ask(BaseModel):
+    question: str
+    mint: str | None = None
+
+
+@app.post("/api/ask")
+async def ask(body: Ask, req: Request):
+    """Investigate a coin. JSON by default; server-sent events when the client accepts text/event-stream."""
+    same_origin(req)
+    question = (body.question or "").strip()[:500]
+    mint = (body.mint or "").strip() or None
+    if not question and not mint:
+        raise HTTPException(400, "Ask about a coin: paste its address or name.")
+    if mint and not agent.MINT_IN_TEXT.fullmatch(mint):
+        raise HTTPException(400, "That doesn't look like a coin address.")
+    question = question or "Who is behind this coin?"
+    vkey = visitor_key(req)
+    _, _, who = ai.client_for(vkey)
+    who_ip = ip(req)
+    if who == "owner":
+        limited(ask_owner_limit, who_ip)
+        if not ask_owner_daily.allow("all"):
+            raise HTTPException(429, "Sniff's shared key is busy today. Add your own key on the Settings page.")
+    elif who == "visitor":
+        limited(ask_visitor_limit, who_ip)
+    else:
+        limited(ask_dossier_limit, who_ip)
+
+    events = agent.investigate(question, mint, vkey)
+    if "text/event-stream" in req.headers.get("accept", ""):
+        async def sse():
+            async for e in events:
+                yield f"event: {e['type']}\ndata: {json.dumps(e, default=str)}\n\n"
+        return StreamingResponse(sse(), media_type="text/event-stream",
+                                 headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"})
+    out: dict = {"steps": [], "evidence": [], "verdict": None}
+    async for e in events:
+        if e["type"] == "step":
+            out["steps"].append(e)
+        elif e["type"] == "evidence":
+            out["evidence"] = e["items"]
+        elif e["type"] == "verdict":
+            out["verdict"] = e
+        elif e["type"] in ("start", "done"):
+            out.update({k: v for k, v in e.items() if k != "type"})
+        elif e["type"] == "notice":
+            out.setdefault("notices", []).append(e["text"])
+    return out

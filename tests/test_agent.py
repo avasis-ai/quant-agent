@@ -251,3 +251,11 @@ def test_compact_counts_are_whole_numbers():
 def test_hub_property_named_label_does_not_clobber_the_node_label():
     n = tools.compact_node({"labels": ["Hub"], "addr": HUB, "label": "exchange", "degree": 900})
     assert n["label"] == "Hub" and n["key"] == f"hub:{HUB}"
+
+
+def test_cap_claims_keeps_five_claims_and_the_closing_line():
+    from app.agent import cap_claims
+    claims = " ".join(f"Fact {i} is here [E{i}]." for i in range(1, 9))
+    out = cap_claims(claims + " For context: 3.7% of the 10 pump.fun launches in this graph graduated. History, not a prediction.")
+    assert "Fact 5" in out and "Fact 6" not in out
+    assert out.endswith("History, not a prediction.") and "For context:" in out

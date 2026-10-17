@@ -39,7 +39,7 @@ How to work:
 - Stop when you have enough; you have at most 8 tool calls.
 
 How to answer (plain words, for traders, no jargon):
-- One short paragraph of 2 to 5 plain sentences, then the closing line. No bullets, lists, headings or bold.
+- One short paragraph of 2 to 5 plain sentences (never more than 5; pick the strongest facts first), then the closing line. No bullets, lists, headings or bold.
 - One claim per sentence, and each sentence ends with the id of the evidence that proves THAT claim, like
   [E2]. Cite the tool that found it: socials and websites -> shared_handles; early buyers -> shared_snipers;
   who funded whom, and other creators paid by the same funder -> coin_dossier, funding_trail or siblings;
@@ -255,7 +255,22 @@ def _step(name: str, args: dict, ok: bool, res: dict) -> dict:
             "evidence": _ids_in(res), **({} if ok else {"error": res.get("error")})}
 
 
+MAX_CLAIMS = 5
+
+
+def cap_claims(text: str, limit: int = MAX_CLAIMS) -> str:
+    """Keep the first `limit` claim sentences plus the closing context line. The prompt asks for 2 to 5,
+    but the model sometimes writes more; it leads with the strongest facts, so the tail is what goes."""
+    sents = SENTENCE_END.split(text)
+    close = [x for x in sents if x.startswith("For context:") or x.startswith("History, not a prediction")]
+    claims = [x for x in sents if x not in close]
+    return " ".join(claims[:limit] + close).strip()
+
+
 def _verdict(text: str, ev: tools.Evidence, mode: str) -> dict:
     text, cited, unknown, mismatched = check_citations(text, ev)
+    if mode == "agent":
+        text = cap_claims(text)
+        cited = [c for c in cited if f"[{c}]" in text]
     return {"type": "verdict", "text": text, "cited": cited, "unknown_cited": unknown,
             "mismatched_cited": mismatched, "mode": mode}

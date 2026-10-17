@@ -161,7 +161,7 @@
     <nav>
       <a href="#how">How it works</a>
       <a href="/settings">Settings</a>
-      <a href="/#join" class="hide-s">Waitlist</a>
+      <a href="/waitlist#join" class="hide-s">Get updates</a>
     </nav>
   </header>
 
@@ -465,7 +465,7 @@
     const my = run + 1;          // ask() below takes this run number
     question = (question || '').trim() || 'Who is behind this coin?';
     if (mint) {
-      history.replaceState(null, '', '/app?mint=' + encodeURIComponent(mint));
+      history.replaceState(null, '', '/?mint=' + encodeURIComponent(mint));
       $('card').innerHTML = '<div class="mut">Loading…</div>'; cardEv = [];
       fetch('/api/dossier?mint=' + encodeURIComponent(mint), { credentials: 'same-origin' })
         .then(r => r.json().then(b => r.ok ? b : Promise.reject(new Error(b.error || 'Lookup failed.'))))

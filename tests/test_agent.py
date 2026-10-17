@@ -235,8 +235,10 @@ def test_ask_route_is_rate_limited(client):
 
 
 def test_app_page_and_lookups(client):
-    r = client.get("/app")
+    r = client.get("/")
     assert r.status_code == 200 and "Sniff any coin" in r.text and "/api/ask" in r.text
+    old = client.get("/app?mint=abc", follow_redirects=False)
+    assert old.status_code == 301 and old.headers["location"] == "/?mint=abc"
     d = client.get("/api/dossier", params={"mint": MINT}).json()
     assert d["coin_dossier"]["found"] and d["siblings"]["rows"] and d["evidence"] and d["base"]["coins"] == 1000
     assert client.get("/api/dossier", params={"mint": "nope"}).status_code == 400

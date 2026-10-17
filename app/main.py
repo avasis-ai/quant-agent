@@ -14,7 +14,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, StreamingResponse
 from pydantic import BaseModel
 
 from . import agent, ai, tools
@@ -145,16 +145,24 @@ async def _headers(req: Request, call_next):
 # ---- pages -----------------------------------------------------------------------
 
 @app.get("/", response_class=HTMLResponse)
-def landing():
+def app_page():
+    return FileResponse(STATIC / "app.html", headers={"Cache-Control": "no-cache"})
+
+
+@app.get("/app")
+def app_redirect(req: Request):
+    """The app used to live here; old links (and the demo video) keep working."""
+    q = req.url.query
+    return RedirectResponse("/" + (f"?{q}" if q else ""), status_code=301)
+
+
+@app.get("/waitlist", response_class=HTMLResponse)
+def waitlist_page():
+    """The pre-launch page with the waitlist form (it posts to /api/waitlist, served by its own service)."""
     page = LANDING / "index.html"
     if page.exists():
         return FileResponse(page, headers={"Cache-Control": "no-cache"})
-    return HTMLResponse("<h1>Sniff</h1>")
-
-
-@app.get("/app", response_class=HTMLResponse)
-def app_page():
-    return FileResponse(STATIC / "app.html", headers={"Cache-Control": "no-cache"})
+    return RedirectResponse("/", status_code=302)
 
 
 @app.get("/settings", response_class=HTMLResponse)

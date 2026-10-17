@@ -28,7 +28,7 @@ BASE58 = re.compile(r"^[1-9A-HJ-NP-Za-km-z]{32,44}$")
 KEEP = {
     "Coin": ("mint", "name", "symbol", "created_at", "graduated", "died_min", "outcome", "ath_usd"),
     "Wallet": ("addr", "launches", "graduations", "snipes", "funded", "kind"),
-    "Hub": ("addr", "degree", "label", "creator_share"),
+    "Hub": ("addr", "degree", "creator_share"),   # its "label" property would clobber the node label
     "Handle": ("hid", "platform", "handle", "coins"),
     "Ring": ("rid", "creators", "coins", "graduations", "funders", "grad_rate"),
 }
@@ -57,7 +57,8 @@ def compact_node(n: dict) -> dict:
     for k in KEEP.get(lab, ()):
         v = n.get(k)
         if v is not None and v != "":
-            out[k] = round(v, 4) if isinstance(v, float) else v
+            out[k] = (int(v) if v.is_integer() and k not in ("ath_usd", "creator_share", "grad_rate")
+                      else round(v, 4)) if isinstance(v, float) else v
     return out
 
 

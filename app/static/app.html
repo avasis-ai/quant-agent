@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sniff</title>
+<meta name="description" content="Sniff any pump.fun coin before you buy: who made it, who paid them, and how their other coins did.">
+<meta property="og:title" content="Sniff">
+<meta property="og:description" content="Sniff any pump.fun coin before you buy: who made it, who paid them, and how their other coins did.">
+<meta property="og:image" content="https://sniff.quantbase.live/media/og.png?v=2">
+<meta name="theme-color" content="#0a0a0b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --bg: #0a0a0b; --ink: #ecebe6; --ink-2: #b9b7b0; --ink-3: #7d7b76; --ink-4: #4a4946;
+    --glass: rgba(120, 124, 128, .16); --glass-2: rgba(150, 154, 158, .10); --edge: rgba(255, 255, 255, .07); --edge-2: rgba(255, 255, 255, .14);
+    --live: #3dff7a; --rec: #ff4a1c;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --brand: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--ink); }
+  body { font: 400 13.5px/1.5 var(--mono); letter-spacing: .02em; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+  button, input { font: inherit; color: inherit; }
+  a { color: inherit; }
+
+  .backdrop { position: fixed; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; }
+  .pool { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .5; }
+  .p1 { width: 60vmax; height: 34vmax; left: -12vmax; top: 14vh; background: radial-gradient(closest-side, #5e6a6c, transparent); animation: d1 26s ease-in-out infinite alternate; }
+  .p2 { width: 46vmax; height: 30vmax; right: -14vmax; bottom: -6vh; background: radial-gradient(closest-side, #7a6446, transparent); opacity: .42; animation: d2 31s ease-in-out infinite alternate; }
+  .p3 { width: 40vmax; height: 22vmax; left: 30vw; top: -8vh; background: radial-gradient(closest-side, #3d4748, transparent); opacity: .4; }
+  @keyframes d1 { to { transform: translate(60px, -40px) scale(1.06); } }
+  @keyframes d2 { to { transform: translate(-70px, 30px) scale(.95); } }
+  .grain { position: fixed; inset: -50%; z-index: 1; pointer-events: none; opacity: .06;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .9 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>"); }
+
+  .wrap { position: relative; z-index: 2; width: min(1120px, 100%); margin: 0 auto; padding: 20px 16px 72px; display: flex; flex-direction: column; gap: 10px; }
+  .glass { background: var(--glass); backdrop-filter: blur(18px) saturate(110%); -webkit-backdrop-filter: blur(18px) saturate(110%); border: 1px solid var(--edge); border-radius: 3px; }
+
+  header.bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 18px; }
+  .brand { font: 800 34px/1 var(--brand); letter-spacing: -.02em; color: #fff; text-decoration: none; }
+  nav { display: flex; gap: clamp(12px, 3vw, 34px); }
+  nav a { text-decoration: none; font-size: 13.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); }
+  nav a:hover, nav a:focus-visible { color: #fff; text-decoration: underline; text-underline-offset: 5px; outline: none; }
+
+  .hero { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: clamp(14px, 4vw, 40px); padding: 18px clamp(14px, 3vw, 28px); }
+  #scene { display: block; image-rendering: pixelated; image-rendering: crisp-edges; }
+  .hero h1 { margin: 0 0 8px; font: 800 clamp(26px, 4.4vw, 44px)/1.02 var(--brand); letter-spacing: -.02em; color: #fff; }
+  .hero p { margin: 0; color: var(--ink-2); max-width: 52ch; }
+
+  /* search */
+  .ask { padding: 14px; display: grid; gap: 10px; }
+  .fields { display: grid; grid-template-columns: 1.1fr 1fr auto; gap: 6px; }
+  .field { position: relative; min-width: 0; }
+  .field input { width: 100%; height: 46px; padding: 0 14px; background: rgba(0,0,0,.34); border: 1px solid var(--edge); border-radius: 2px; outline: none; letter-spacing: .03em; }
+  .field input:focus { border-color: rgba(255,255,255,.3); }
+  .field input::placeholder { color: var(--ink-3); }
+  .go { height: 46px; padding: 0 20px; border: 0; border-radius: 2px; background: var(--ink); color: #0a0a0b; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+  .go:hover { background: #fff; } .go:disabled { opacity: .45; cursor: default; }
+  .go:focus-visible, .chip:focus-visible, .ev:focus-visible { outline: 2px solid var(--live); outline-offset: 2px; }
+  .sugg { position: absolute; left: 0; right: 0; top: 50px; z-index: 20; padding: 4px; background: rgba(18,19,21,.97); border: 1px solid var(--edge-2); border-radius: 3px; max-height: 320px; overflow: auto; }
+  .sugg[hidden] { display: none; }
+  .sugg button { display: grid; grid-template-columns: 1fr auto; gap: 10px; width: 100%; text-align: left; padding: 9px 10px; background: none; border: 0; border-radius: 2px; cursor: pointer; }
+  .sugg button:hover, .sugg button.sel { background: rgba(255,255,255,.07); }
+  .sugg .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #fff; }
+  .sugg .meta { color: var(--ink-3); font-size: 12px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .chips .lbl { color: var(--ink-3); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; margin-right: 4px; }
+  .chip { padding: 6px 10px; border: 1px solid var(--edge-2); background: rgba(255,255,255,.03); border-radius: 2px; cursor: pointer; font-size: 12.5px; color: var(--ink-2); }
+  .chip:hover { color: #fff; border-color: rgba(255,255,255,.3); }
+  .chip b { color: var(--ink); font-weight: 500; }
+
+  /* results */
+  .results { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 10px; align-items: start; }
+  .results[hidden] { display: none; }
+  .col { display: grid; gap: 10px; min-width: 0; }
+  .panel { padding: 16px; min-width: 0; }
+  .panel h2 { flex-wrap: wrap; margin: 0 0 12px; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; display: flex; justify-content: space-between; gap: 8px; }
+  .panel h2 .r { color: var(--ink-4); letter-spacing: .08em; }
+
+  .coinhead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .coinhead .n { font: 800 24px/1.1 var(--brand); color: #fff; letter-spacing: -.01em; overflow-wrap: anywhere; }
+  .coinhead .s { color: var(--ink-3); margin-left: 6px; font: 400 13px var(--mono); }
+  .tag { display: inline-flex; align-items: center; gap: 7px; padding: 4px 9px; border-radius: 2px; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; border: 1px solid var(--edge-2); color: var(--ink-2); white-space: nowrap; }
+  .tag i { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-4); }
+  .tag.grad { color: var(--live); border-color: rgba(61,255,122,.35); } .tag.grad i { background: var(--live); }
+  .facts { display: grid; gap: 0; margin: 0; }
+  .facts > div { display: grid; grid-template-columns: 112px minmax(0,1fr); gap: 12px; padding: 9px 0; border-top: 1px solid var(--edge); }
+  .facts dt { color: var(--ink-3); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; padding-top: 1px; }
+  .facts dd { margin: 0; overflow-wrap: anywhere; }
+  .facts dd b { color: #fff; font-weight: 500; }
+  .mut { color: var(--ink-3); }
+  .addr { color: var(--ink-2); text-decoration: none; border-bottom: 1px dotted var(--ink-4); }
+  .addr:hover { color: #fff; }
+  .foot { margin-top: 10px; color: var(--ink-4); font-size: 11.5px; }
+
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .steps li { display: grid; grid-template-columns: 16px minmax(0,1fr) auto; gap: 10px; align-items: center; padding: 6px 0; color: var(--ink-2); }
+  .steps li .d { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-4); justify-self: center; }
+  .steps li.ok .d { background: var(--ink); } .steps li.bad .d { background: var(--rec); }
+  .steps li.run .d { background: var(--live); animation: pulse 1s ease-in-out infinite; }
+  .steps li .ms { color: var(--ink-4); font-size: 11.5px; }
+  @keyframes pulse { 50% { opacity: .25; } }
+
+  .verdict { font-size: 14.5px; line-height: 1.65; color: var(--ink); }
+  .verdict p { margin: 0 0 10px; }
+  .verdict .wait { color: var(--ink-3); }
+  .ev { display: inline-block; margin: 0 1px; padding: 0 5px; border: 1px solid var(--edge-2); border-radius: 2px; background: rgba(255,255,255,.05); color: var(--ink-2); font-size: 11.5px; line-height: 18px; cursor: pointer; vertical-align: 1px; }
+  .ev:hover, .ev.on { background: var(--ink); color: #0a0a0b; border-color: var(--ink); }
+  .note { color: var(--ink-3); font-size: 12px; margin-top: 6px; }
+  .note.err { color: var(--rec); }
+
+  .graphwrap { position: relative; }
+  .mappanel { position: sticky; top: 12px; }
+  #graph { height: 520px; width: 100%; border-radius: 2px; background: rgba(0,0,0,.22); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; font-size: 11.5px; color: var(--ink-3); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .lg { width: 12px; height: 12px; display: inline-block; border: 1.5px solid var(--ink); }
+  .lg.coin { border-radius: 3px; } .lg.grad { border-color: var(--live); background: rgba(61,255,122,.18); border-radius: 3px; }
+  .lg.dead { border-style: dashed; border-color: var(--ink-3); border-radius: 3px; }
+  .lg.wal { border-radius: 50%; } .lg.hub { border-style: dashed; border-color: var(--ink-3); background: rgba(255,255,255,.04); }
+  .lg.han { transform: rotate(45deg) scale(.8); } .lg.ring { border-radius: 50%; border-width: 3px; border-color: var(--ink-3); }
+  .evline { min-height: 20px; margin-top: 8px; font-size: 12.5px; color: var(--ink-2); }
+  .evline b { color: #fff; font-weight: 500; }
+  .reset { position: absolute; right: 10px; top: 10px; z-index: 5; padding: 5px 9px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; border: 1px solid var(--edge-2); border-radius: 2px; background: rgba(10,10,11,.7); cursor: pointer; color: var(--ink-2); }
+  .reset:hover { color: #fff; }
+
+  .how { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; padding: 20px clamp(14px, 3vw, 28px); }
+  .how .k { color: var(--ink-3); font-size: 11.5px; letter-spacing: .14em; margin-bottom: 10px; }
+  .how .h { color: #fff; margin-bottom: 8px; letter-spacing: .06em; text-transform: uppercase; font-size: 12.5px; }
+  .how .d { color: var(--ink-3); font-size: 12.5px; line-height: 1.6; }
+  .fine { color: var(--ink-4); font-size: 11.5px; text-align: center; margin-top: 6px; }
+  .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+
+  @media (max-width: 900px) {
+    .results { grid-template-columns: 1fr; }
+    .mappanel { position: static; }
+    .fields { grid-template-columns: 1fr; }
+    #graph { height: 400px; }
+    .how { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .brand { font-size: 26px; } header.bar { padding: 10px 12px; }
+    nav { gap: 12px; } nav a { font-size: 11.5px; letter-spacing: .06em; } nav a.hide-s { display: none; }
+    .hero { grid-template-columns: 1fr; justify-items: start; }
+    .facts > div { grid-template-columns: 1fr; gap: 2px; }
+    #graph { height: 340px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .pool, .steps li.run .d { animation: none; } }
+</style>
+</head>
+<body>
+<div class="backdrop" aria-hidden="true"><div class="pool p1"></div><div class="pool p2"></div><div class="pool p3"></div></div>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header class="bar glass">
+    <a class="brand" href="/">SNIFF</a>
+    <nav>
+      <a href="#how">How it works</a>
+      <a href="/settings">Settings</a>
+      <a href="/#join" class="hide-s">Waitlist</a>
+    </nav>
+  </header>
+
+  <section class="hero glass" aria-label="Sniff">
+    <canvas id="scene" width="120" height="56" role="img" aria-label="A pixel-art dachshund sniffing a Solana coin"></canvas>
+    <div>
+      <h1>Sniff any coin<br>before you buy.</h1>
+      <p>See who made a pump.fun coin, who paid them, and how their other coins did. Every answer shows where it came from.</p>
+    </div>
+  </section>
+
+  <section class="ask glass" aria-label="Look up a coin">
+    <form class="fields" id="form" autocomplete="off">
+      <div class="field">
+        <input id="coin" placeholder="Coin name, ticker or address" aria-label="Coin name, ticker or address" spellcheck="false" autocapitalize="off">
+        <div class="sugg" id="sugg" role="listbox" hidden></div>
+      </div>
+      <div class="field">
+        <input id="q" placeholder="Your question (optional)" aria-label="Your question" maxlength="400">
+      </div>
+      <button class="go" id="go" type="submit">Sniff it</button>
+    </form>
+    <div class="chips" id="chips">
+      <span class="lbl">Try</span>
+      <button class="chip" data-mint="3LaVxn1Pp5gDjJZgGrpbQ8gRKj7GxgPE8cjF62Svpump"><b>METHU</b> · one payer, 72 creators</button>
+      <button class="chip" data-mint="2f6jt6sR7CcuJ9sxWcqhXHBgE5r8kS3gXBJvaUWtpump"><b>Subprime Cat</b> · biggest ring</button>
+      <button class="chip" data-mint="95JVHQQhHAPTJDVjw37ViiEwehstLEeX61Gbf13Upump"><b>Women in Finance</b> · reused socials</button>
+      <button class="chip" data-mint="wV46Y351erjX7CiAyRRvzJgeWdtqpHXXBmv9LVzpump"><b>Higher</b> · graduated</button>
+    </div>
+  </section>
+
+  <section class="results" id="results" hidden aria-live="polite">
+    <div class="col">
+      <div class="panel glass" id="cardPanel">
+        <h2><span>The coin</span><span class="r">no AI needed</span></h2>
+        <div id="card"><div class="mut">Loading…</div></div>
+      </div>
+      <div class="panel glass">
+        <h2><span>Sniff's answer</span><span class="r" id="mode"></span></h2>
+        <ul class="steps" id="steps"></ul>
+        <div class="verdict" id="verdict"></div>
+        <div class="note" id="note"></div>
+      </div>
+    </div>
+    <div class="panel glass mappanel">
+      <h2><span>The map</span><span class="r">tap a node or an [E] tag</span></h2>
+      <div class="graphwrap">
+        <button class="reset" id="reset" type="button">Show all</button>
+        <div id="graph" role="img" aria-label="Graph of the coin, its creator, the wallets that paid the creator, and linked coins"></div>
+      </div>
+      <div class="evline" id="evline"></div>
+      <div class="legend">
+        <span><i class="lg grad"></i>Graduated coin</span>
+        <span><i class="lg dead"></i>Did not graduate</span>
+        <span><i class="lg wal"></i>Wallet</span>
+        <span><i class="lg hub"></i>Exchange-like wallet (dead end)</span>
+        <span><i class="lg han"></i>Social / website</span>
+        <span><i class="lg ring"></i>Funding ring</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="how glass" id="how" aria-label="How it works">
+    <div><div class="k">01</div><div class="h">A map of launches</div><div class="d">Sniff keeps a map of pump.fun launches since September: each coin, the wallet that made it, the wallet that paid that wallet, early buyers, and shared socials.</div></div>
+    <div><div class="k">02</div><div class="h">Follow the money</div><div class="d">When you ask about a coin, Sniff walks that map: what else the maker launched, who paid them, and who else that payer funded.</div></div>
+    <div><div class="k">03</div><div class="h">Every claim has proof</div><div class="d">Each sentence links to the part of the map it came from. Big exchange-like wallets are dead ends, so they never tie strangers together.</div></div>
+  </section>
+  <p class="fine">History, not a prediction. Nothing here is financial advice. Built for Graph Hacks by Quant Agent on FalkorDB.</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.33.1/cytoscape.min.js" integrity="sha512-kHAY8XzRfLVMcLuowdk91552RD+Nb2/1uHamfHMdLejNqlZnbEJLl1wYnsNnqIFCEZ++WaOcOlfokC6p9JWrLw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const short = a => a && a.length > 12 ? a.slice(0, 4) + '…' + a.slice(-4) : (a || '');
+  const MINT = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const visitorKey = () => { try { return sessionStorage.getItem('sniff.claudeKey') || ''; } catch { return ''; } };
+
+  // ---------------- hero: the dog sniffs the coin (sprites from the landing page) ----------------
+  const cv = $('scene'), cx = cv.getContext('2d'); cx.imageSmoothingEnabled = false;
+  const W = 120, H = 56, G = 53, dog = new Image(), coin = new Image();
+  dog.src = '/media/dog-sniff.png?v=2'; coin.src = '/media/coin-spin.png?v=2';
+  const scale = () => { const s = innerWidth < 560 ? 2 : 3; cv.style.width = W * s + 'px'; cv.style.height = H * s + 'px'; };
+  addEventListener('resize', scale); scale();
+  let busy = false;                      // sniffs faster while Sniff is working
+  const dogF = t => t < .8 ? 0 : t < 1 ? 1 : t < 1.2 ? 2 : t < 2.8 ? [3, 4][Math.floor((t - 1.2) * 6) % 2] : t < 3 ? 2 : t < 3.2 ? 5 : t < 4.4 ? [6, 7][Math.floor((t - 3.2) * 5) % 2] : 0;
+  function draw(t) {
+    cx.clearRect(0, 0, W, H);
+    cx.fillStyle = 'rgba(236,235,230,.14)'; cx.fillRect(2, G + 1, W - 4, 1);
+    if (dog.naturalWidth) { const fw = dog.naturalWidth / 8, f = busy ? [3, 4][Math.floor(t * 7) % 2] : dogF(t); cx.drawImage(dog, f * fw, 0, fw, dog.naturalHeight, 2, G - dog.naturalHeight + 1, fw, dog.naturalHeight); }
+    if (coin.naturalWidth) { const fw = coin.naturalWidth / 8, f = busy ? Math.floor(t * 10) % 8 : (t > 3.2 && t < 4 ? Math.floor((t - 3.2) * 10) % 8 : 0); cx.drawImage(coin, f * fw, 0, fw, coin.naturalHeight, 80, G - coin.naturalHeight + 1, fw, coin.naturalHeight); }
+  }
+  const t0 = performance.now();
+  const loop = now => { draw(((now - t0) / 1000) % 5.5); requestAnimationFrame(loop); };
+  if (reduce) { dog.onload = coin.onload = () => draw(2); } else requestAnimationFrame(loop);
+
+  // ---------------- the graph ----------------
+  const C = { ink: '#ecebe6', ink2: '#b9b7b0', ink3: '#7d7b76', ink4: '#4a4946', live: '#3dff7a', bg: '#0a0a0b' };
+  let cy = null, layout = null, focusKey = null, evidence = [];
+  function graphInit() {
+    if (!window.cytoscape) { $('graph').innerHTML = '<div class="note" style="padding:14px">The map could not load. The answer still works.</div>'; return; }
+    cy = cytoscape({
+      container: $('graph'), wheelSensitivity: .25, minZoom: .2, maxZoom: 2.5,
+      style: [
+        { selector: 'node', style: { 'label': 'data(label)', 'color': C.ink2, 'font-family': 'IBM Plex Mono, monospace', 'font-size': 10,
+          'text-valign': 'bottom', 'text-margin-y': 5, 'text-wrap': 'wrap', 'text-max-width': 110, 'width': 20, 'height': 20,
+          'background-color': C.bg, 'border-width': 1.5, 'border-color': C.ink, 'text-outline-width': 2, 'text-outline-color': C.bg } },
+        { selector: 'node[kind="coin"]', style: { 'shape': 'round-rectangle', 'border-style': 'dashed', 'border-color': C.ink3, 'width': 22, 'height': 22 } },
+        { selector: 'node[kind="coin"][grad="yes"]', style: { 'border-style': 'solid', 'border-color': C.live, 'background-color': '#123d22' } },
+        { selector: 'node[kind="hub"]', style: { 'shape': 'rectangle', 'border-style': 'dashed', 'border-color': C.ink3, 'background-color': '#1b1c1e', 'color': C.ink3 } },
+        { selector: 'node[kind="handle"]', style: { 'shape': 'diamond', 'width': 22, 'height': 22 } },
+        { selector: 'node[kind="ring"]', style: { 'shape': 'ellipse', 'width': 38, 'height': 38, 'border-width': 3, 'border-color': C.ink3, 'background-color': '#151617' } },
+        { selector: 'node[kind="group"]', style: { 'shape': 'round-rectangle', 'width': 34, 'height': 24, 'border-style': 'dotted', 'border-color': C.ink2, 'background-color': '#151617' } },
+        { selector: 'node.focus', style: { 'width': 34, 'height': 34, 'border-width': 3, 'color': '#fff', 'font-size': 11, 'font-weight': 600 } },
+        { selector: 'edge', style: { 'width': 1.2, 'line-color': C.ink4, 'target-arrow-color': C.ink4, 'target-arrow-shape': 'triangle', 'arrow-scale': .8,
+          'curve-style': 'bezier', 'label': 'data(label)', 'font-size': 8, 'color': C.ink3, 'font-family': 'IBM Plex Mono, monospace',
+          'text-rotation': 'autorotate', 'text-background-color': C.bg, 'text-background-opacity': 1, 'text-background-padding': 2 } },
+        { selector: 'edge[type="FUNDED"]', style: { 'line-color': C.ink2, 'target-arrow-color': C.ink2, 'width': 1.6 } },
+        { selector: 'edge[type="LINKS"]', style: { 'line-style': 'dashed', 'target-arrow-shape': 'none' } },
+        { selector: 'edge[type="IN_RING"]', style: { 'line-style': 'dotted', 'target-arrow-shape': 'none' } },
+        { selector: 'edge[type="SHARED"]', style: { 'line-style': 'dashed', 'target-arrow-shape': 'none', 'line-color': C.ink3 } },
+        { selector: '.dim', style: { 'opacity': .14 } },
+        { selector: 'node.hi', style: { 'border-color': '#fff', 'border-width': 3, 'color': '#fff', 'z-index': 10 } },
+        { selector: 'node[kind="coin"][grad="yes"].hi', style: { 'border-color': C.live } },
+        { selector: 'edge.hi', style: { 'line-color': '#fff', 'target-arrow-color': '#fff', 'width': 2.4, 'color': '#fff', 'z-index': 10 } },
+      ],
+    });
+    cy.on('tap', 'node', e => explainNode(e.target));
+    cy.on('tap', e => { if (e.target === cy) clearHi(); });
+  }
+
+  const KIND = { Coin: 'coin', Wallet: 'wallet', Hub: 'hub', Handle: 'handle', Ring: 'ring' };
+  function nodeLabel(n) {
+    if (n.label === 'Coin') return (n.name ? n.name : short(n.mint)) + (n.graduated ? '\ngraduated' : '');
+    if (n.label === 'Hub') return 'exchange-like\n' + short(n.addr);
+    if (n.label === 'Handle') return (n.platform === 'twitter' ? 'X ' : (n.platform || '') + ' ') + (n.handle || '');
+    if (n.label === 'Ring') return 'ring · ' + (n.creators ?? '?') + ' creators';
+    if (n.label === 'Wallet') return short(n.addr) + (n.kind === 'creator' || n.launches ? '\nmade ' + (n.launches ?? '?') : '');
+    return n.key;
+  }
+  const merged = new Map();          // key -> merged props (the richest version of each node seen)
+  function buildGraph(items) {
+    evidence = items || [];
+    if (!cy) return;
+    merged.clear();
+    const nodes = new Map(), edges = new Map(), ev2 = {};
+    const addNode = (n, eid) => {
+      const m = { ...(merged.get(n.key) || {}), ...Object.fromEntries(Object.entries(n).filter(([, v]) => v !== undefined && v !== null)) };
+      merged.set(n.key, m);
+      const kind = n.kind && n.kind !== 'creator' && !KIND[n.label] ? n.kind : (KIND[n.label] || 'wallet');
+      const cur = nodes.get(n.key) || { data: { id: n.key, ev: [] } };
+      Object.assign(cur.data, { kind: n._kind || kind, label: n._label || nodeLabel(m), grad: m.graduated ? 'yes' : 'no' });
+      cur.data.ev.push(eid); nodes.set(n.key, cur);
+    };
+    const addEdge = (e, eid) => {
+      const id = e.type + '|' + e.src + '|' + e.dst;
+      const lab = e.type === 'FUNDED' ? (e.sol != null ? 'paid ' + (+e.sol).toFixed(3) + ' SOL' : 'paid')
+                : e.type === 'CREATED' ? 'made' : e.type === 'LINKS' ? 'uses' : e.type === 'IN_RING' ? '' : (e.label || '');
+      const cur = edges.get(id) || { data: { id, source: e.src, target: e.dst, type: e.type, label: lab, ev: [] } };
+      cur.data.ev.push(eid); edges.set(id, cur);
+    };
+    for (const it of evidence) {
+      ev2[it.id] = it;
+      it.nodes.forEach(n => addNode(n, it.id));
+      it.edges.forEach(e => addEdge(e, it.id));
+      // Some evidence names a pair without an edge: draw what it means.
+      if (it.tool === 'siblings' && it.nodes.length >= 2) {
+        const f = it.nodes[0], m = /paid (\d+) other creators: (\d+) coins, (\d+) graduated/.exec(it.summary) || [];
+        const g = { key: 'group:' + f.key, label: 'Group', _kind: 'group', _label: (m[1] || '?') + ' other creators\n' + (m[2] || '?') + ' coins · ' + (m[3] || '?') + ' graduated' };
+        addNode(g, it.id); addEdge({ type: 'FUNDED', src: f.key, dst: g.key, label: '' }, it.id);
+      } else if (it.tool === 'shared_snipers' && it.nodes.length >= 2) {
+        addEdge({ type: 'SHARED', src: it.nodes[0].key, dst: it.nodes[1].key, label: 'same early buyers' }, it.id);
+      } else if (!it.edges.length && it.nodes.length >= 2) {
+        it.nodes.slice(1).forEach(n => addEdge({ type: 'SHARED', src: it.nodes[0].key, dst: n.key, label: '' }, it.id));
+      }
+    }
+    for (const e of [...edges.values()]) if (!nodes.has(e.data.source) || !nodes.has(e.data.target)) edges.delete(e.data.id);
+    cy.elements().remove();
+    cy.add([...nodes.values()]); cy.add([...edges.values()]);
+    if (focusKey) cy.getElementById(focusKey).addClass('focus');
+    cy.resize(); if (layout) layout.stop();
+    layout = cy.layout({ name: 'cose', animate: false, nodeRepulsion: () => 12000, idealEdgeLength: () => 90, numIter: 1500,
+                         padding: 28, randomize: true, componentSpacing: 70, nodeDimensionsIncludeLabels: true });
+    layout.run(); cy.fit(undefined, 28);
+  }
+  function clearHi() { if (!cy) return; cy.elements().removeClass('dim hi'); document.querySelectorAll('.ev.on').forEach(b => b.classList.remove('on')); $('evline').textContent = ''; }
+  function highlight(eid) {
+    const it = evidence.find(x => x.id === eid);
+    document.querySelectorAll('.ev').forEach(b => b.classList.toggle('on', b.dataset.e === eid));
+    $('evline').innerHTML = it ? `<b>[${esc(eid)}]</b> ${esc(it.summary)}` : '';
+    if (!cy || !it) return;
+    const sel = cy.elements().filter(el => (el.data('ev') || []).includes(eid));
+    cy.elements().addClass('dim').removeClass('hi');
+    sel.removeClass('dim').addClass('hi'); sel.connectedNodes().removeClass('dim');
+    if (sel.length) cy.animate({ fit: { eles: sel.union(sel.connectedNodes()), padding: 60 } }, { duration: reduce ? 0 : 350 });
+  }
+  function explainNode(n) {
+    const m = merged.get(n.id()) || {}, k = n.data('kind');
+    let t = '';
+    if (k === 'coin') t = `<b>${esc(m.name || short(m.mint))}</b> ${m.graduated ? 'graduated.' : 'did not graduate.'} <a class="addr" target="_blank" rel="noopener" href="https://solscan.io/token/${esc(m.mint)}">${esc(short(m.mint))}</a>`;
+    else if (k === 'hub') t = `<b>Exchange-like wallet</b> (paid more than 200 wallets). Sniff never links coins through it.`;
+    else if (k === 'ring') t = `<b>Funding ring</b>: ${esc(m.creators)} creators linked by funding, ${esc(m.coins)} coins, ${esc(m.graduations)} graduated.`;
+    else if (k === 'handle') t = `<b>${esc(m.handle)}</b> on ${esc(m.platform)}, used on ${esc(m.coins)} coins.`;
+    else if (k === 'group') t = `<b>${esc(n.data('label').replace('\n', ', '))}</b>, all paid by the same wallet.`;
+    else t = `<b>Wallet</b> <a class="addr" target="_blank" rel="noopener" href="https://solscan.io/account/${esc(m.addr)}">${esc(short(m.addr))}</a>` + (m.launches != null ? ` made ${esc(m.launches)} coin${m.launches === 1 ? '' : 's'}, ${esc(m.graduations ?? 0)} graduated.` : '.');
+    $('evline').innerHTML = t;
+    cy.elements().removeClass('dim hi'); n.addClass('hi');
+  }
+  $('reset').addEventListener('click', () => { clearHi(); cy && cy.animate({ fit: { padding: 24 } }, { duration: reduce ? 0 : 300 }); });
+
+  // ---------------- the dossier card (fixed facts, no AI) ----------------
+  const day = ts => ts ? new Date(ts * 1000).toISOString().slice(0, 10) : '?';
+  const chip = id => id ? `<button class="ev" type="button" data-e="${esc(id)}">${esc(id)}</button>` : '';
+  function renderCard(d) {
+    const cd = d.coin_dossier || {};
+    if (cd.error) return `<div class="note err">${esc(cd.error)}</div>`;
+    if (!cd.found) return `<div class="mut">${esc(cd.note || 'This coin is not in the map yet.')}</div>`;
+    const c = cd.coin, cr = cd.creator, f = cd.funders || [], r = cd.ring;
+    const sib = ((d.siblings || {}).rows || [])[0], hand = ((d.shared_handles || {}).rows || []);
+    const real = f.filter(x => x.label !== 'Hub'), hubs = f.filter(x => x.label === 'Hub');
+    const payer = real.length ? real.map(x => `<a class="addr" target="_blank" rel="noopener" href="https://solscan.io/account/${esc(x.addr)}">${esc(short(x.addr))}</a>${x.sol != null ? ` <span class="mut">${(+x.sol).toFixed(3)} SOL</span>` : ''} ${chip(x.evidence)}`).join('<br>')
+                : hubs.length ? `An exchange-like wallet <span class="mut">(links to nobody)</span> ${chip(hubs[0].evidence)}` : '<span class="mut">No payer found</span>';
+    const rate = d.base ? (100 * d.base.rate).toFixed(1) + '% of ' + d.base.coins.toLocaleString() + ' launches graduated.' : '';
+    return `
+      <div class="coinhead"><div class="n">${esc(c.name || short(c.mint))}${c.symbol ? `<span class="s">$${esc(c.symbol)}</span>` : ''}</div>
+        <span class="tag ${c.graduated ? 'grad' : ''}"><i></i>${c.graduated ? 'Graduated' : 'Did not graduate'}</span></div>
+      <dl class="facts">
+        <div><dt>Coin</dt><dd><a class="addr" target="_blank" rel="noopener" href="https://solscan.io/token/${esc(c.mint)}">${esc(short(c.mint))}</a> <span class="mut">launched ${day(c.created_at)}</span></dd></div>
+        <div><dt>Made by</dt><dd><a class="addr" target="_blank" rel="noopener" href="https://solscan.io/account/${esc(cr.addr)}">${esc(short(cr.addr))}</a>, who made <b>${cd.creator_other_coins}</b> other coin${cd.creator_other_coins === 1 ? '' : 's'}, <b>${cd.creator_other_graduated}</b> graduated ${chip((cd.evidence || [])[0])}</dd></div>
+        <div><dt>Paid by</dt><dd>${payer}</dd></div>
+        <div><dt>Same payer</dt><dd>${sib ? `also paid <b>${sib.creators}</b> other creators: <b>${sib.coins}</b> coins, <b>${sib.graduated}</b> graduated ${chip(sib.evidence)}` : '<span class="mut">No other creators found</span>'}</dd></div>
+        <div><dt>Ring</dt><dd>${r ? `<b>${r.creators}</b> creators linked by funding, <b>${r.coins}</b> coins, <b>${r.graduations}</b> graduated ${chip(r.evidence)}` : '<span class="mut">Not in a funding ring</span>'}</dd></div>
+        <div><dt>Socials</dt><dd>${hand.length ? hand.slice(0, 3).map(h => `${esc(h.platform === 'twitter' ? 'X' : h.platform)} <b>${esc(h.handle)}</b> also on <b>${h.other_coins}</b> other coins ${chip(h.evidence)}`).join('<br>') : '<span class="mut">Not reused on other coins</span>'}</dd></div>
+      </dl>
+      <div class="foot">For context: ${esc(rate)} History, not a prediction.</div>`;
+  }
+
+  // ---------------- the agent stream ----------------
+  const STEP = {
+    search_coins: 'Looking the coin up by name', coin_dossier: 'Checking who made the coin and who paid them',
+    funding_trail: 'Following the money back', siblings: 'Checking who else the same payer funded',
+    shared_snipers: "Checking the early buyers' other coins", shared_handles: 'Checking if the socials were used before',
+    ring: "Checking the maker's funding ring", connect: 'Looking for a link between the two', top_operators: 'Finding the busiest payers',
+  };
+  let run = 0, cardEv = [], agentEv = [];
+  const refreshGraph = () => buildGraph(agentEv.concat(cardEv));
+  function stepRow(text, cls, ms) {
+    const li = document.createElement('li'); li.className = cls;
+    li.innerHTML = `<span class="d"></span><span>${esc(text)}</span><span class="ms">${ms != null ? ms + ' ms' : ''}</span>`;
+    $('steps').appendChild(li); return li;
+  }
+  function renderVerdict(v) {
+    const parts = esc(v.text).split(/\n{2,}/).map(p => '<p>' + p.replace(/\[(E\d+)\]/g, (_, id) => chip(id)).replace(/\n/g, '<br>') + '</p>');
+    $('verdict').innerHTML = parts.join('');
+    $('mode').textContent = v.mode === 'agent' ? 'written by Claude from the map' : 'fixed summary';
+  }
+  document.addEventListener('click', e => { const b = e.target.closest('.ev'); if (b) highlight(b.dataset.e); });
+
+  async function ask(question, mint) {
+    const my = ++run; agentEv = [];
+    $('steps').innerHTML = ''; $('verdict').innerHTML = '<span class="wait">Sniffing…</span>'; $('note').textContent = ''; $('note').className = 'note'; $('mode').textContent = '';
+    busy = true; $('go').disabled = true;
+    let pending = stepRow('Starting', 'run');
+    const headers = { 'content-type': 'application/json', accept: 'text/event-stream' };
+    const k = visitorKey(); if (k) headers['x-anthropic-key'] = k;
+    try {
+      const r = await fetch('/api/ask', { method: 'POST', headers, credentials: 'same-origin', body: JSON.stringify({ question, mint: mint || null }) });
+      if (!r.ok) { const b = await r.json().catch(() => ({})); throw new Error(b.error || 'Sniff could not answer right now.'); }
+      const reader = r.body.getReader(), dec = new TextDecoder(); let buf = '';
+      for (;;) {
+        const { value, done } = await reader.read(); if (done) break;
+        if (my !== run) { reader.cancel(); return; }
+        buf += dec.decode(value, { stream: true });
+        let i; while ((i = buf.indexOf('\n\n')) >= 0) {
+          const chunk = buf.slice(0, i); buf = buf.slice(i + 2);
+          const line = chunk.split('\n').find(l => l.startsWith('data: ')); if (!line) continue;
+          const ev = JSON.parse(line.slice(6));
+          if (ev.type === 'start') { pending.remove(); pending = stepRow(ev.mode === 'agent' ? 'Claude is planning the search' : 'No AI key: running the fixed checks', 'run');
+            if (ev.mode !== 'agent') $('note').innerHTML = 'Add your own Claude key in <a href="/settings">Settings</a> for a written answer.'; }
+          else if (ev.type === 'step') { pending.remove(); stepRow(STEP[ev.tool] || ev.tool, ev.ok ? 'ok' : 'bad', ev.ms); pending = stepRow('Thinking', 'run'); }
+          else if (ev.type === 'notice') { $('note').textContent = ev.text; }
+          else if (ev.type === 'evidence') { if (ev.items && ev.items.length) { agentEv = ev.items; refreshGraph(); } }
+          else if (ev.type === 'verdict') { pending.remove(); renderVerdict(ev); }
+          else if (ev.type === 'done') stepRow('Done', 'ok', ev.ms);
+        }
+      }
+    } catch (err) {
+      if (my !== run) return;
+      pending && pending.remove();
+      $('verdict').innerHTML = ''; $('note').className = 'note err'; $('note').textContent = err.message || 'Something went wrong.';
+    } finally { if (my === run) { busy = false; $('go').disabled = false; } }
+  }
+
+  async function sniff(mint, question) {
+    $('results').hidden = false;
+    if (!cy) graphInit();
+    focusKey = mint ? 'coin:' + mint : null;
+    agentEv = []; cardEv = []; if (cy) cy.elements().remove(); $('evline').textContent = '';
+    const my = run + 1;          // ask() below takes this run number
+    question = (question || '').trim() || 'Who is behind this coin?';
+    if (mint) {
+      history.replaceState(null, '', '/app?mint=' + encodeURIComponent(mint));
+      $('card').innerHTML = '<div class="mut">Loading…</div>'; cardEv = [];
+      fetch('/api/dossier?mint=' + encodeURIComponent(mint), { credentials: 'same-origin' })
+        .then(r => r.json().then(b => r.ok ? b : Promise.reject(new Error(b.error || 'Lookup failed.'))))
+        .then(d => { if (my !== run) return;
+          $('card').innerHTML = renderCard(d);
+          // The card's evidence is its own set (ids E1.. again): prefix it so both sets share one map.
+          $('card').querySelectorAll('.ev').forEach(b => { b.dataset.e = 'c' + b.dataset.e; b.textContent = 'show'; });
+          cardEv = (d.evidence || []).map(x => ({ ...x, id: 'c' + x.id }));
+          refreshGraph();
+          if (d.coin_dossier && d.coin_dossier.coin) $('coin').value = d.coin_dossier.coin.name || mint; })
+        .catch(e => { $('card').innerHTML = `<div class="note err">${esc(e.message)}</div>`; });
+    } else {
+      $('card').innerHTML = '<div class="mut">Sniff will find the coin from your question.</div>';
+    }
+    $('results').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    ask(question, mint);
+  }
+
+  // ---------------- search box ----------------
+  let picked = null, sTimer = null, sRows = [], sSel = -1;
+  const sugg = $('sugg');
+  function showSugg(rows) {
+    sRows = rows; sSel = -1;
+    if (!rows.length) { sugg.hidden = true; return; }
+    sugg.innerHTML = rows.map((c, i) => `<button type="button" role="option" data-i="${i}"><span class="nm">${esc(c.name || short(c.mint))} ${c.symbol ? `<span class="meta">$${esc(c.symbol)}</span>` : ''}</span><span class="meta">${c.graduated ? 'graduated' : day(c.created_at)} · ${esc(short(c.mint))}</span></button>`).join('');
+    sugg.hidden = false;
+  }
+  $('coin').addEventListener('input', () => {
+    picked = null; const v = $('coin').value.trim();
+    clearTimeout(sTimer);
+    if (v.length < 2 || MINT.test(v)) { sugg.hidden = true; return; }
+    sTimer = setTimeout(async () => {
+      try { const r = await fetch('/api/search?q=' + encodeURIComponent(v), { credentials: 'same-origin' }); const b = await r.json(); if ($('coin').value.trim() === v) showSugg(b.rows || []); }
+      catch { sugg.hidden = true; }
+    }, 220);
+  });
+  $('coin').addEventListener('keydown', e => {
+    if (sugg.hidden || !sRows.length) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); sSel = (sSel + (e.key === 'ArrowDown' ? 1 : -1) + sRows.length) % sRows.length;
+      sugg.querySelectorAll('button').forEach((b, i) => b.classList.toggle('sel', i === sSel)); }
+    else if (e.key === 'Enter' && sSel >= 0) { e.preventDefault(); choose(sRows[sSel]); }
+    else if (e.key === 'Escape') sugg.hidden = true;
+  });
+  sugg.addEventListener('click', e => { const b = e.target.closest('button'); if (b) choose(sRows[+b.dataset.i]); });
+  document.addEventListener('click', e => { if (!e.target.closest('.field')) sugg.hidden = true; });
+  function choose(c) { picked = c.mint; $('coin').value = c.name || c.mint; sugg.hidden = true; $('q').focus(); }
+
+  $('form').addEventListener('submit', e => {
+    e.preventDefault();
+    const v = $('coin').value.trim(), q = $('q').value.trim();
+    const mint = picked || (MINT.test(v) ? v : null);
+    if (!mint && !v && !q) { $('coin').focus(); return; }
+    if (!mint && sRows.length && v) { choose(sRows[0]); return sniff(sRows[0].mint, q); }
+    sniff(mint, mint ? q : (q || ('Who is behind the coin ' + v + '?')));
+  });
+  $('chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; picked = b.dataset.mint; $('coin').value = b.querySelector('b').textContent; sniff(b.dataset.mint, $('q').value); });
+
+  const start = new URLSearchParams(location.search).get('mint');
+  if (start && MINT.test(start)) { picked = start; $('coin').value = start; sniff(start, ''); }
+})();
+</script>
+</body>
+</html>

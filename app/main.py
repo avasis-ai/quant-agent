@@ -1,6 +1,7 @@
 """Sniff web app (FastAPI): the landing page, /settings (owner key + visitor BYOK), /api/ask (the agent)."""
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
 import hmac
@@ -15,7 +16,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
-from . import agent, ai
+from . import agent, ai, tools
 from .limits import Limiter
 from .secrets import check_passcode, install_log_masking, read_env, write_env
 
@@ -41,6 +42,9 @@ async def lifespan(_app):
 
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
+if os.environ.get("SNIFF_MEDIA_DIR"):  # local dev only: in production Caddy serves /media
+    from fastapi.staticfiles import StaticFiles
+    app.mount("/media", StaticFiles(directory=os.environ["SNIFF_MEDIA_DIR"]), name="media")
 
 login_limit = Limiter(5, 15 * 60)
 key_limit = Limiter(10, 60 * 60)
@@ -50,6 +54,7 @@ ask_owner_limit = Limiter(15, 60 * 60)        # per visitor IP, on the site's ke
 ask_owner_daily = Limiter(300, 24 * 60 * 60)  # all visitors together, on the site's key
 ask_visitor_limit = Limiter(60, 60 * 60)      # per IP, on the visitor's own key
 ask_dossier_limit = Limiter(60, 60 * 60)      # per IP, no AI
+lookup_limit = Limiter(240, 60 * 60)          # per IP: search box and dossier cards
 
 
 def _session_secret() -> bytes:
@@ -140,6 +145,11 @@ def landing():
     if page.exists():
         return FileResponse(page, headers={"Cache-Control": "no-cache"})
     return HTMLResponse("<h1>Sniff</h1>")
+
+
+@app.get("/app", response_class=HTMLResponse)
+def app_page():
+    return FileResponse(STATIC / "app.html", headers={"Cache-Control": "no-cache"})
 
 
 @app.get("/settings", response_class=HTMLResponse)
@@ -293,4 +303,37 @@ async def ask(body: Ask, req: Request):
             out.update({k: v for k, v in e.items() if k != "type"})
         elif e["type"] == "notice":
             out.setdefault("notices", []).append(e["text"])
+    return out
+
+
+# ---- lookups for the app page (no AI) --------------------------------------------------------
+
+@app.get("/api/search")
+async def search(q: str, req: Request):
+    """Coins by name, ticker or address, for the search box."""
+    limited(lookup_limit, ip(req))
+    q = q.strip()[:80]
+    if agent.MINT_IN_TEXT.fullmatch(q):
+        res, ok = await asyncio.to_thread(tools.run_tool, tools.Evidence(), "coin_dossier", {"mint": q})
+        return {"rows": [res["coin"]] if ok and res.get("found") else []}
+    res, ok = await asyncio.to_thread(tools.run_tool, tools.Evidence(), "search_coins", {"query": q})
+    return {"rows": [{k: v for k, v in r.items() if k != "evidence"} for r in res.get("rows", [])] if ok else []}
+
+
+@app.get("/api/dossier")
+async def dossier_card(mint: str, req: Request):
+    """The fixed facts for the dossier card: shown with or without an AI key."""
+    limited(lookup_limit, ip(req))
+    mint = mint.strip()
+    if not agent.MINT_IN_TEXT.fullmatch(mint):
+        raise HTTPException(400, "That doesn't look like a coin address.")
+    ev = tools.Evidence()
+    out = {}
+    for name in ("coin_dossier", "siblings", "shared_handles"):
+        res, ok = await asyncio.to_thread(tools.run_tool, ev, name, {"mint": mint})
+        out[name] = res if ok else {"error": res.get("error")}
+        if name == "coin_dossier" and not res.get("found"):
+            break
+    out["base"] = tools.base_rate()
+    out["evidence"] = ev.items
     return out

@@ -202,3 +202,22 @@ def test_ask_route_rejects_bad_input_and_foreign_origin(client):
 def test_ask_route_is_rate_limited(client):
     codes = [client.post("/api/ask", json={"question": "x", "mint": MINT}).status_code for _ in range(62)]
     assert codes[-1] == 429 and codes[0] == 200
+
+
+def test_app_page_and_lookups(client):
+    r = client.get("/app")
+    assert r.status_code == 200 and "Sniff any coin" in r.text and "/api/ask" in r.text
+    d = client.get("/api/dossier", params={"mint": MINT}).json()
+    assert d["coin_dossier"]["found"] and d["siblings"]["rows"] and d["evidence"] and d["base"]["coins"] == 1000
+    assert client.get("/api/dossier", params={"mint": "nope"}).status_code == 400
+    assert client.get("/api/search", params={"q": MINT}).json()["rows"][0]["mint"] == MINT
+
+
+def test_compact_counts_are_whole_numbers():
+    n = tools.compact_node({"labels": ["Ring"], "rid": 7, "creators": 72.0, "coins": 72.0, "grad_rate": 0.0})
+    assert n["creators"] == 72 and isinstance(n["creators"], int) and isinstance(n["grad_rate"], float)
+
+
+def test_hub_property_named_label_does_not_clobber_the_node_label():
+    n = tools.compact_node({"labels": ["Hub"], "addr": HUB, "label": "exchange", "degree": 900})
+    assert n["label"] == "Hub" and n["key"] == f"hub:{HUB}"

@@ -10,7 +10,8 @@ Data). Team **Quant Agent**. Built during the event window, Oct 15–18, 2026 (I
 
 | | |
 |---|---|
-| **App** | https://sniff.quantbase.live/app |
+| **App** | https://sniff.quantbase.live |
+| **Demo video** | https://youtu.be/YMQKpynEsI0 |
 | **Bring your own Claude key** | https://sniff.quantbase.live/settings |
 | **MCP endpoint (9 graph tools)** | `https://sniff.quantbase.live/mcp` |
 

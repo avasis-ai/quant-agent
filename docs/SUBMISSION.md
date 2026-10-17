@@ -10,9 +10,9 @@ Deadline: **Oct 18, 2026, 23:59 IST**. Our own target: submitted by **18:00 IST*
 | Team | Quant Agent (code F92P7R) |
 | Track | 01: Agents That Act on Connected Data |
 | Repository | https://github.com/avasis-ai/quant-agent |
-| Live demo | https://sniff.quantbase.live/app |
+| Live demo | https://sniff.quantbase.live |
 | MCP endpoint | https://sniff.quantbase.live/mcp |
-| Video | _(link to add once the demo video is uploaded)_ |
+| Video | https://youtu.be/YMQKpynEsI0 |
 | Blog post | _(link to add once published; text in `docs/BLOG.md`)_ |
 
 **Short description (≤ 300 characters, 281 now):**
@@ -45,8 +45,10 @@ Cytoscape.js, DuckDB (data prep and test ground truth), AWS EC2 and Caddy.
 
 ## Check before submitting
 
-- [ ] https://sniff.quantbase.live/app loads, and the METHU example answers.
+- [x] https://sniff.quantbase.live loads, and the METHU example answers.
 - [ ] `/settings` shows the site key as Active.
 - [ ] `claude mcp add --transport http sniff https://sniff.quantbase.live/mcp` lists 9 tools.
 - [ ] The README renders on GitHub, including the screenshots and mermaid diagrams.
-- [ ] The video link works when you're logged out.
+- [x] The video link works when you're logged out.
+
+**Submitted 2026-10-17 13:48 IST, video link updated 13:57 IST.**

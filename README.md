@@ -175,6 +175,16 @@ The QuantBase data collector, which records public pump.fun data, and the snapsh
 line in this repository (the graph build, queries, agent, app, MCP server, tests and docs) was written
 between Oct 15 and Oct 18, 2026.
 
+## AI assistance (disclosure)
+
+Per rule 11: this project was built with AI coding assistants. Most of the code, tests and docs were
+written by Claude Code (Anthropic) working under the team's direction. The team chose the problem and
+the product, supplied the data from our own pump.fun collector, decided the graph model and its rules
+(hubs as dead ends, the 200-wallet cutoff, sniper rarity weighting), set the claims policy ("history,
+not a prediction"), and reviewed the work, including checking every core query against independent
+DuckDB ground truth (`tests/test_queries.py`). The commit history shows the work as it happened during
+the event. At runtime, Sniff's answers are written by Claude from the graph's evidence, as described above.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).

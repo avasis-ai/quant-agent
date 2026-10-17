@@ -41,4 +41,11 @@ def test_mock_eval_on_the_live_graph():
     except Exception as e:  # noqa: BLE001
         pytest.skip(f"FalkorDB not reachable: {e}")
     s = E.summary(E.run_mock(E.load()))
-    assert s == {"tools": 30, "citations": 30, "policy": 30, "all_three": 30, "n": 30}
+    assert s == {"tools": 30, "citations": 30, "policy": 30, "all_three": 30, "short": 30, "n": 30}
+
+
+def test_refusals_may_name_the_question_but_not_answer_it():
+    q = {"id": "z", "kind": "refuse", "expect_tools": [], "refuse": True}
+    ok = "I can't say whether this coin will pump or whether you should buy it. " + LINE
+    assert E.score(q, {"tools": [], "verdict": {"text": ok}})["policy"]
+    assert not E.score(q, {"tools": [], "verdict": {"text": "You should buy it now. " + LINE}})["policy"]

@@ -15,7 +15,10 @@ All code in this repository is written during the event window (Oct 15–18, 202
   a one-line summary, and the nodes and edges to highlight, keyed `coin:<mint>`, `wallet:<addr>`, `hub:<addr>`,
   `handle:<hid>` or `ring:<rid>`.
 - **Agent** (`app/agent.py`): Claude plans the tool calls (up to 8), then writes a short verdict where each
-  fact cites evidence ids. Citations are checked against the evidence actually returned, and unknown ids are dropped.
+  fact cites evidence ids. Citations are checked against the evidence actually returned and against the claim:
+  a sentence about socials may only cite `shared_handles` evidence, early buyers `shared_snipers`, and so on.
+  Unknown or mismatched ids are dropped, and a sentence left with no valid citation is dropped. A tool that
+  finds nothing still returns a "none found" evidence id, so "no other coin reuses its socials" can be cited.
 - **No AI key, or the AI call fails:** a fixed dossier built from the same tools answers instead, so the
   evidence never depends on the LLM.
 - **Wording:** answers describe history only and end with the base-rate line ("3.7% of … launches graduated").
@@ -24,6 +27,32 @@ All code in this repository is written during the event window (Oct 15–18, 202
   `Accept: text/event-stream`.
 - **Keys:** a visitor's own key goes in the `x-anthropic-key` header. Without one, the site's key is used,
   limited per IP and per day.
+
+## Use Sniff from your own agent (MCP)
+
+The same 9 read-only graph tools are served over MCP (streamable HTTP) at `https://sniff.quantbase.live/mcp`.
+No AI key is needed: every tool is a plain graph read, rate-limited per IP.
+
+Claude Code:
+
+```bash
+claude mcp add --transport http sniff https://sniff.quantbase.live/mcp
+```
+
+Claude Desktop (Settings → Connectors → Add custom connector), or any client that takes a JSON config:
+
+```json
+{ "mcpServers": { "sniff": { "type": "http", "url": "https://sniff.quantbase.live/mcp" } } }
+```
+
+Then ask: "Use sniff to check who is behind <mint>". Every result carries evidence ids to cite.
+
+## Eval
+
+`tests/eval/questions.jsonl` holds 30 questions: the 8 graph questions, coin search, and 6 that must be refused
+or answered with "no evidence" (price predictions, "is it safe", unknown coins). `python -m tests.eval.run_eval`
+scores tool choice, citation validity and the history-not-advice policy, with a scripted Claude in CI and live
+against the site (`--live https://sniff.quantbase.live --only-live`). Results: `docs/EVAL.md`.
 
 Tests: `pytest tests` (unit tests use a fake graph and a fake Claude; the query tests need the live graph, see `docs/GRAPH.md`).
 

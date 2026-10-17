@@ -6,7 +6,7 @@ investigate() is an async generator of events, so the route can stream them (SSE
   {"type": "start", "mode": "agent"|"dossier", "model": ...}
   {"type": "step", "tool": ..., "input": {...}, "ok": bool, "ms": int, "evidence": [ids]}
   {"type": "evidence", "items": [...]}          all evidence gathered, once, before the verdict
-  {"type": "verdict", "text": ..., "cited": [ids], "unknown_cited": [ids], "mode": ...}
+  {"type": "verdict", "text": ..., "cited": [ids], "unknown_cited": [ids], "mismatched_cited": [ids], "mode": ...}
   {"type": "done", "ms": int}
 """
 from __future__ import annotations
@@ -39,10 +39,14 @@ How to work:
 - Stop when you have enough; you have at most 8 tool calls.
 
 How to answer (plain words, for traders, no jargon):
-- 2 to 5 short sentences. Every factual sentence ends with the evidence ids it rests on, like [E2] or
-  [E1][E4]. Only cite ids that appeared in tool results.
-- Describe history only. Never say buy, sell, safe, scam, or what the price will do. Say "no links found"
-  rather than "clean" when the tools find nothing.
+- One short paragraph of 2 to 5 plain sentences, then the closing line. No bullets, lists, headings or bold.
+- One claim per sentence, and each sentence ends with the id of the evidence that proves THAT claim, like
+  [E2]. Cite the tool that found it: socials and websites -> shared_handles; early buyers -> shared_snipers;
+  who funded whom, and other creators paid by the same funder -> coin_dossier, funding_trail or siblings;
+  rings -> ring or coin_dossier; links between two things -> connect. Never cite an id for a claim it does
+  not show. A tool that found nothing returns a 'none found' evidence id: cite that for a "no ..." sentence.
+- Describe history only. Never say buy, sell, safe, scam, rug, or what the price will do. Say "no links found"
+  rather than "clean" when the tools find nothing. If asked to predict, say Sniff only shows history.
 - End with exactly this line: {base_line}"""
 
 
@@ -60,15 +64,60 @@ def _ids_in(result: Any) -> list[str]:
     return list(dict.fromkeys(found))
 
 
-def check_citations(text: str, ev: tools.Evidence) -> tuple[str, list[str], list[str]]:
-    """(text with unknown citations removed, cited ids, unknown ids). The UI only ever links real evidence."""
-    known = ev.ids()
-    cited, unknown = [], []
-    for eid in CITE.findall(text):
-        (cited if eid in known else unknown).append(eid)
-    for eid in set(unknown):
-        text = text.replace(f"[{eid}]", "")
-    return text.strip(), list(dict.fromkeys(cited)), list(dict.fromkeys(unknown))
+# A sentence about one of these topics may only cite evidence from the tools that can show it.
+# Sentences about nothing in particular ("launched 72 coins") may cite any real evidence.
+TOPICS: list[tuple[re.Pattern, set[str]]] = [
+    (re.compile(r"\b(socials?|twitter|telegram|websites?|site|handles?|x account)\b", re.I), {"shared_handles"}),
+    (re.compile(r"\b(early buyers?|snipers?|sniped|bought early)\b", re.I), {"shared_snipers"}),
+    (re.compile(r"\brings?\b", re.I), {"ring", "coin_dossier"}),
+    (re.compile(r"\b(fund(ed|er|ers|ing|s)?|paid|pays|hubs?|exchange)\b", re.I),
+     {"coin_dossier", "funding_trail", "siblings", "top_operators", "connect", "ring"}),
+    (re.compile(r"\b(linked|links?|connected|hops?|path)\b", re.I),
+     {"connect", "coin_dossier", "funding_trail", "siblings", "ring"}),
+]
+SENTENCE_END = re.compile(r"(?<=[.!?\]])\s+(?=[A-Z0-9\"'(])")
+BULLET = re.compile(r"^\s*(?:[-*\u2022]|\d+[.)])\s+", re.M)
+
+
+def allowed_tools(sentence: str) -> set[str] | None:
+    """Tools whose evidence can support this sentence, or None when it names no specific topic."""
+    hit = [tools_ for pat, tools_ in TOPICS if pat.search(sentence)]
+    return set().union(*hit) if hit else None
+
+
+def check_citations(text: str, ev: tools.Evidence) -> tuple[str, list[str], list[str], list[str]]:
+    """Clean a verdict so the UI only ever links evidence that shows the claim.
+
+    Returns (text, cited, unknown, mismatched). Unknown ids (never returned by a tool) are removed.
+    Mismatched ids (a real id from a tool that cannot show the sentence's topic, e.g. a siblings id on a
+    "no reused socials" sentence) are removed too, and a sentence left with no citation at all is dropped:
+    an unsupported claim is worse than a shorter answer. Bullets become plain sentences."""
+    known = {i["id"]: i["tool"] for i in ev.items}
+    text = BULLET.sub("", text.replace("**", "")).replace("\n", " ")
+    text = re.sub(r"\s+", " ", text).strip()
+    cited, unknown, mismatched, kept = [], [], [], []
+    for sent in SENTENCE_END.split(text):
+        ids = CITE.findall(sent)
+        if not ids:
+            kept.append(sent)
+            continue
+        ok_tools = allowed_tools(CITE.sub("", sent))
+        good = []
+        for eid in ids:
+            if eid not in known:
+                unknown.append(eid)
+            elif ok_tools is not None and known[eid] not in ok_tools:
+                mismatched.append(eid)
+            else:
+                good.append(eid)
+        if not good:
+            continue
+        for eid in set(ids) - set(good):
+            sent = sent.replace(f"[{eid}]", "")
+        kept.append(re.sub(r"\s+([.!?,])", r"\1", re.sub(r"\s{2,}", " ", sent)).strip())
+        cited += good
+    dedup = lambda xs: list(dict.fromkeys(xs))  # noqa: E731
+    return " ".join(kept).strip(), dedup(cited), dedup(unknown), dedup(mismatched)
 
 
 # ---- dossier fallback --------------------------------------------------------------------------
@@ -207,5 +256,6 @@ def _step(name: str, args: dict, ok: bool, res: dict) -> dict:
 
 
 def _verdict(text: str, ev: tools.Evidence, mode: str) -> dict:
-    text, cited, unknown = check_citations(text, ev)
-    return {"type": "verdict", "text": text, "cited": cited, "unknown_cited": unknown, "mode": mode}
+    text, cited, unknown, mismatched = check_citations(text, ev)
+    return {"type": "verdict", "text": text, "cited": cited, "unknown_cited": unknown,
+            "mismatched_cited": mismatched, "mode": mode}

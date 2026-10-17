@@ -1,4 +1,5 @@
-"""Sniff web app (FastAPI): the landing page, /settings (owner key + visitor BYOK), /api/ask (the agent)."""
+"""Sniff web app (FastAPI): the landing page, /settings (owner key + visitor BYOK), /api/ask (the agent),
+/mcp (the graph tools over MCP)."""
 from __future__ import annotations
 
 import asyncio
@@ -17,6 +18,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Streamin
 from pydantic import BaseModel
 
 from . import agent, ai, tools
+from . import mcp as sniff_mcp
 from .limits import Limiter
 from .secrets import check_passcode, install_log_masking, read_env, write_env
 
@@ -38,10 +40,13 @@ async def lifespan(_app):
     SECRET = _session_secret()
     ai.load_owner()
     log.info("sniff app up; owner key %s", "active" if ai.OWNER.active else "not set")
-    yield
+    async with sniff_mcp.lifespan():
+        yield
 
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
+app.router.add_route(sniff_mcp.PATH, sniff_mcp.Limited(), methods=["GET", "POST", "DELETE"],
+                     include_in_schema=False)  # MCP: the agent's graph tools for any MCP client
 if os.environ.get("SNIFF_MEDIA_DIR"):  # local dev only: in production Caddy serves /media
     from fastapi.staticfiles import StaticFiles
     app.mount("/media", StaticFiles(directory=os.environ["SNIFF_MEDIA_DIR"]), name="media")

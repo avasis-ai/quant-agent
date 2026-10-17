@@ -104,8 +104,38 @@ def test_cap_trims_rows_to_fit():
 def test_citations_unknown_ids_are_removed():
     ev = tools.Evidence()
     ev.add("x", {}, "one", [tools._coin(MINT)])
-    text, cited, unknown = agent.check_citations("Creator made 4 coins [E1]. Made up [E9].", ev)
+    text, cited, unknown, _ = agent.check_citations("Creator made 4 coins [E1]. Made up [E9].", ev)
     assert cited == ["E1"] and unknown == ["E9"] and "[E9]" not in text and "[E1]" in text
+    assert "Made up" not in text  # a sentence left with no real citation is dropped
+
+
+def test_citations_must_come_from_a_tool_that_shows_the_claim():
+    ev = tools.Evidence()
+    ev.add("coin_dossier", {}, "creator", [tools._coin(MINT)])                       # E1
+    ev.add("siblings", {}, "funder paid 5", [tools._wallet(FUNDER), tools._coin(MINT)])  # E2
+    ev.add("shared_handles", {}, "none found", [tools._coin(OTHER)])                   # E3
+    text, cited, unknown, mismatched = agent.check_citations(
+        "The creator launched 4 coins [E1]. Its funder also paid 5 creators [E2]. "
+        "No other coin reuses its socials [E2]. Its website is on no other coin [E3][E2].", ev)
+    assert "No other coin reuses its socials" not in text   # the live bug: a siblings id on a socials claim
+    assert "Its website is on no other coin [E3]." in text and "[E3][E2]" not in text
+    assert cited == ["E1", "E2", "E3"] and mismatched == ["E2"] and not unknown
+
+
+def test_bullets_become_plain_sentences():
+    ev = tools.Evidence()
+    ev.add("coin_dossier", {}, "creator", [tools._coin(MINT)])
+    text, cited, _, _ = agent.check_citations("- **Creator** made 4 coins [E1].\n- Funded by a hub [E1].", ev)
+    assert text == "Creator made 4 coins [E1]. Funded by a hub [E1]." and cited == ["E1"]
+
+
+def test_empty_results_are_citable_none_found_evidence(fake_graph):
+    ev = tools.Evidence()
+    res, ok = tools.run_tool(ev, "shared_handles", {"mint": MINT})
+    assert ok and res["rows"] == [] and res["evidence"] == "E1"
+    assert ev.items[0]["tool"] == "shared_handles" and "No other coin" in ev.items[0]["summary"]
+    res, ok = tools.run_tool(ev, "coin_dossier", {"mint": OTHER})
+    assert ok and res["found"] is False and res["evidence"] == "E2"
 
 
 def collect(gen):

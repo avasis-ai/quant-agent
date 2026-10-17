@@ -136,6 +136,12 @@ def _coin(mint: str, **props) -> dict:
     return {"key": f"coin:{mint}", "label": "Coin", "mint": mint, **props}
 
 
+def _none(ev: Evidence, tool: str, args: dict, note: str, *subjects: dict) -> dict:
+    """An empty answer is evidence too: a 'none found' item lets a verdict cite a negative
+    ("no other coin reuses its socials") instead of borrowing an unrelated tool's id."""
+    return {"rows": [], "note": note, "evidence": ev.add(tool, args, note, list(subjects))}
+
+
 # ---- the tools -------------------------------------------------------------------------------
 
 class BadInput(ValueError):
@@ -168,7 +174,9 @@ def t_coin_dossier(ev: Evidence, mint: str) -> dict:
     mint = _need_addr(mint, "mint")
     r = queries.coin_dossier(mint)
     if not r:
-        return {"found": False, "note": "This coin is not in the graph (too new, or not a pump.fun launch)."}
+        return {"found": False, **_none(ev, "coin_dossier", {"mint": mint},
+                                        "This coin is not in the graph (too new, or not a pump.fun launch).",
+                                        _coin(mint))}
     coin, creator = compact_node(r["coin"]), compact_node(r["creator"])
     created = {"type": "CREATED", "src": creator["key"], "dst": coin["key"]}
     r["others"], r["other_grads"] = int(r["others"] or 0), int(r["other_grads"] or 0)
@@ -213,8 +221,9 @@ def t_funding_trail(ev: Evidence, address: str) -> dict:
                     "evidence": ev.add("funding_trail", {"address": addr},
                                        f"{_short(addr)} was funded {r['depth']} hop(s) back by {what}",
                                        p["nodes"], p["edges"])})
-    return {"rows": out, "truncated": max(0, len(rows) - MAX_ROWS),
-            "note": "" if rows else "No known funder for this wallet."}
+    if not rows:
+        return _none(ev, "funding_trail", {"address": addr}, "No known funder for this wallet.", _wallet(addr))
+    return {"rows": out, "truncated": max(0, len(rows) - MAX_ROWS), "note": ""}
 
 
 def t_siblings(ev: Evidence, mint: str) -> dict:
@@ -227,8 +236,10 @@ def t_siblings(ev: Evidence, mint: str) -> dict:
             "siblings", {"mint": mint},
             f"Funder {_short(r['funder'])} also paid {r['creators']} other creators: "
             f"{r['coins']} coins, {r['graduated']} graduated", [f, _coin(mint)])})
-    return {"rows": out, "truncated": max(0, len(rows) - MAX_ROWS),
-            "note": "" if rows else "No other creator shares a (non-hub) funder with this creator."}
+    if not rows:
+        return _none(ev, "siblings", {"mint": mint},
+                     "No other creator shares a (non-hub) funder with this creator.", _coin(mint))
+    return {"rows": out, "truncated": max(0, len(rows) - MAX_ROWS), "note": ""}
 
 
 def t_shared_snipers(ev: Evidence, mint: str) -> dict:
@@ -242,9 +253,11 @@ def t_shared_snipers(ev: Evidence, mint: str) -> dict:
             f"{r['shared']} early buyers of this coin also bought early into {r.get('name') or _short(r['mint'])}"
             f" ({'graduated' if r.get('graduated') else 'did not graduate'})",
             [_coin(mint), _coin(r["mint"], name=r.get("name"), graduated=r.get("graduated"))])})
+    if not rows:
+        return _none(ev, "shared_snipers", {"mint": mint},
+                     "No early buyer of this coin bought early into another coin (bots ignored).", _coin(mint))
     return {"rows": out, "truncated": max(0, len(rows) - MAX_ROWS),
-            "note": "score = sum of each shared buyer's rarity; bots (>100 snipes) are ignored."
-                    if rows else "No early buyer of this coin bought early into another coin (bots ignored)."}
+            "note": "score = sum of each shared buyer's rarity; bots (>100 snipes) are ignored."}
 
 
 def t_shared_handles(ev: Evidence, mint: str) -> dict:
@@ -259,8 +272,10 @@ def t_shared_handles(ev: Evidence, mint: str) -> dict:
             f"{r['platform']} '{r['handle']}' is also on {r['other_coins']} other coins by "
             f"{r['other_creators']} creators ({r['graduated']} graduated)",
             [_coin(mint), h], [{"type": "LINKS", "src": f"coin:{mint}", "dst": h["key"]}])})
-    return {"rows": out, "truncated": max(0, len(rows) - MAX_ROWS),
-            "note": "" if rows else "No other coin uses this coin's socials or website."}
+    if not rows:
+        return _none(ev, "shared_handles", {"mint": mint},
+                     "No other coin uses this coin's socials or website.", _coin(mint))
+    return {"rows": out, "truncated": max(0, len(rows) - MAX_ROWS), "note": ""}
 
 
 def t_ring(ev: Evidence, mint: str | None = None, address: str | None = None) -> dict:
@@ -271,7 +286,9 @@ def t_ring(ev: Evidence, mint: str | None = None, address: str | None = None) ->
     else:
         raise BadInput("Give a mint or an address.")
     if not r:
-        return {"found": False, "note": "Not part of a funding ring (no two creators linked by funding)."}
+        subject = _coin(mint) if mint else _wallet(address)
+        return {"found": False, **_none(ev, "ring", {"mint": mint, "address": address},
+                                        "Not part of a funding ring (no two creators linked by funding).", subject)}
     ring = compact_node(r["ring"])
     top = [_wallet(t["creator"], launches=t["launches"], graduations=t["graduations"]) for t in r["top_creators"]]
     eid = ev.add("ring", {"mint": mint, "address": address},
@@ -283,14 +300,30 @@ def t_ring(ev: Evidence, mint: str | None = None, address: str | None = None) ->
 
 def t_connect(ev: Evidence, a: str, b: str) -> dict:
     a, b = _need_addr(a, "a"), _need_addr(b, "b")
-    rows = queries.connect(a, b)
+    # Deepen step by step: short links come back fast, and a 6-hop search between two busy wallets can
+    # time out. Stop at the first depth that finds a link, or at the first timeout.
+    rows, searched = [], 0
+    for max_len in (4, 5, 6):
+        try:
+            rows = queries.connect(a, b, max_len=max_len)
+        except Exception:  # noqa: BLE001 - a timeout at this depth: report what was searched
+            if not searched:
+                raise
+            break
+        searched = max_len
+        if rows:
+            break
     out = []
     for r in rows:
         p = compact_path(r["path"])
         out.append({"hops": r["hops"], "evidence": ev.add(
             "connect", {"a": a, "b": b}, f"{_short(a)} and {_short(b)} are linked in {r['hops']} hops "
             f"({' → '.join(e['type'] for e in p['edges'])})", p["nodes"], p["edges"])})
-    return {"rows": out, "note": "" if rows else "No link within 6 hops (hubs and platform-sized handles excluded)."}
+    if not rows:
+        ends = [_coin(x) if x.endswith("pump") else _wallet(x) for x in (a, b)]
+        return _none(ev, "connect", {"a": a, "b": b},
+                     f"No link within {searched} hops (hubs and platform-sized handles excluded).", *ends)
+    return {"rows": out, "note": ""}
 
 
 def t_top_operators(ev: Evidence, days: int = 7) -> dict:

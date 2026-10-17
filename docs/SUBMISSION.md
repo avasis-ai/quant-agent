@@ -13,7 +13,7 @@ Deadline: **Oct 18, 2026, 23:59 IST**. Our own target: submitted by **18:00 IST*
 | Live demo | https://sniff.quantbase.live |
 | MCP endpoint | https://sniff.quantbase.live/mcp |
 | Video | https://youtu.be/YMQKpynEsI0 |
-| Blog post | _(link to add once published; text in `docs/BLOG.md`)_ |
+| Blog post | https://dev.to/quantbase/who-is-behind-this-meme-coin-building-sniff-on-a-graph-4nnc |
 
 **Short description (≤ 300 characters, 281 now):**
 

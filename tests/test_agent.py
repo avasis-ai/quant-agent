@@ -122,6 +122,57 @@ def test_citations_must_come_from_a_tool_that_shows_the_claim():
     assert cited == ["E1", "E2", "E3"] and mismatched == ["E2"] and not unknown
 
 
+@pytest.mark.parametrize("text", [
+    "The creator launched 999 coins.",
+    "The creator launched 999 coins. the funder paid 5 creators [E1].",
+    "The creator launched 999 coins! The funder paid 5 creators [E1].",
+    '"The creator launched 999 coins." The funder paid 5 creators [E1].',
+    "The creator launched 999 coins… the funder paid 5 creators [E1].",
+    "The creator launched 999 coins\n\nThe funder paid 5 creators [E1].",
+    "- The creator launched 999 coins\n- The funder paid 5 creators [E1].",
+    "For context: the creator launched 999 coins. History, not a prediction.",
+])
+def test_review_uncited_factual_sentences_are_rejected(text):
+    ev = tools.Evidence()
+    ev.add("siblings", {}, "The funder paid 5 creators.", [tools._coin(MINT)])
+    cleaned, cited, _, _ = agent.check_citations(text, ev)
+    assert "999" not in cleaned
+    assert bool(cited) == ("[E1]" in text)
+
+
+@pytest.mark.parametrize("ids,kept", [("[E1]", False), ("[E2]", False), ("[E1][E2]", True)])
+def test_review_mixed_topics_require_evidence_for_each_topic(ids, kept):
+    ev = tools.Evidence()
+    ev.add("siblings", {}, "The funder paid 5 creators.", [tools._coin(MINT)])
+    ev.add("shared_handles", {}, "No reused socials.", [tools._coin(MINT)])
+    cleaned, cited, _, _ = agent.check_citations(f"The funder paid 5 creators and no coin reuses its socials {ids}.", ev)
+    assert bool(cleaned) is kept and bool(cited) is kept
+
+
+def test_review_compatible_citations_do_not_verify_numbers_or_truth():
+    ev = tools.Evidence()
+    ev.add("coin_dossier", {}, "The creator launched one coin.", [tools._coin(MINT)])
+    # This is the review's valid-ID/false-number probe. It documents the actual
+    # boundary: a compatible tool id does NOT validate subject/value semantics.
+    cleaned, cited, _, _ = agent.check_citations("The creator launched 999 coins [E1].", ev)
+    assert "999" in cleaned and cited == ["E1"]
+
+
+def test_only_server_adds_uncited_context_or_refusal(fake_graph):
+    ev = tools.Evidence()
+    result = agent._verdict("For context: 99% graduated. The creator launched 999 coins.", ev, "agent")
+    assert "99%" not in result["text"] and "999" not in result["text"]
+    assert result["text"] == "Sniff could not produce a cited answer. " + agent.base_line()
+    assert result["text"].count("History, not a prediction.") == 1
+
+
+def test_sentence_citation_after_punctuation_stays_with_its_sentence():
+    ev = tools.Evidence()
+    ev.add("coin_dossier", {}, "Creator history.", [tools._coin(MINT)])
+    cleaned, cited, _, _ = agent.check_citations("Uncited opening. The creator launched 4 coins. [E1] Uncited ending.", ev)
+    assert cleaned == "The creator launched 4 coins. [E1]" and cited == ["E1"]
+
+
 def test_bullets_become_plain_sentences():
     ev = tools.Evidence()
     ev.add("coin_dossier", {}, "creator", [tools._coin(MINT)])

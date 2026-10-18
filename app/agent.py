@@ -43,7 +43,7 @@ How to work:
   shared_handles, shared_snipers, ring, funding_trail. Use search_coins when you only have a name.
 - A hub (a funder of more than 200 wallets, likely an exchange) proves nothing. Never treat two things
   as linked because they share a hub.
-- Stop when you have enough; you have at most 8 tool calls.
+- Stop when you have enough; you have at most 8 model/tool rounds. A round may call several tools.
 
 How to answer (plain words, for traders, no jargon):
 - One short paragraph of 2 to 5 plain sentences (never more than 5; pick the strongest facts first), then the closing line. No bullets, lists, headings or bold.
@@ -72,7 +72,8 @@ def _ids_in(result: Any) -> list[str]:
 
 
 # A sentence about one of these topics may only cite evidence from the tools that can show it.
-# Sentences about nothing in particular ("launched 72 coins") may cite any real evidence.
+# Sentences without a matched topic still require a real evidence id. This checks
+# evidence kind, not numerical values, subjects or the truth of a source.
 TOPICS: list[tuple[re.Pattern, set[str]]] = [
     (re.compile(r"\b(socials?|twitter|telegram|websites?|site|handles?|x account)\b", re.I), {"shared_handles"}),
     (re.compile(r"\b(early buyers?|snipers?|sniped|bought early)\b", re.I), {"shared_snipers"}),
@@ -82,34 +83,39 @@ TOPICS: list[tuple[re.Pattern, set[str]]] = [
     (re.compile(r"\b(linked|links?|connected|hops?|path)\b", re.I),
      {"connect", "coin_dossier", "funding_trail", "siblings", "ring"}),
 ]
-SENTENCE_END = re.compile(r"(?<=[.!?\]])\s+(?=[A-Z0-9\"'(])")
+SENTENCE_END = re.compile(
+    r'''(?<=[.!?。！？…])\s+(?!\[[EB]\d+\])|(?<=[.!?。！？…]["'”’])\s+(?!\[[EB]\d+\])'''
+    r"|(?<=\])\s+(?!(?:\[[EB]\d+\]|[.!?。！？…]))"
+)
 BULLET = re.compile(r"^\s*(?:[-*\u2022]|\d+[.)])\s+", re.M)
 
 
-def allowed_tools(sentence: str) -> set[str] | None:
-    """Tools whose evidence can support this sentence, or None when it names no specific topic."""
-    hit = [tools_ for pat, tools_ in TOPICS if pat.search(sentence)]
-    return set().union(*hit) if hit else None
+def required_tools(sentence: str) -> list[set[str]]:
+    """Each matched topic needs its own compatible citation; one topic cannot mask another."""
+    return [tools_ for pat, tools_ in TOPICS if pat.search(sentence)]
 
 
 def check_citations(text: str, ev: tools.Evidence) -> tuple[str, list[str], list[str], list[str]]:
-    """Clean a verdict so the UI only ever links evidence that shows the claim.
+    """Require known citations and evidence of every matching kind per sentence.
 
-    Returns (text, cited, unknown, mismatched). Unknown ids (never returned by a tool) are removed.
-    Mismatched ids (a real id from a tool that cannot show the sentence's topic, e.g. a siblings id on a
-    "no reused socials" sentence) are removed too, and a sentence left with no citation at all is dropped:
-    an unsupported claim is worse than a shorter answer. Bullets become plain sentences."""
+    Returns (text, cited, unknown, mismatched). Uncited model prose is rejected,
+    including context/refusal wording: only the server may add those lines after
+    this check. E citations check tool compatibility, not claim truth or values.
+    B citations additionally require a literal excerpt of their own source section.
+    """
     known = {i["id"]: i["tool"] for i in ev.items}
     by_id = {i["id"]: i for i in ev.items}
-    text = BULLET.sub("", text.replace("**", "")).replace("\n", " ")
-    text = re.sub(r"\s+", " ", text).strip()
+    # Preserve paragraph/list boundaries so an uncited opening cannot borrow a
+    # later paragraph's citation simply by omitting its final punctuation.
+    text = BULLET.sub("\n\n", text.replace("**", ""))
+    sentences = [sentence for paragraph in re.split(r"\n\s*\n", text)
+                 for sentence in SENTENCE_END.split(re.sub(r"\s+", " ", paragraph).strip())]
     cited, unknown, mismatched, kept = [], [], [], []
-    for sent in SENTENCE_END.split(text):
+    for sent in sentences:
         ids = CITE.findall(sent)
         if not ids:
-            kept.append(sent)
             continue
-        ok_tools = allowed_tools(CITE.sub("", sent))
+        required = required_tools(CITE.sub("", sent))
         good = []
         for eid in ids:
             if eid not in known:
@@ -120,13 +126,18 @@ def check_citations(text: str, ev: tools.Evidence) -> tuple[str, list[str], list
                    re.sub(r"\s+", " ", by_id[eid].get("section", ""))
             ):
                 mismatched.append(eid)
-            elif (eid.startswith("B") and known[eid] != "brain_ask") or (
-                eid.startswith("E") and ok_tools is not None and known[eid] not in ok_tools
-            ):
+            elif eid.startswith("E") and (known[eid] == "brain_ask" or
+                    (required and not any(known[eid] in kinds for kinds in required))):
                 mismatched.append(eid)
             else:
                 good.append(eid)
         if not good:
+            continue
+        # A literal B excerpt is source-bound. For lineage, cover ALL matched
+        # topics, possibly with separate ids from different tools.
+        good_tools = {known[eid] for eid in good}
+        if not any(eid.startswith("B") for eid in good) and not all(kinds & good_tools for kinds in required):
+            mismatched.extend(good)
             continue
         for eid in set(ids) - set(good):
             sent = sent.replace(f"[{eid}]", "")
@@ -149,7 +160,7 @@ async def dossier(question: str, mint: str | None, ev: tools.Evidence | None = N
         rows = res.get("rows") or []
         if not rows:
             yield {"type": "evidence", "items": ev.items}
-            yield _verdict("Paste the coin's address (mint) and Sniff will look it up.", ev, "dossier")
+            yield _verdict("", ev, "dossier", context="Paste the coin's address (mint) and Sniff will look it up.")
             return
         mint = rows[0]["mint"]
     results: dict[str, dict] = {}
@@ -166,8 +177,8 @@ async def dossier(question: str, mint: str | None, ev: tools.Evidence | None = N
 def _dossier_text(r: dict[str, dict]) -> str:
     d = r.get("coin_dossier") or {}
     if not d.get("found"):
-        return ("This coin is not in Sniff's graph yet: it may be brand new or not a pump.fun launch. "
-                + base_line())
+        eid = d.get("evidence")
+        return f"This coin is not in Sniff's graph [{eid}]." if isinstance(eid, str) else ""
     s = []
     coin, n, g = d["coin"], d["creator_other_coins"], d["creator_other_graduated"]
     s.append(f"Its creator launched {n} other coin{'s' if n != 1 else ''}, and {g} of them graduated [{d['evidence'][0]}].")
@@ -193,9 +204,6 @@ def _dossier_text(r: dict[str, dict]) -> str:
         ring = d["ring"]
         s.append(f"The creator sits in a funding ring of {ring.get('creators')} creators and {ring.get('coins')} coins, "
                  f"{ring.get('graduations')} graduated [{ring['evidence']}].")
-    if len(s) == 1 and not g and not n:
-        s.append("No links to other creators were found, which is not the same as safe.")
-    s.append(base_line())
     return " ".join(s)
 
 
@@ -323,10 +331,13 @@ def cap_claims(text: str, limit: int = MAX_CLAIMS) -> str:
     return " ".join(claims[:limit] + close).strip()
 
 
-def _verdict(text: str, ev: tools.Evidence, mode: str) -> dict:
+def _verdict(text: str, ev: tools.Evidence, mode: str, *, context: str | None = None) -> dict:
     text, cited, unknown, mismatched = check_citations(text, ev)
     if mode == "agent":
         text = cap_claims(text)
         cited = [c for c in cited if f"[{c}]" in text]
+    # Context/refusal text is server-owned, never copied from an unchecked model
+    # prefix such as "For context:". The base rate is computed from graph data.
+    text = (text or context or "Sniff could not produce a cited answer.") + " " + base_line()
     return {"type": "verdict", "text": text, "cited": cited, "unknown_cited": unknown,
             "mismatched_cited": mismatched, "mode": mode}

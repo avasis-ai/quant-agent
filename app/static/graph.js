@@ -3,7 +3,9 @@
   'use strict';
   const short = value => value && value.length > 14 ? `${value.slice(0, 4)}…${value.slice(-4)}` : (value || '');
   const cut = (value, max = 26) => value.length > max ? value.slice(0, max - 1) + '…' : value;
-  const kinds = { Coin: 'coin', Wallet: 'wallet', Hub: 'hub', Handle: 'handle', Ring: 'ring' };
+  const kinds = { Coin: 'coin', Wallet: 'wallet', Hub: 'hub', Handle: 'handle', Ring: 'ring',
+    Doc: 'doc', Section: 'section', Product: 'entity', Feature: 'entity', Policy: 'entity',
+    Decision: 'entity', Finding: 'entity', Metric: 'entity', Entity: 'entity' };
   const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   class SniffGraph {
@@ -44,6 +46,9 @@
           { selector: 'node[kind="group"]', style: {
             shape: 'round-rectangle', width: 58, height: 38, 'border-style': 'dotted',
             'background-color': '#2b2526', 'border-color': '#a99a94',
+          } },
+          { selector: 'node[kind="doc"], node[kind="section"]', style: {
+            shape: 'round-rectangle', width: 38, height: 30, 'border-color': '#ffac83',
           } },
           { selector: 'node.focus', style: {
             width: 42, height: 42, 'border-width': 2, 'border-color': '#ff6d29',
@@ -96,10 +101,11 @@
       if (node.label === 'Hub') return `Hub · dead end\n${short(node.addr)}`;
       if (node.label === 'Handle') return cut(`${node.platform === 'twitter' ? 'X' : (node.platform || 'Social')} · ${node.handle || ''}`);
       if (node.label === 'Ring') return `Funding ring\n${node.creators ?? '?'} creators`;
+      if (['doc', 'section', 'entity'].includes(kinds[node.label])) return cut(node.name || node.key);
       return short(node.addr || node.key);
     }
 
-    setEvidence(items, focusKey) {
+    setEvidence(items, focusKey, extraGraph = null) {
       this.evidence = items || [];
       if (!this.cy) return;
       this.layout?.stop();
@@ -120,6 +126,7 @@
       const addEdge = (edge, eid) => {
         const id = `${edge.type}|${edge.src}|${edge.dst}`;
         let label = edge.label || '';
+        if (extraGraph && !label) label = edge.type;
         if (edge.type === 'FUNDED' && !label) label = edge.sol != null ? `${Number(edge.sol).toFixed(3)} SOL` : 'funded';
         if (edge.type === 'CREATED') label = 'created';
         if (edge.type === 'LINKS') label = 'uses';
@@ -145,6 +152,13 @@
         if (item.tool === 'shared_snipers' && item.nodes?.length >= 2 && !item.edges?.length) {
           addEdge({ type: 'SHARED', src: item.nodes[0].key, dst: item.nodes[1].key, label: 'shared early buyers' }, item.id);
         }
+      }
+      // The brain verdict includes the complete retrieved neighbourhood, beyond
+      // the section/document pair in each individual citation's evidence.
+      for (const node of extraGraph?.nodes || []) addNode(node, node.citation || null);
+      for (const edge of extraGraph?.edges || []) {
+        const source = this.evidence.find(item => item.nodes?.some(node => node.key === edge.src));
+        addEdge(edge, source?.id || null);
       }
       const elements = [...data.values()].map(node => ({ data: node, classes: node.id === focusKey ? 'focus' : '' }));
       for (const edge of edges.values()) {

@@ -8,6 +8,8 @@
   function date(at) { return at ? new Date(at*1000).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'}) : 'Time not recorded'; }
   function status(text, error=false) { $('status').textContent=text; $('status').classList.toggle('error',error); }
   function sourceLink(url,text) { const a=el('a',text); try { const u=new URL(url); if(u.protocol==='https:') { a.href=u.href; a.target='_blank'; a.rel='noopener noreferrer'; } } catch{} return a; }
+  // Display Markdown as plain text; the expandable original remains unchanged.
+  function plainExcerpt(text) { return text.replace(/^\s*(?:#{1,6}\s+|[-*]\s+)/gm,'').replace(/\*\*|__/g,'').replace(/`([^`]+)`/g,'$1').replace(/\[([^\]]+)\]\(https?:\/\/[^)]+\)/g,'$1'); }
   async function fetchJSON(url, options={}) { const r=await fetch(url,{...options,headers:{'content-type':'application/json',...(options.headers||{})}}); const out=await r.json(); if(!r.ok) throw new Error(out.error||out.detail||'The request failed.'); return out; }
 
   function showGraph(graph, sources=[]) {
@@ -21,7 +23,12 @@
     const other=nodes.filter(n=>!lanes.flat().includes(n.label)); if(other.length) columns.push(other);
     const used=columns.filter(c=>c.length), width=Math.max(660,used.length*220), height=Math.max(500,Math.max(...used.map(c=>c.length))*68+60);
     const canvas=svg('svg',{viewBox:`0 0 ${width} ${height}`,role:'group','aria-label':page==='brain'?'Public company knowledge graph':'Investigation memory graph'});
-    canvas.style.width=width+'px'; canvas.style.height=height+'px'; const positions=new Map();
+    let scale=1;
+    const resize=()=>{canvas.style.width=(scale*100)+'%';canvas.style.height='auto';};resize();
+    $('graph-fit').onclick=()=>{scale=1;resize();container.scrollTo(0,0);};
+    $('graph-zoom-in').onclick=()=>{scale=Math.min(4,scale*1.25);resize();};
+    $('graph-zoom-out').onclick=()=>{scale=Math.max(1,scale/1.25);resize();};
+    const positions=new Map();
     const defs=svg('defs',{}), marker=svg('marker',{id:'graph-arrow',viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'});
     marker.append(svg('path',{d:'M 0 0 L 10 5 L 0 10 z',class:'graph-arrow'}));defs.append(marker);canvas.append(defs);
     used.forEach((column,ci)=>column.forEach((n,ri)=>positions.set(n.key,{x:ci*(width/used.length)+20,y:35+ri*((height-50)/column.length)})));
@@ -33,6 +40,7 @@
       nodeEls.forEach(x=>{const active=x.n.key===n.key;x.g.classList.toggle('selected',active);x.g.setAttribute('aria-pressed',String(active));});
       lineEls.forEach(({edge,line,label})=>{const active=edge.src===n.key||edge.dst===n.key;line.classList.toggle('selected',active);label.style.opacity=active?'1':'0';});
       const panel=$('detail');panel.replaceChildren(el('h2',n.label),el('p',n.name||n.key));
+      if(n.label==='Note')panel.append(el('p','agent note · not verified','meta'));
       if(n.tool)panel.append(el('p','Tool: '+n.tool,'meta'));
       if(n.at)panel.append(el('p',date(n.at),'meta'));
       if(n.url)panel.append(sourceLink(n.url,'Open public source'));
@@ -49,7 +57,9 @@
     showGraph(data.graph);
     const target=$('findings');target.replaceChildren();
     (data.rows||[]).forEach(row=>{const article=el('article',undefined,'finding');article.append(el('h3',row.tool||'Investigation'),el('p',row.summary||'No public evidence was recorded for this investigation.'),el('p',date(row.at||row.asked_at)+(row.sessions?' · '+row.sessions+' anonymous session'+(row.sessions===1?'':'s'):''),'meta'));if(row.id)article.append(el('p','Memory evidence: '+row.id,'meta'));target.append(article);});
-    (data.notes||[]).forEach(note=>{const article=el('article',undefined,'finding');article.append(el('h3','Agent note: '+note.by),el('p',note.text),el('p',date(note.at)+' · Unverified; self-declared agent label','meta'));if(note.evidence_ids?.length)article.append(el('p','Source evidence: '+note.evidence_ids.join(', '),'meta'));target.append(article);});
+    const notes=$('agent-notes');notes.replaceChildren();
+    (data.notes||[]).forEach(note=>{const article=el('article',undefined,'finding');article.append(el('h3',note.by),el('p','agent note · not verified','note-label'),el('p',note.text),el('p',date(note.at)+' · Self-declared agent label','meta'));if(note.evidence_ids?.length)article.append(el('p','Source evidence: '+note.evidence_ids.join(', '),'meta'));notes.append(article);});
+    if(!notes.children.length)notes.append(el('p','No second-agent notes recorded for this view yet. Notes appear here as agent note · not verified.','meta'));
     if(!target.children.length)target.append(el('p','No investigations or notes found yet.','meta'));
     $('result-note').textContent=data.note||'';
     status((data.rows||[]).length+' findings'+((data.notes||[]).length?' and '+data.notes.length+' agent note'+(data.notes.length===1?'':'s'):'')+' recalled.');
@@ -57,9 +67,9 @@
   function renderBrain(data) {
     showGraph(data.graph,data.sources);
     const answer=$('answer');answer.replaceChildren();answer.classList.remove('hidden');
-    data.answer.split(/\n\s*\n/).forEach(text=>{const p=el('p');let last=0;for(const m of text.matchAll(/\[(B\d+)\]/g)){p.append(document.createTextNode(text.slice(last,m.index)));const a=el('a','['+m[1]+']');a.href='#source-'+m[1];p.append(a);last=m.index+m[0].length;}p.append(document.createTextNode(text.slice(last)));answer.append(p);});
+    plainExcerpt(data.answer).split(/\n\s*\n/).forEach(text=>{const p=el('p');let last=0;for(const m of text.matchAll(/\[(B\d+)\]/g)){p.append(document.createTextNode(text.slice(last,m.index)));const a=el('a','['+m[1]+']');a.href='#source-'+m[1];p.append(a);last=m.index+m[0].length;}p.append(document.createTextNode(text.slice(last)));answer.append(p);});
     const target=$('sources');target.replaceChildren();
-    (data.sources||[]).forEach(source=>{const article=el('article',undefined,'source');article.id='source-'+source.id;article.append(sourceLink(source.url,'['+source.id+'] '+source.title),el('p',source.section_title+' · Fetched '+date(source.fetched_at),'meta'),el('blockquote',source.excerpt));const details=el('details');details.append(el('summary','Read the source section'),el('pre',source.text));article.append(details);target.append(article);});
+    (data.sources||[]).forEach(source=>{const article=el('article',undefined,'source');article.id='source-'+source.id;article.append(sourceLink(source.url,'['+source.id+'] '+source.title),el('p',source.section_title+' · Fetched '+date(source.fetched_at),'meta'),el('blockquote',plainExcerpt(source.excerpt)));const details=el('details');details.append(el('summary','Read the source section'),el('pre',source.text));article.append(details);target.append(article);});
     if(!target.children.length)target.append(el('p','No matching public sources found.','meta'));
     $('result-note').textContent=data.note||'';
     status((data.sources||[]).length+' public source sections retrieved. Answers are source excerpts.');
@@ -76,6 +86,7 @@
   $('query-form').addEventListener('submit',e=>{e.preventDefault();run();});
   document.querySelectorAll('[data-question]').forEach(b=>b.addEventListener('click',()=>{$('query').value=b.dataset.question;run();}));
   if(page==='memory') {
+    $('see-methu').addEventListener('click',()=>{$('scope').value='entity';$('query').value='coin:3LaVxn1Pp5gDjJZgGrpbQ8gRKj7GxgPE8cjF62Svpump';history.replaceState(null,'','/memory?entity='+encodeURIComponent($('query').value));run();});
     $('my-session').addEventListener('click',()=>run(true));
     $('scope').addEventListener('change',()=>{$('query').placeholder=$('scope').value==='session'?'32-character random session token':'Paste a Solana address';});
     const params=new URLSearchParams(location.search);const entity=params.get('entity')||params.get('mint');const session=params.get('session');

@@ -134,9 +134,11 @@ relationship quotes must also contain both endpoints. Unsupported output is drop
 sections retain literal source anchors and stay searchable. Each document records its extraction mode.
 
 `--source-only` explicitly creates a corpus without AI calls and labels it accordingly. The checked-in
-`build/public-brain.json` is such a privacy-scanned fallback snapshot, not a claim that a live AI
+`build/public-brain.json` is the reviewed source-only snapshot, not a claim that a live AI
 extraction happened. It contains grounded Product, Feature, Policy, Decision, Finding and Metric anchors.
-Use the default builder on the demo box for capped AI extraction and richer semantic relationships.
+The currently loaded 12-document corpus has zero AI requests and no extracted entity-to-entity
+relationships; its edges are `MENTIONS`/`PART_OF`. The default builder can add capped AI extraction
+and richer semantic relationships, which are a capability rather than a demonstrated live path.
 
 Sections connect to their source Doc and typed Entity nodes. AI-extracted relationships retain
 `source_sid` and the exact quote. Range indexes cover source and entity identifiers, active sections
@@ -146,21 +148,25 @@ sections and neighbourhood. Answers are source excerpts, with whitespace normali
 bound to their own section. Unknown ids, E ids, invented text and text attributed to the wrong section
 fail the brain citation check. Sources retain dates and context when different public versions disagree.
 
-The load is rerunnable: document/entity ids are deterministic, changed sections are deactivated, old
-semantic relationships are removed, and current sections are upserted. The loader scans and validates
+The load replaces the active corpus: all old Doc/Section records are retired, including documents whose
+URL changed or disappeared. Current documents and sections are reactivated/upserted, and old semantic
+relationships are removed. Document/entity IDs remain deterministic. The status endpoint hides retired
+documents; both retrieval paths require active sections. The loader scans and validates
 the whole artifact before its first database mutation. It does not drop existing graphs.
 
 ### Leader-only demo-box commands (not run by this task)
 
-Run these from the release checkout after integrating `final/tracks` with `final/premium-ui`. Set
+All three tracks are live as verified on 18 October 2026. To apply the review fixes, the leader deploys
+`final/review-fixes` and reloads the regenerated source-only corpus. Run these from the release checkout. Set
 `SNIFF_HOST` and `SNIFF_SSH_KEY` to the existing demo-box SSH target and key used by `deploy/deploy.sh`.
-The deployment now copies the allowlisted repo docs and the public fallback corpus as well as the app.
+The deployment copies the allowlisted repo docs and reviewed public corpus as well as the app.
 
 ```bash
 # LEADER: normal app deployment, with the existing host/key already configured.
 ./deploy/deploy.sh
 
-# LEADER: initialise memory and perform capped AI extraction on the box's configured owner key.
+# OPTIONAL CAPABILITY: initialise memory and run capped AI extraction using the configured owner key.
+# This changes the source-only demonstration; it is not required for the review-fix reload.
 ssh -i "$SNIFF_SSH_KEY" "$SNIFF_HOST" 'set -eu
   cd /opt/lineage/app/src
   export SNIFF_ENV_FILE=/opt/lineage/env/app.env
@@ -174,8 +180,7 @@ ssh -i "$SNIFF_SSH_KEY" "$SNIFF_HOST" 'set -eu
 '
 ```
 
-If the owner key is unavailable, the leader can load the reviewed source-only fallback with no API
-cost or network fetch. This is a complete retrieval corpus, with its extraction limitation labelled:
+For the review-fix release, load the reviewed source-only corpus with no API cost or network fetch. This is a complete retrieval corpus, with its extraction limitation labelled:
 
 ```bash
 ssh -i "$SNIFF_SSH_KEY" "$SNIFF_HOST" 'set -eu

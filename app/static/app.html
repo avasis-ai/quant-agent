@@ -38,7 +38,7 @@
     <section class="investigation" id="results" aria-label="Investigation workspace">
       <div class="map-column">
         <div class="map-panel glass">
-          <div class="panel-heading"><h2>The connection map</h2><span id="graph-count">Waiting for a coin</span></div>
+          <div class="panel-heading"><h2 id="map-title">The connection map</h2><span id="graph-count">Waiting for a coin</span></div>
           <div class="graphwrap">
             <div id="graph" role="group" tabindex="0" aria-label="Connection map. Arrow keys pan, plus and minus zoom. Use evidence tags or Graph details below to inspect individual connections."></div>
             <div class="graph-empty" id="graph-empty"><div class="empty-network" aria-hidden="true"><i></i><span></span><i></i><span></span><i></i></div><h3>A coin is the starting point.</h3><p>Its creator, funder and connected launches<br>will appear here as Sniff investigates.</p><button class="button" type="button" id="empty-example">Explore METHU <span class="arrow" aria-hidden="true">↗</span></button></div>
@@ -54,7 +54,7 @@
       <aside class="evidence-panel glass" aria-labelledby="answer-heading">
         <div class="panel-heading"><h2 id="answer-heading">Sniff’s findings</h2><span class="answer-status" id="answer-status">Ready</span></div>
         <div class="answer-content">
-          <div class="answer-empty" id="answer-empty"><div class="answer-mark" aria-hidden="true">[E]</div><h3>An answer<br>you can trace.</h3><p>Every claim links to the graph evidence behind it. Select an <span class="inline-evidence">[E]</span> tag to see the connection on the map.</p><div class="empty-prompts"><span>Who created this coin?</span><span>Who paid that wallet?</span><span>What else did they launch?</span></div></div>
+          <div class="answer-empty" id="answer-empty"><div class="answer-mark" aria-hidden="true">[E]</div><h3>An answer<br>you can trace.</h3><p>Select an <span class="inline-evidence">[E]</span> tag to inspect the graph result cited by that sentence and see its connections on the map.</p><div class="empty-prompts"><span>Who created this coin?</span><span>Who paid that wallet?</span><span>What else did they launch?</span></div></div>
           <div class="answer-meta" id="mode"></div><div class="verdict" id="verdict" aria-live="polite"></div><div class="note" id="note" role="status"></div>
           <div class="answer-actions" id="answer-actions" hidden><button type="button" class="copy-answer" id="copy-link">Copy investigation link ↗</button></div>
           <details class="step-details" id="step-details" hidden open><summary><span>Investigation steps</span><span id="step-count"></span></summary><ul class="steps" id="steps" aria-live="polite" aria-relevant="additions text"></ul></details>

@@ -1,0 +1,65 @@
+{
+  "checked_at_utc": "2026-10-18T14:43:18.880925+00:00",
+  "checks": [
+    {
+      "url": "https://github.com/avasis-ai/quant-agent/blob/main/README.md",
+      "status": 200,
+      "anonymous": true
+    },
+    {
+      "url": "https://github.com/avasis-ai/quant-agent/blob/main/docs/GRAPH.md",
+      "status": 200,
+      "anonymous": true
+    },
+    {
+      "url": "https://github.com/avasis-ai/quant-agent/blob/main/docs/EVAL.md",
+      "status": 200,
+      "anonymous": true
+    },
+    {
+      "url": "https://github.com/avasis-ai/quant-agent/blob/main/docs/BLOG.md",
+      "status": 200,
+      "anonymous": true
+    },
+    {
+      "url": "https://github.com/avasis-ai/quant-agent/blob/main/docs/PUBLIC-POLICIES.md",
+      "status": 200,
+      "anonymous": true
+    },
+    {
+      "url": "https://quantbase.live/#paper",
+      "status": 200,
+      "anonymous": true
+    },
+    {
+      "url": "https://quantbase.live/#pricing",
+      "status": 200,
+      "anonymous": true
+    },
+    {
+      "url": "https://quantbase.live/#faq",
+      "status": 200,
+      "anonymous": true
+    },
+    {
+      "url": "https://quantbase.live/#safety",
+      "status": 200,
+      "anonymous": true
+    },
+    {
+      "url": "https://quantbase.live/docs/",
+      "status": 200,
+      "anonymous": true
+    },
+    {
+      "url": "https://quantbase.live/docs/quickstart/",
+      "status": 200,
+      "anonymous": true
+    },
+    {
+      "url": "https://quantbase.live/docs/exit-coach/",
+      "status": 200,
+      "anonymous": true
+    }
+  ]
+}

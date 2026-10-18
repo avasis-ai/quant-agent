@@ -1,6 +1,6 @@
 # Submission checklist (for Abhay)
 
-Deadline: **Oct 18, 2026, 23:59 IST**. Our own target: submitted by **18:00 IST**.
+Submission deadline: **18 October 2026, 23:59 IST**. Review-fix commit deadline: **21:30 IST**.
 
 ## Pre-filled form fields
 
@@ -21,42 +21,76 @@ Deadline: **Oct 18, 2026, 23:59 IST**. Our own target: submitted by **18:00 IST*
 > and answers QuantBase product and policy questions from a public company graph. Every answer links to its
 > graph evidence or source section. History, not a prediction.
 
-All three tracks are integrated on `final/merged` and verified locally. Before updating the submitted
-entry, the leader must deploy the merged branch and load both new graphs using
-[the exact commands in GRAPH.md](GRAPH.md#leader-only-demo-box-commands-not-run-by-this-task).
-The included public corpus is explicitly source-only; the builder supports capped Haiku extraction
-through the configured owner key. The merge report is [MERGE-RESULT.md](final/MERGE-RESULT.md). No deployment or form update was performed.
+**Verified live state — 18 October 2026.** All three tracks are deployed. The final production review
+verified METHU, persistent session replay (`recalled: true`), 12 MCP tools and the three brain examples.
+Read-only checks on 18 October confirmed the site key is Active, four aggregate METHU findings,
+no public METHU agent notes, and a 12-document source-only brain. The loaded brain uses `MENTIONS` and
+`PART_OF`, with zero AI requests and no extracted entity-to-entity relationships. The capped AI builder
+supports richer `SUPPORTS`/`CONTRADICTS`/`DECIDED_ON` relationships as an optional capability.
+Graph retrieval and full-text retrieval run alongside each other.
+
+Citation contract for factual answer text: **every sentence must cite evidence of the matching kind;
+the server rejects answers that don't**. Unknown IDs, uncited sentences and missing topic coverage are
+rejected. This checks citation-ID/tool compatibility, not whether every claim is true or whether a
+number matches its evidence. B citations additionally bind literal excerpts to their own source.
+Only explicit server-owned context/refusal text is allowed without citations.
+
+The production source links still use the old branch until the leader deploys these fixes and reloads
+the regenerated corpus. The fixes are on `final/review-fixes`; exact handoff and validation are in
+[FIX-RESULT.md](final/FIX-RESULT.md). The earlier production evidence is in
+[ASTRA-REVIEW.md](final/ASTRA-REVIEW.md). This task does not deploy, push, update dev.to, change the
+submission form, or post a public agent note.
 
 **Tech used:** FalkorDB 6.0.2 (bulk loader, range and full-text indexes, `algo.WCC`, `algo.SPpaths`,
 read-only queries with timeouts), Claude Sonnet 5.5 with tool use, MCP (streamable HTTP), Python, FastAPI,
 Cytoscape.js, DuckDB (data prep and test ground truth), AWS EC2 and Caddy.
 
-## Steps only you can do
+## Leader actions
 
-1. **Make the repo public:** GitHub → avasis-ai/quant-agent → Settings → Danger Zone → Change visibility →
-   Public.
-   - **Secret scan, 2026-10-17:** gitleaks 8.28.0 over the full git history (10 commits) found no leaks. A
-     manual grep for `sk-ant`, private keys, `ws_` secrets, scrypt hashes and password assignments found only
-     test fakes (`sk-ant-api03-xxxx…`) and the hash *format* string.
-   - **Not in git:** the admin passcode, `.falkordb.pw`, `*.env`, `*.key` and `data/` are all gitignored.
-   - **Public on purpose:** the demo box's public IP appears in `deploy/deploy.sh`. It's already public through
-     DNS, and SSH is closed except during a deploy.
-   - **Re-run before flipping**, in case anything was committed since: `~/.cache/gl/gitleaks git ~/dev/quant-agent --no-banner --redact`
-2. **Fill in and submit the form** with the fields above, plus the video link.
-3. **Publish the blog** (side prize). Post `docs/BLOG.md` on Hashnode, dev.to or Medium, then add the link to
-   the form if it asks for one.
-4. **After judging:** tear down the demo box. The steps are in the hackathon notes: terminate
-   i-0ec741d963da4a248, release the Elastic IP, delete the security group, and delete the `sniff` and
-   `lineage` DNS records.
+1. Deploy the reviewed fixes, then run the source-only reload under **Reproduce** below. Verify the
+   returned source URLs anonymously and confirm no retired branch URLs remain in `/api/brain` or answers.
+2. From a second agent, recall the real METHU findings over MCP and post one real attributed observation.
+   The memory UI labels notes **agent note · not verified**. No synthetic note is preloaded.
+3. Update the **existing** [submitted dev.to article](https://dev.to/quantbase/who-is-behind-this-meme-coin-building-sniff-on-a-graph-4nnc)
+   from **[BLOG-FINAL.md](BLOG-FINAL.md)**, retaining its URL. Verify QuantBase attribution and all ten images.
+   `docs/BLOG.md` is the older article and is not the publishing source.
+4. Confirm the submitted form selects **all three tracks** and keeps the intended video and blog URLs.
+   This task has not inspected the form.
+5. After judging, follow the existing infrastructure teardown notes.
+
+## Reproduce
+
+Local setup, corpus preparation, tests and app commands are in [README.md](../README.md#reproduce).
+The regenerated artifact uses published `main` repository content, not working-tree drafts.
+A local/repository privacy match fails the build; a web-source privacy match refuses that whole source.
+A missing/refused required web source fails the build.
+
+After deploying the reviewed code and `build/public-brain.json`, run **on the box**:
+
+```bash
+cd /opt/lineage/app/src
+export FALKORDB_PASSWORD_FILE=/opt/lineage/env/falkordb.env
+/opt/lineage/app/.venv/bin/python -m build.brain --load build/public-brain.json
+```
+
+The loader retires old Doc/Section records, including changed URLs and removed documents, before
+activating the new corpus. No AI call or fresh network fetch is made by `--load`. Memory is already live;
+this reload does not change the memory graph.
 
 ## Check before submitting
 
-- [x] https://sniff.quantbase.live loads, and the METHU example answers.
-- [ ] `/settings` shows the site key as Active.
-- [ ] `claude mcp add --transport http sniff https://sniff.quantbase.live/mcp` lists 12 tools after the tracks deploy.
-- [ ] `/memory` recalls a real METHU investigation and a second agent can add an attributed note over MCP.
-- [ ] `/brain` answers the paper/live question with `[B#]` source sections and a knowledge graph.
-- [ ] The README renders on GitHub, including the screenshots and mermaid diagrams.
-- [x] The video link works when you're logged out.
+- [x] Production home and METHU investigation work (18 October live review).
+- [x] `/settings` reports an Active site key (18 October read-only check).
+- [x] MCP initialization and `tools/list` return exactly 12 tools (18 October live review).
+- [x] `/memory` recalls real METHU findings and repeated MCP calls reuse persistent evidence.
+- [x] Two-agent MCP note coordination passes the isolated real-FalkorDB integration test.
+- [x] `/brain` returns paper/live, research and privacy source sections and graph results (18 October live review).
+- [x] README screenshot URLs and all ten final blog image URLs return 200 (18 October live review).
+- [ ] Leader deploys these fixes and reloads the regenerated corpus; production source URLs are verified afterward.
+- [ ] A second agent posts a real METHU note over MCP; the production page shows its attribution and unverified label.
+- [ ] Existing dev.to article is updated from `BLOG-FINAL.md`, with QuantBase attribution and all ten images.
+- [ ] Submitted form is checked for all three tracks and the intended blog URL.
+- [ ] README diagrams are visually checked on GitHub after publishing these fixes.
+- [x] Video link worked logged out at the earlier submission check.
 
-**Submitted 2026-10-17 13:48 IST, video link updated 13:57 IST.**
+**Submitted 17 October 2026, 13:48 IST; video link updated 13:57 IST.**

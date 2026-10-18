@@ -62,7 +62,9 @@ def test_public_collection_allowlist_and_whole_source_refusal(tmp_path, monkeypa
     requests = []
     def respond(request):
         requests.append(str(request.url))
-        if request.url.path == "/":
+        if request.url.host == "raw.githubusercontent.com":
+            body = '# Published public source\nQuantBase published paper facts.'
+        elif request.url.path == "/":
             body = ''.join(f'<section id="{fragment}"><h2>{fragment}</h2><p>Public QuantBase facts.</p></section>'
                            for fragment in ("paper", "pricing", "faq", "safety"))
         elif "privacy" in request.url.path or "terms" in request.url.path:
@@ -76,10 +78,35 @@ def test_public_collection_allowlist_and_whole_source_refusal(tmp_path, monkeypa
     assert all(builder.source_allowed(d["url"]) for d in docs)
     assert not any("person@" in json.dumps(d) for d in docs)
     assert sum(a["status"] == "refused" for a in audit) == 2
-    assert all(url.startswith("https://quantbase.live/") for url in requests)
+    assert all(url.startswith(("https://quantbase.live/", builder.REPO_RAW_URL)) for url in requests)
+    repo_docs = [d for d in docs if d["url"].startswith(builder.REPO_URL)]
+    assert len(repo_docs) == len(builder.LOCAL)
+    assert all("published paper facts" in d["sections"][0]["text"] for d in repo_docs)
+    assert not any("uses play money" in d["sections"][0]["text"] for d in repo_docs)
     assert requests.count("https://quantbase.live/") == 1  # fragment sources use one fetched page
     assert not builder.source_allowed("https://quantbase.live/internal/HANDOVER.md")
     assert not builder.source_allowed("https://attacker.invalid/docs/")
+
+
+def test_collection_refuses_missing_published_repo_files_and_private_local_drafts(tmp_path, monkeypatch):
+    for path in builder.LOCAL:
+        local = tmp_path / path
+        local.parent.mkdir(exist_ok=True, parents=True)
+        local.write_text("# Public\nQuantBase paper mode.")
+    requests = []
+    def missing(request):
+        requests.append(str(request.url))
+        return httpx.Response(404)
+    original = httpx.AsyncClient
+    monkeypatch.setattr(builder.httpx, "AsyncClient", lambda **kw: original(transport=httpx.MockTransport(missing), **kw))
+    with pytest.raises(httpx.HTTPStatusError):
+        asyncio.run(builder.collect(tmp_path))
+    assert requests == [builder.REPO_RAW_URL + builder.LOCAL[0]]
+    requests.clear()
+    (tmp_path / builder.LOCAL[-1]).write_text("Contact person@example.org")
+    with pytest.raises(PrivacyError):
+        asyncio.run(builder.collect(tmp_path))
+    assert not requests
 
 
 def sample_corpus():
@@ -122,6 +149,19 @@ def test_load_preflights_entire_corpus_before_any_graph_mutation(monkeypatch):
     corpus = sample_corpus()
     corpus["documents"][0]["url"] = "file:///private/HANDOVER.md"
     with pytest.raises(PrivacyError):
+        builder.load(corpus)
+    assert writes == []
+
+
+@pytest.mark.parametrize("level,field", [("document", "mode"), ("document", "at"), ("section", "method"), ("section", "at")])
+def test_incomplete_corpus_cannot_retire_the_active_corpus(monkeypatch, level, field):
+    writes = []
+    monkeypatch.setattr(builder.kg, "write", lambda *a: writes.append(a))
+    monkeypatch.setattr(builder.kg, "ensure_indexes", lambda *a: writes.append(a))
+    corpus = sample_corpus()
+    target = corpus["documents"][0] if level == "document" else corpus["documents"][0]["sections"][0]
+    del target[field]
+    with pytest.raises(ValueError, match="Incomplete"):
         builder.load(corpus)
     assert writes == []
 
@@ -185,6 +225,14 @@ def test_excerpt_keeps_negation_and_wrapped_paragraph_context():
     assert "Do not claim that a paper result" in excerpt
     evidence = [{"id": "B1", "tool": "brain_ask", "section": text, "source": {"url": "https://quantbase.live/#paper"}}]
     assert brain.check_citations(excerpt + " [B1]", evidence)[1] == ["B1"]
+
+
+def test_excerpt_keeps_complete_long_paragraph_and_separates_markdown_list_items():
+    paragraph = "Paper mode " + "uses play money, " * 50 + "and is not live execution."
+    excerpt = brain._excerpt(paragraph, ["paper"], limit=80)
+    assert excerpt == paragraph and not excerpt.endswith("…")
+    text = "- **Paper** results are not real fills.\n- Other product details."
+    assert brain._excerpt(text, ["paper"]) == "- **Paper** results are not real fills."
 
 
 def test_compact_mcp_result_always_remains_valid_json():

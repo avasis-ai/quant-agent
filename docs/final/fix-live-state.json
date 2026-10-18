@@ -1,0 +1,42 @@
+{
+  "verified_at_utc": "2026-10-18T14:37:08.419868+00:00",
+  "checks": [
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/api/brain",
+      "status": 200,
+      "documents": 12,
+      "modes": [
+        "source-only"
+      ],
+      "urls": [
+        "https://quantbase.live/docs/",
+        "https://quantbase.live/docs/exit-coach/",
+        "https://quantbase.live/docs/quickstart/",
+        "https://quantbase.live/#faq",
+        "https://quantbase.live/#paper",
+        "https://quantbase.live/#pricing",
+        "https://quantbase.live/#safety",
+        "https://github.com/avasis-ai/quant-agent/blob/final/tracks/README.md",
+        "https://github.com/avasis-ai/quant-agent/blob/final/tracks/docs/BLOG.md",
+        "https://github.com/avasis-ai/quant-agent/blob/final/tracks/docs/EVAL.md",
+        "https://github.com/avasis-ai/quant-agent/blob/final/tracks/docs/GRAPH.md",
+        "https://github.com/avasis-ai/quant-agent/blob/final/tracks/docs/PUBLIC-POLICIES.md"
+      ]
+    },
+    {
+      "path": "/api/settings/status",
+      "status": 200,
+      "owner_active": true
+    },
+    {
+      "path": "/api/memory?entity=coin:3LaVxn1Pp5gDjJZgGrpbQ8gRKj7GxgPE8cjF62Svpump",
+      "status": 200,
+      "findings": 4,
+      "notes": 0
+    }
+  ]
+}

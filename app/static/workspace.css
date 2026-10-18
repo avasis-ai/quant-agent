@@ -118,6 +118,12 @@ body { background: radial-gradient(ellipse 55% 45% at 0% 25%, rgba(126,56,30,.16
 .steps .ms { color: var(--color-muted-2); font: 400 9px/1.5 var(--font-mono); white-space: nowrap; }
 .source-details button { display: block; width: 100%; text-align: left; border: 0; padding: var(--space-xs) 0; background: transparent; font-size: 11px; line-height: 1.7; color: var(--color-muted); }
 .source-details button strong { color: var(--color-accent-text); font: 400 10px/1.5 var(--font-mono); margin-right: var(--space-2xs); }
+.brain-source { padding-block: var(--space-md); border-bottom: 1px solid var(--color-rule); scroll-margin-top: var(--space-md); overflow-wrap: anywhere; }
+.brain-source h3 { font-size: var(--text-sm); }
+.brain-source a { color: var(--color-accent-text); }
+.brain-source .meta { color: var(--color-muted); font-size: var(--text-xs); }
+.brain-source blockquote { border-left: 1px solid var(--color-rule-2); margin: var(--space-sm) 0; padding-left: var(--space-sm); font-size: var(--text-sm); }
+.brain-source pre { white-space: pre-wrap; overflow-wrap: anywhere; font: 400 11px/1.8 var(--font-mono); }
 .answer-footer { padding: var(--space-md); font-size: 11px; color: var(--color-ink-2); border-top: 1px solid var(--color-rule); }
 .answer-footer>span { color: var(--color-muted); font-size: 10px; }
 .graph-details { margin-top: var(--space-xs); padding-inline: var(--space-md); border: 1px solid var(--color-rule); border-radius: var(--radius-input); }

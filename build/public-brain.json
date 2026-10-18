@@ -1,19 +1,19 @@
 {
   "schema": 1,
   "public_only": true,
-  "at": 1792330983,
+  "at": 1792334231,
   "documents": [
     {
-      "did": "e8be02802284eaeb40d5988d",
-      "url": "https://github.com/avasis-ai/quant-agent/blob/final/tracks/README.md",
+      "did": "8e744db4698c75382da15355",
+      "url": "https://github.com/avasis-ai/quant-agent/blob/main/README.md",
       "title": "README.md",
-      "at": 1792330980,
+      "at": 1792334226,
       "sections": [
         {
-          "sid": "ba0dcb5fb2d9c77409193ee4",
+          "sid": "eb35934f466ef99945a400f4",
           "title": "Sniff, by QuantBase",
-          "text": "**Sniff any coin before you buy.** Paste a pump.fun meme coin and Sniff tells you who made it, who paid the\nwallet that made it, what else those people launched, and how those coins ended. It walks a FalkorDB graph of\n632,339 pump.fun launches and 424,007 wallets. Claude writes the answer, and every sentence in it links to the\npart of the graph that proves it. Sniff shows history, not predictions.\n\nEntry for WeMakeDevs × FalkorDB **Graph Hacks: Context for AI Agents**, Tracks 01, 02 and 03.\nTeam **QuantBase**. Built during the event window, Oct 15–18, 2026 (IST).\n\n| | |\n|---|---|\n| **App** | https://sniff.quantbase.live |\n| **Demo video** | https://youtu.be/YMQKpynEsI0 |\n| **Blog post** | https://dev.to/quantbase/who-is-behind-this-meme-coin-building-sniff-on-a-graph-4nnc |\n| **Bring your own Claude key** | https://sniff.quantbase.live/settings |\n| **MCP endpoint (12 graph tools)** | `https://sniff.quantbase.live/mcp` |\n\n| Ask | Evidence on the map | Phone |\n|---|---|---|\n| ![Live steps](docs/shots/02-streaming-steps.jpg) | ![Evidence highlight](docs/shots/04-evidence-highlight.jpg) | ![Mobile](docs/shots/06-mobile-answer.png) |\n\nTry the **METHU** example: one wallet paid 72 brand-new creators, each launched exactly one coin, and none of\nthe 72 coins graduated.",
-          "at": 1792330980,
+          "text": "**Sniff any coin before you buy.** Paste a pump.fun meme coin and Sniff tells you who made it, who paid the\nwallet that made it, what else those people launched, and how those coins ended. It walks a FalkorDB graph of\n632,339 pump.fun launches and 424,007 wallets. Claude writes the answer, and every sentence in it links to the\npart of the graph that proves it. Sniff shows history, not predictions.\n\nEntry for WeMakeDevs × FalkorDB **Graph Hacks: Context for AI Agents**, Tracks 01, 02 and 03.\nTeam **QuantBase**. Built during the event window, Oct 15–18, 2026 (IST).\n\n| | |\n|---|---|\n| **Home** | https://sniff.quantbase.live |\n| **Investigation workspace** | https://sniff.quantbase.live/app |\n| **Agent memory** | https://sniff.quantbase.live/memory |\n| **Company brain** | https://sniff.quantbase.live/brain |\n| **Full build story** | https://sniff.quantbase.live/blog |\n| **Demo video** | https://youtu.be/YMQKpynEsI0 |\n| **Blog post** | https://dev.to/quantbase/who-is-behind-this-meme-coin-building-sniff-on-a-graph-4nnc |\n| **Bring your own Claude key** | https://sniff.quantbase.live/settings |\n| **MCP endpoint (12 graph tools)** | `https://sniff.quantbase.live/mcp` |\n\n| Ask | Evidence on the map | Phone |\n|---|---|---|\n| ![Live steps](docs/final/shots-merged/app-streaming-1440.png) | ![Evidence highlight](docs/final/shots-merged/app-evidence-1440.png) | ![Mobile](docs/final/shots-merged/app-investigation-390.png) |\n\nTry the **METHU** example: one wallet paid 72 brand-new creators, each launched exactly one coin, and none of\nthe 72 coins graduated.",
+          "at": 1792334226,
           "entities": [
             {
               "eid": "a9796f26d3d292e3cd9fa83d",
@@ -33,7 +33,7 @@
               "eid": "9173dd044e287f46cc6d5e24",
               "kind": "Feature",
               "name": "live",
-              "quote": "| | |\n|---|---|\n| **App** | https://sniff.quantbase.live |\n| **Demo video** | https://youtu.be/YMQKpynEsI0 |\n| **Blog post** | https://dev.to/quantbase/who-is-behind-this-meme-coin-building-sniff-on-a-graph-4nnc |\n| **Bring your own Claude key** | https://sniff.quantbase.live/settings |\n| **MCP endpoint (12 graph tools)** | `https://sniff.quantbase.live/mcp` |",
+              "quote": "| | |\n|---|---|\n| **Home** | https://sniff.quantbase.live |\n| **Investigation workspace** | https://sniff.quantbase.live/app |\n| **Agent memory** | https://sniff.quantbase.live/memory |\n| **Company brain** | https://sniff.quantbase.live/brain |\n| **Full build story** | https://sniff.quantbase.live/blog |\n| **Demo video** | https://youtu.be/YMQKpynEsI0 |\n| **Blog post** | https://dev.to/quantbase/who-is-behind-this-meme-coin-building-sniff-on-a-graph-4nnc |\n| **Bring your own Claude key** | https://sniff.quantbase.live/settings |\n| **MCP endpoint (12 graph tools)** | `https://sniff.quantbase.live/mcp` |",
               "method": "literal source anchor"
             },
             {
@@ -48,10 +48,10 @@
           "method": "source-only"
         },
         {
-          "sid": "51c0604784c0ad316bf1196d",
+          "sid": "2fa7121c7be7de0d8364a032",
           "title": "Tracks",
           "text": "| Track | Working feature | Try it |\n|---|---|---|\n| **01: Agents That Act on Connected Data** | The `lineage` graph connects launches, creators, funders, early buyers and socials. Nine fixed Cypher tools return graph evidence with checked `[E#]` citations. | [Investigate a coin](https://sniff.quantbase.live/app) |\n| **02: Agent Memory and Coordination** | The `memory` graph records `Session → Question → Evidence → Coin/Wallet` with timestamps. Same-session follow-ups reuse exact tool results, keeping original tool provenance. Other agents can recall findings and add attributed, unverified notes. Coin views aggregate across sessions without exposing visitor tokens. | [Memory graph](https://sniff.quantbase.live/memory), MCP `memory_recall` and `memory_note` |\n| **03: Company Brain** | The `brain` graph connects public docs, sections, products, features, policies, decisions, findings and metrics. Graph neighbourhoods plus full-text retrieval return exact source excerpts with checked `[B#]` citations. The rerunnable builder uses the existing AI client with a cheap model and explicit call, token and cost limits; every extracted quote must occur in the source. | [Ask the company brain](https://sniff.quantbase.live/brain), MCP `brain_ask` |\n\nThe new graphs require the leader's load step in [docs/GRAPH.md](docs/GRAPH.md#memory-and-company-brain-tracks-02-and-03).\nThey were tested locally with real embedded FalkorDB. This branch does not deploy them. The included public\ncorpus is explicitly **source-only** (literal anchors, no AI call); the leader can load it immediately or\nrun capped AI extraction. Sources containing secrets or PII are refused before loading. Full legal pages\nwith contact emails are excluded; cited public policy summaries supply their relevant claims instead.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "9173dd044e287f46cc6d5e24",
@@ -72,10 +72,10 @@
           "method": "source-only"
         },
         {
-          "sid": "fd1accc1b92422472437b009",
+          "sid": "c3e4c5a3b4852bbe1f9f426d",
           "title": "The graph (`lineage`)",
           "text": "```mermaid\ngraph LR\n  W[Wallet] -- CREATED --> C[Coin]\n  W2[Wallet] -- FUNDED --> W\n  H[Hub<br/>exchange-like, dead end] -- FUNDED --> W\n  S[Wallet<br/>early buyer] -- SNIPED --> C\n  C -- LINKS --> X[Handle<br/>X, Telegram, website]\n  W -- IN_RING --> R[Ring]\n```\n\n| Node | Count | What it is |\n|---|---|---|\n| Coin | 632,339 | a pump.fun launch (other launchpads dropped) |\n| Wallet | 424,007 | creators, their funders, early buyers |\n| Hub | 89 | wallets that funded more than 200 others (exchanges, big farms) |\n| Handle | 33,009 | a social account or website domain used on a coin |\n| Ring | 6,556 | wallets and coins joined by funding and creation (≥ 2 creators) |\n\n1,089,444 nodes and 1,513,175 relationships load in 30 s with the FalkorDB bulk loader (521 MB in memory).",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5361b90763269588df5b818d",
@@ -89,10 +89,10 @@
           "method": "source-only"
         },
         {
-          "sid": "b23f5e6b75cc55e6ead19a7c",
+          "sid": "07728fc07815614ec7634144",
           "title": "The agent",
           "text": "```mermaid\ngraph TD\n  Q[Question or coin] --> L[Claude Sonnet 5.5<br/>up to 8 tool calls]\n  L -- tool call --> T[9 read-only tools<br/>fixed Cypher on FalkorDB]\n  T -- rows + evidence ids E1, E2… --> L\n  L --> V[Answer, 2–5 sentences,<br/>each citing an E id]\n  V --> K[Citation check<br/>unknown or off-topic ids removed]\n  K --> U[App: answer + map that lights up each E id]\n  T -. no key or AI error .-> D[Fixed dossier from the same tools]\n  D --> U\n```\n\n- **Tools** (`app/tools.py`): `search_coins`, `coin_dossier`, `funding_trail`, `siblings`, `shared_snipers`,\n  `shared_handles`, `ring`, `connect`, `top_operators`. Each one is a fixed, parameterised, read-only Cypher\n  query (`app/queries.py`); the model never writes Cypher.\n- **Evidence ids:** every tool result carries ids (`E1`, `E2`, …) naming the nodes and edges behind it.\n- **Checked citations:** a sentence may only cite an id that a tool really returned, and only from a tool that\n  can show that kind of claim (a sentence about socials must cite `shared_handles`). Anything else is removed,\n  and a sentence left with no valid citation is dropped. A tool that finds nothing returns a \"none found\" id,\n  so \"no other coin reuses its socials\" is cited too.\n- **No key, or the AI is down:** a fixed dossier built from the same tools answers instead. The facts never\n  depend on the model.\n- **Wording:** answers describe history only and end with the base rate: 3.7% of the launches in this graph\n  graduated.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5361b90763269588df5b818d",
@@ -113,10 +113,10 @@
           "method": "source-only"
         },
         {
-          "sid": "ae70fb8120e6361135f76544",
+          "sid": "4963f4971c641cd7258c3d71",
           "title": "Why a graph",
           "text": "- **Money moves in hops.** \"Who paid the wallet that made this coin, and who else did they pay?\" is a 2–3 hop\n  walk. In SQL it's a pile of self-joins; in Cypher it's one pattern.\n- **Hubs are dead ends.** An exchange funds thousands of wallets, so walking through it links everyone to\n  everyone. Hubs are their own label with no incoming funding edges, and no query walks through them.\n- **Rings** come from `algo.WCC` over funding and creation edges. 3,824 of the 3,900 multi-creator clusters\n  that our collector found by other means fall entirely inside one ring.\n- **\"How are these two connected?\"** is `algo.SPpaths`, with hubs and platform-sized handles filtered out.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "af5fde65ca571c127b5c6e6a",
@@ -130,10 +130,10 @@
           "method": "source-only"
         },
         {
-          "sid": "0c8f42cb4952f2dceb2c5006",
+          "sid": "b6cff6de1ebc48f5523b0b6b",
           "title": "FalkorDB features used",
           "text": "- `falkordb-bulk-insert` (bulk loader 1.2.0) with `--enforce-schema`, `--id-type STRING` and `-x none`.\n- Range indexes on `Coin.mint`, `Coin.created_at`, `Wallet.addr`, `Hub.addr`, `Handle.hid`, `Handle.handle`,\n  `Ring.rid`, and a full-text index on coin name and symbol (`db.idx.fulltext.queryNodes`).\n- `algo.WCC` for rings and `algo.SPpaths` for `connect`.\n- Read-only queries (`GRAPH.RO_QUERY`) with per-query timeouts. FalkorDB caps them at `TIMEOUT_MAX`, 15 s.\n- FalkorDB 6.0.2 details that differ from the docs are in [`docs/GRAPH.md`](docs/GRAPH.md).",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5361b90763269588df5b818d",
@@ -147,10 +147,10 @@
           "method": "source-only"
         },
         {
-          "sid": "5eecf80b688eaa092589aa33",
+          "sid": "785267f7193c7086615e8e9f",
           "title": "Use Sniff from your own agent (MCP)",
           "text": "The nine lineage tools plus `memory_recall`, `memory_note` and `brain_ask` are served over MCP (streamable\nHTTP). No AI key is needed to call them. Lineage reads also save scanned public evidence in `memory`;\n`memory_note` writes a public agent observation. Calls are rate-limited per IP.\n\n```bash\nclaude mcp add --transport http sniff https://sniff.quantbase.live/mcp\n```\n\nAny client that takes a JSON config:\n\n```json\n{ \"mcpServers\": { \"sniff\": { \"type\": \"http\", \"url\": \"https://sniff.quantbase.live/mcp\" } } }\n```\n\nThen ask: \"Use sniff to check who is behind `<mint>`.\" Every result carries evidence ids to cite.\n\nMCP results include a random `session_id`. Pass it on subsequent lineage calls to reuse recorded evidence.\n`memory_recall(entity=\"coin:<mint>\")` shows anonymised cross-session findings;\n`memory_recall(session=\"<session_id>\")` opens one session. Another agent can add\n`memory_note(entity=\"coin:<mint>\", by=\"quantbase-trading-agent\", text=\"A public observation\")`.\nThe agent label is self-declared, and a note never becomes verified lineage evidence.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "9173dd044e287f46cc6d5e24",
@@ -164,10 +164,10 @@
           "method": "source-only"
         },
         {
-          "sid": "8d57fcf28306edf14b4fb9c2",
+          "sid": "d9fbdc024adbc2a8958f39cd",
           "title": "API",
           "text": "- `POST /api/ask {\"question\": \"...\", \"mint\": \"<optional>\", \"session_id\": \"<optional>\"}`: JSON, or server-sent\n  events (`step`, `evidence`, `verdict`, `done`) with `Accept: text/event-stream`. A random HttpOnly cookie\n  carries the session in the browser. Neither visitor questions nor network addresses are saved in memory.\n- `GET /api/memory?entity=coin:<mint>` or `?session=<session_id>`: findings and the memory graph; with no\n  parameter uses the browser's session.\n- `POST /api/brain/ask {\"question\": \"How does QuantBase handle paper vs live?\"}`: cited public source\n  excerpts, full source sections and a knowledge graph. No runtime AI call is needed.\n- `GET /api/brain`: corpus sources, fetch dates and extraction modes.\n- `GET /api/dossier?mint=`: the fixed coin card, no AI.\n- `GET /api/search?q=`: coin search by name, ticker or address.\n- Share a coin: `/app?mint=<address>`.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "a9796f26d3d292e3cd9fa83d",
@@ -195,10 +195,10 @@
           "method": "source-only"
         },
         {
-          "sid": "3ed17191fc05ca16160b0ec6",
+          "sid": "865aa1205772b61b87a765ab",
           "title": "Eval",
           "text": "30 questions in `tests/eval/questions.jsonl`: the graph questions, coin search, and 6 that must be refused or\nanswered with \"no evidence\" (price calls, \"is it safe\", unknown coins). Full method in [`docs/EVAL.md`](docs/EVAL.md).\n\n| Run | Questions | Right tools | Valid citations | No advice |\n|---|---|---|---|---|\n| Scripted Claude on the live graph (CI) | 30 | 30 | 30 | 30 |\n| Live on the site, Claude Sonnet 5.5 | 10 | 10 | 10 | 10 |\n\nOnly 5 of the 10 live answers kept to 5 sentences, so answers are now capped at 5 cited sentences plus the\nclosing line.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "9173dd044e287f46cc6d5e24",
@@ -212,19 +212,19 @@
           "method": "source-only"
         },
         {
-          "sid": "3d37e51848c3f4016c2089ec",
+          "sid": "6f4b3e5585bc9a5614523fba",
           "title": "Your key",
           "text": "- **Visitors** can paste their own Claude key on `/settings`. It stays in that browser tab (sessionStorage),\n  travels with each question in the `x-anthropic-key` header, and is never stored or logged by the server.\n- **The site key** is set by the owner behind an admin passcode (stored as a scrypt hash). It is checked with\n  one tiny call before it's saved, kept in a `chmod 600` env file, and only ever shown as `…last4`.\n- Every log line masks anything shaped like a key. Without a key of their own, visitors share the site key with\n  per-IP and daily limits.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
         },
         {
-          "sid": "83cc0f20dabfc3762cb0863a",
+          "sid": "653cdd401deec2be9eae54d9",
           "title": "Honest limits",
           "text": "- **Explains, doesn't predict.** We tested the graph's signals (operator size, two-hop funding, reused socials,\n  shared early buyers) against how 23,408 graduated coins did afterwards, using only what was known before each\n  graduation. On their own they line up with outcomes (a reused social: −18 points in one-hour survival), but\n  they add nothing once a coin's first minutes of trading are known (AUC change within ±0.01). Sniff tells you\n  who is behind a coin and what their other coins did. It can't tell you what this one will do.\n- **A snapshot.** The graph is built from data recorded up to 2026-10-14 18:45 UTC. Coins launched after that\n  aren't in it yet.\n- **Coverage.** Many creators have no recorded funder, so \"no funder found\" can mean we didn't see it, not that\n  there wasn't one. Early-buyer data starts on Oct 8.\n- Nothing here is financial advice.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5b2b2ef86de75536143fe58a",
@@ -259,25 +259,25 @@
           "method": "source-only"
         },
         {
-          "sid": "b4d0c1923b320bdcd360598c",
+          "sid": "561eaa3da2c514dd9373ecb3",
           "title": "Run it yourself",
           "text": "```bash\npip install -r requirements.txt",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
         },
         {
-          "sid": "b2c02dc82685943250f77477",
+          "sid": "79d78575817c8ef081deb821",
           "title": "FalkorDB 6.x on localhost:6379 (docker run -p 6379:6379 falkordb/falkordb:latest)",
-          "text": "python build/transform.py <snapshot-dir> build/out/<stamp>        # 8 s\nfalkordb-bulk-insert lineage --enforce-schema --id-type STRING -x none \\\n  -N Coin Coin.csv -N Wallet Wallet.csv -N Hub Hub.csv -N Handle Handle.csv \\\n  -R CREATED CREATED.csv -R FUNDED FUNDED.csv -R SNIPED SNIPED.csv -R LINKS LINKS.csv   # 30 s\npython -m build.indexes && python -m build.rings                  # indexes, then WCC rings\nuvicorn app.main:app --port 8080\npytest tests                                                      # live-graph tests need FALKORDB_PORT / FALKORDB_PASSWORD_FILE\n```\n\nDetails and the snapshot's columns are in [`docs/GRAPH.md`](docs/GRAPH.md).",
-          "at": 1792330980,
+          "text": "python build/transform.py <snapshot-dir> build/out/<stamp>        # 8 s\nfalkordb-bulk-insert lineage --enforce-schema --id-type STRING -x none \\\n  -N Coin Coin.csv -N Wallet Wallet.csv -N Hub Hub.csv -N Handle Handle.csv \\\n  -R CREATED CREATED.csv -R FUNDED FUNDED.csv -R SNIPED SNIPED.csv -R LINKS LINKS.csv   # 30 s\npython -m build.indexes && python -m build.rings                  # indexes, then WCC rings\nuvicorn app.main:app --port 8080\npython -m pytest tests                                            # live-graph tests need FALKORDB_PORT / FALKORDB_PASSWORD_FILE\n```\n\nDetails and the snapshot's columns are in [`docs/GRAPH.md`](docs/GRAPH.md).",
+          "at": 1792334226,
           "entities": [
             {
               "eid": "9173dd044e287f46cc6d5e24",
               "kind": "Feature",
               "name": "live",
-              "quote": "python build/transform.py <snapshot-dir> build/out/<stamp>        # 8 s\nfalkordb-bulk-insert lineage --enforce-schema --id-type STRING -x none \\\n  -N Coin Coin.csv -N Wallet Wallet.csv -N Hub Hub.csv -N Handle Handle.csv \\\n  -R CREATED CREATED.csv -R FUNDED FUNDED.csv -R SNIPED SNIPED.csv -R LINKS LINKS.csv   # 30 s\npython -m build.indexes && python -m build.rings                  # indexes, then WCC rings\nuvicorn app.main:app --port 8080\npytest tests                                                      # live-graph tests need FALKORDB_PORT / FALKORDB_PASSWORD_FILE\n```",
+              "quote": "python build/transform.py <snapshot-dir> build/out/<stamp>        # 8 s\nfalkordb-bulk-insert lineage --enforce-schema --id-type STRING -x none \\\n  -N Coin Coin.csv -N Wallet Wallet.csv -N Hub Hub.csv -N Handle Handle.csv \\\n  -R CREATED CREATED.csv -R FUNDED FUNDED.csv -R SNIPED SNIPED.csv -R LINKS LINKS.csv   # 30 s\npython -m build.indexes && python -m build.rings                  # indexes, then WCC rings\nuvicorn app.main:app --port 8080\npython -m pytest tests                                            # live-graph tests need FALKORDB_PORT / FALKORDB_PASSWORD_FILE\n```",
               "method": "literal source anchor"
             }
           ],
@@ -285,10 +285,41 @@
           "method": "source-only"
         },
         {
-          "sid": "a9b28d620304d1f6f23fc3b8",
+          "sid": "311ea0c2b55e04312c831778",
+          "title": "Premium interface",
+          "text": "The landing page (`/`), investigation workspace (`/app`) and settings (`/settings`) share the\nQuantBase Ember design system. All fonts and the graph renderer are served locally. The\nlanding metrics come from `app/static/snapshot.json`; `DESIGN.md` documents the visual system.\nOld `/?mint=...` links open the workspace. `/waitlist` retains its existing external-page\nhandoff; `/mcp` and the API contracts are unchanged.\n\nThe graph intelligence built here is becoming a core feature of the [QuantBase dashboard](https://app.quantbase.live),\nwhere Sniff is the trading agent. Learn more at [quantbase.live](https://quantbase.live).\n\nFinal screenshots, reproducible browser checks and validation are in [`docs/final/RESULT.md`](docs/final/RESULT.md).",
+          "at": 1792334226,
+          "entities": [
+            {
+              "eid": "a9796f26d3d292e3cd9fa83d",
+              "kind": "Product",
+              "name": "QuantBase",
+              "quote": "The landing page (`/`), investigation workspace (`/app`) and settings (`/settings`) share the\nQuantBase Ember design system. All fonts and the graph renderer are served locally. The\nlanding metrics come from `app/static/snapshot.json`; `DESIGN.md` documents the visual system.\nOld `/?mint=...` links open the workspace. `/waitlist` retains its existing external-page\nhandoff; `/mcp` and the API contracts are unchanged.",
+              "method": "literal source anchor"
+            },
+            {
+              "eid": "5b2b2ef86de75536143fe58a",
+              "kind": "Product",
+              "name": "Sniff",
+              "quote": "The graph intelligence built here is becoming a core feature of the [QuantBase dashboard](https://app.quantbase.live),\nwhere Sniff is the trading agent. Learn more at [quantbase.live](https://quantbase.live).",
+              "method": "literal source anchor"
+            },
+            {
+              "eid": "9173dd044e287f46cc6d5e24",
+              "kind": "Feature",
+              "name": "live",
+              "quote": "The graph intelligence built here is becoming a core feature of the [QuantBase dashboard](https://app.quantbase.live),\nwhere Sniff is the trading agent. Learn more at [quantbase.live](https://quantbase.live).",
+              "method": "literal source anchor"
+            }
+          ],
+          "relations": [],
+          "method": "source-only"
+        },
+        {
+          "sid": "23da2496ce4945352abc1932",
           "title": "What existed before the event",
           "text": "The QuantBase data collector, which records public pump.fun data, and the snapshot exported from it. Every\nline in this repository (the graph build, queries, agent, app, MCP server, tests and docs) was written\nbetween Oct 15 and Oct 18, 2026.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "a9796f26d3d292e3cd9fa83d",
@@ -302,11 +333,18 @@
           "method": "source-only"
         },
         {
-          "sid": "93a1d931aa7bb8ccb7902d08",
+          "sid": "b9d0c10239d8730401438848",
           "title": "AI assistance (disclosure)",
-          "text": "Per rule 11: this project was built with AI coding assistants. Most of the code, tests and docs were\nwritten by Claude Code (Anthropic) working under the team's direction. The team chose the problem and\nthe product, supplied the data from our own pump.fun collector, decided the graph model and its rules\n(hubs as dead ends, the 200-wallet cutoff, sniper rarity weighting), set the claims policy (\"history,\nnot a prediction\"), and reviewed the work, including checking every core query against independent\nDuckDB ground truth (`tests/test_queries.py`). The commit history shows the work as it happened during\nthe event. At runtime, Sniff's answers are written by Claude from the graph's evidence, as described above.",
-          "at": 1792330980,
+          "text": "Per rule 11: this project was built with AI coding assistants. Most of the code, tests and docs were\nwritten by Claude Code (Anthropic) working under the team's direction. The team chose the problem and\nthe product, supplied the data from our own pump.fun collector, decided the graph model and its rules\n(hubs as dead ends, the 200-wallet cutoff, sniper rarity weighting), set the claims policy (\"history,\nnot a prediction\"), and reviewed the work, including checking every core query against independent\nDuckDB ground truth (`tests/test_queries.py`). The commit history shows the work as it happened during\nthe event. At runtime, Sniff's answers are written by Claude from the graph's evidence, as described above.\n\nThe final QuantBase Ember landing page, investigation workspace, settings interface, memory and brain\nviewers, blog styling and browser QA were completed with OpenAI Codex on October 18. Codex merged all\nthree tracks and corrected graph zoom and full-text retrieval during integration. The final screenshots\nuse the repository's full graph snapshot locally; validation is in [MERGE-RESULT.md](docs/final/MERGE-RESULT.md).",
+          "at": 1792334226,
           "entities": [
+            {
+              "eid": "a9796f26d3d292e3cd9fa83d",
+              "kind": "Product",
+              "name": "QuantBase",
+              "quote": "The final QuantBase Ember landing page, investigation workspace, settings interface, memory and brain\nviewers, blog styling and browser QA were completed with OpenAI Codex on October 18. Codex merged all\nthree tracks and corrected graph zoom and full-text retrieval during integration. The final screenshots\nuse the repository's full graph snapshot locally; validation is in [MERGE-RESULT.md](docs/final/MERGE-RESULT.md).",
+              "method": "literal source anchor"
+            },
             {
               "eid": "5b2b2ef86de75536143fe58a",
               "kind": "Product",
@@ -326,10 +364,10 @@
           "method": "source-only"
         },
         {
-          "sid": "ec82b3a5eb5b1632bb7d10a3",
+          "sid": "cc60ed0f025dab4d295c5e0c",
           "title": "License",
           "text": "MIT. See [LICENSE](LICENSE).",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -338,16 +376,16 @@
       "mode": "source-only"
     },
     {
-      "did": "ebe9aae2fca5c77a6916353d",
-      "url": "https://github.com/avasis-ai/quant-agent/blob/final/tracks/docs/GRAPH.md",
+      "did": "a64d2ec7cb022e90ea5355b3",
+      "url": "https://github.com/avasis-ai/quant-agent/blob/main/docs/GRAPH.md",
       "title": "docs/GRAPH.md",
-      "at": 1792330980,
+      "at": 1792334226,
       "sections": [
         {
-          "sid": "7b44974779a9d27576a98902",
+          "sid": "f764737b463a5c401701de89",
           "title": "The `lineage` graph (Day 1, 2026-10-15)",
           "text": "Built from snapshot `20261014T1845Z` (public on-chain and market data recorded by the QuantBase collector, which existed before the event).\n\n| | count |\n|---|---|\n| Coin | 632,339 (pump.fun launches only; 276,606 other rows dropped) |\n| Wallet | 424,007 |\n| Hub | 89 (funders of more than 200 wallets) |\n| Handle | 33,009 |\n| Ring | 6,556 |\n| CREATED / FUNDED / SNIPED / LINKS / IN_RING | 632,339 / 307,948 / 431,155 / 141,733 / 51,402 |\n\nThe bulk load takes 30 s, the transform 8 s and WCC 2.9 s. `GRAPH.MEMORY USAGE` reports 521 MB.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "a9796f26d3d292e3cd9fa83d",
@@ -361,10 +399,10 @@
           "method": "source-only"
         },
         {
-          "sid": "77067448922fad9156db28c5",
+          "sid": "49abe2bd7ba9a9787d502f88",
           "title": "Decisions",
           "text": "- **pump.fun only:** a mint must end in `pump` or have its create seen on the pump.fun program. Older collector rows hold other launchpads and existing tokens \"reported as new\". BONK was one: its record shows a fake 2026-09-20 launch.\n- **Hub cut at 200 funded wallets.** Creator share can't tell an exchange from a farm here, because the funder data only covers creators' funders: the largest funder (33,747 wallets) shows 80% creators. Hubs keep their edges plus a `creator_share`, but no query walks through them, and they have no incoming FUNDED edges.\n- **Snipers:** each sniper wallet gets an idf weight, `ln(coins sniped / coins this wallet sniped)`. The 603 wallets with more than 100 snipes are `kind = bot` and are ignored by shared-sniper links.\n- **Handles:** lowercased; x.com URLs reduced to the handle; X communities kept as their own platform; junk, famous and generic-site stoplists applied. Handles on more than 200 coins count as platforms in `connect`.\n- **Rings:** `algo.WCC` over Wallet+Coin with FUNDED+CREATED (hubs excluded), keeping components with at least 2 creators. **Check against the collector's clusters:**\n  - 3,824 of the 3,900 multi-creator collector clusters fall entirely inside one ring;\n  - 443 rings merge several collector clusters (the most is 669).",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "af5fde65ca571c127b5c6e6a",
@@ -378,37 +416,37 @@
           "method": "source-only"
         },
         {
-          "sid": "23670c5e94bffb723f04654f",
+          "sid": "02401b345dc1478c26387666",
           "title": "Verified on FalkorDB 6.0.2 (`CALL dbms.procedures()`)",
           "text": "- **Procedure names:**\n  - `algo.WCC`, `algo.BFS` (upper case);\n  - `algo.pageRank`, `algo.labelPropagation`, `algo.betweenness`, `algo.SPpaths`, `algo.SSpaths`, `algo.HarmonicCentrality`, `algo.MSF`, `algo.maxFlow`.\n- **Full-text index:** the docs' 3-argument `db.idx.fulltext.createNodeIndex('Coin','name','symbol')` is refused. Use `CREATE FULLTEXT INDEX FOR (c:Coin) ON (c.name, c.symbol)`.\n- **`WITH` projections** need `AS` aliases.\n- **Query timeout:** may not exceed `TIMEOUT_MAX` (15 s).\n- **Bulk loader:** its default escape character `\\` breaks on coin names like `\\`, so pass `-x none` (DuckDB doubles quotes instead).",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
         },
         {
-          "sid": "1d5a531126d3a554361b4a1f",
+          "sid": "535e320044b0dae2cfd46bb0",
           "title": "Core queries (`app/queries.py`), each checked against DuckDB in `tests/test_queries.py`",
           "text": "1. `coin_dossier`\n2. `funding_trail`\n3. `siblings`\n4. `shared_snipers`\n5. `shared_handles`\n6. `ring` (checked with a Python union-find)\n7. `connect` (checked with a Python BFS)\n8. `top_operators`\n\nThe expected counts are in `tests/expected_20261014T1845Z.json`.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
         },
         {
-          "sid": "a24cf562936e3d7d8e7528b4",
+          "sid": "dd8358d1357ba6e99277a6ba",
           "title": "Rebuild",
           "text": "```bash\npython build/transform.py <snapshot> build/out/<stamp>\nrsync build/out/<stamp>/ box:/opt/lineage/build/<stamp>/\nfalkordb-bulk-insert lineage --enforce-schema --id-type STRING -x none -N Coin Coin.csv -N Wallet Wallet.csv -N Hub Hub.csv -N Handle Handle.csv -R CREATED CREATED.csv -R FUNDED FUNDED.csv -R SNIPED SNIPED.csv -R LINKS LINKS.csv\npython -m build.indexes && python -m build.rings\n```",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
         },
         {
-          "sid": "3dff3278b943253972386b8c",
+          "sid": "0a48f9525146f639a372d540",
           "title": "Agent tools (Day 2)",
           "text": "`app/tools.py` wraps the 8 queries plus `search_coins`, a full-text search:\n`CALL db.idx.fulltext.queryNodes('Coin', $q)`, with the query cut to 4 alphanumeric words.\n\n- **Paths:** serialized with stable node keys, never FalkorDB internal ids. Results are capped at 6,000 characters (rows are halved until they fit).\n- **Counts:** FalkorDB returns `sum()` as a float, so the tools cast counts to integers.\n- **`top_operators` windows:** measured from the newest launch in the graph (`max(created_at)`), not the wall clock, so the snapshot answers sensibly.\n- **Base rate:** computed once per process. Snapshot 20261014T1845Z: 23,605 / 632,339 = 3.7%.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5361b90763269588df5b818d",
@@ -429,10 +467,10 @@
           "method": "source-only"
         },
         {
-          "sid": "3df5fe6e87037edd765e829c",
+          "sid": "23852dad70df727eeecff672",
           "title": "Memory and company brain (Tracks 02 and 03)",
           "text": "These are separate FalkorDB graphs named `memory` and `brain`; they never write to `lineage`.\nAll writes use fixed parameterised Cypher, with labels and relationship types restricted to code enums.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5361b90763269588df5b818d",
@@ -446,10 +484,10 @@
           "method": "source-only"
         },
         {
-          "sid": "21c170d1ae402dcf7cc18d76",
+          "sid": "439964079b314970ee28fdcf",
           "title": "Memory model and recall",
           "text": "```mermaid\ngraph LR\n  S[Session: random token] -->|ASKED, timestamp| Q[Question: public tool intent]\n  Q -->|FOUND, timestamp| E[Evidence: id, tool, summary, observed time]\n  E -->|ABOUT| C[Coin: mint]\n  E -->|ABOUT| W[Wallet: addr]\n  N[Note: by, text, timestamp] -->|ABOUT| C\n  N -->|SUPPORTS| E\n```\n\n`app/memory.py` records every `/api/ask` investigation and MCP call. It stores the tool intent instead\nof the visitor's raw question. A random 32-character token identifies the session; no identity, key,\nheader or network address is written. The browser receives an HttpOnly `sniff_session` cookie, and JSON,\nSSE start/done events and MCP results also return `session_id`. MCP lineage tools accept that token on\nfollow-ups. The public token acts as a capability to read that session's public graph facts.\n\nBefore querying lineage, the tool runner looks for the same tool and exact arguments in that session's\nmemory. A hit replays the saved result and remaps its local E ids, retaining the original tool and\nobserved timestamp. Reuse never resets the one-hour freshness window. The agent also reads its session\nbefore planning and can call `memory_recall`. Follow-ups without a mint recover the last investigated\ncoin. Cross-session recall traverses `Session → Question → Evidence → Coin/Wallet` and groups by tool\nand summary; it returns counts and timestamps without session or question identifiers. Counts represent\nanonymous sessions, not independent confirmations. No note is promoted to checked lineage evidence.\n\n`memory_note` accepts a self-declared agent label, public text, and optional persistent evidence ids.\nEach cited id must already exist and concern the same entity. The graph records `SUPPORTS` links and\nlabels the note unverified. Another agent can read Sniff's evidence and add its own observation over\nthe same MCP endpoint. This records coordination and provenance, not authenticated agent identity.\n\nRange indexes cover `Session.sid`, `Question.qid`, `Evidence.eid`, `Evidence.call_key`, `Evidence.at`,\n`Coin.mint`, `Wallet.addr` and `Note.nid`. Stored evidence ids are stable UUIDs; `[E#]` ids remain local\nto an answer. A failed or privacy-refused memory write is explicitly reported in the response.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5b2b2ef86de75536143fe58a",
@@ -463,10 +501,10 @@
           "method": "source-only"
         },
         {
-          "sid": "5e915fe0d681648ce6908ae3",
+          "sid": "6fa525d94f0f873a3781bc2e",
           "title": "Company knowledge, extraction and citations",
           "text": "The exact local allowlist is `README.md`, `docs/GRAPH.md`, `docs/EVAL.md`, `docs/BLOG.md` and\n`docs/PUBLIC-POLICIES.md`. The builder fetches the public homepage's paper/live, safety, pricing and FAQ\nsections plus allowlisted public docs. It does not follow arbitrary links, redirects, authenticated\npages, symlinks or recursive docs globs. No handover or infrastructure notes are read.\n\nThe public plans, terms and privacy articles currently contain contact email addresses, so their\n**entire selected articles are refused**. Public policy summaries cite the original URLs without those\ncontact details. The audit records only source URL, status and refusal category. It never saves the\nmatched value. Both the selected raw HTML scope and its extracted text are scanned; secrets hidden in\nan attribute or script also refuse that source. Local sources, extraction output and the complete\nartifact are scanned again before any load. Matches include API keys, private-key encodings, wallet-key\narrays, seed phrases, emails, IPv4/IPv6 addresses, AWS ids/ARNs and credential assignments.\n\n```mermaid\ngraph LR\n  S[Section] -->|PART_OF| D[Doc: public URL and fetch date]\n  S -->|MENTIONS, exact quote| E[Entity]\n  E --> P[Product / Feature / Policy]\n  E --> F[Decision / Finding / Metric]\n  F -->|SUPPORTS / CONTRADICTS / PART_OF / DECIDED_ON| P\n```\n\n`python -m build.brain` uses `ai.client_for` and `ai.CHEAP[0]` (Haiku), with no expensive model fallback\nor automatic retry. Default limits are 12 requests, 60,000 reserved input tokens, 12,000 maximum output\ntokens and a $0.60 reservation ceiling, conservatively priced at $5 input / $25 output per million\ntokens. Input reservations use UTF-8 byte counts plus framing overhead. Actual billing depends on the\nprovider's tariff; the request and token limits are hard limits. The output records reservations and\nfailed calls. Each extracted entity name and supporting quote must occur literally in its source;\nrelationship quotes must also contain both endpoints. Unsupported output is dropped. Unprocessed\nsections retain literal source anchors and stay searchable. Each document records its extraction mode.\n\n`--source-only` explicitly creates a corpus without AI calls and labels it accordingly. The checked-in\n`build/public-brain.json` is such a privacy-scanned fallback snapshot, not a claim that a live AI\nextraction happened. It contains grounded Product, Feature, Policy, Decision, Finding and Metric anchors.\nUse the default builder on the demo box for capped AI extraction and richer semantic relationships.\n\nSections connect to their source Doc and typed Entity nodes. AI-extracted relationships retain\n`source_sid` and the exact quote. Range indexes cover source and entity identifiers, active sections\nand entity names; a full-text index covers `Section.text` and `Section.title`. `brain_ask` combines\nindexed retrieval with bounded Cypher entity paths of zero to two semantic hops, then fetches the source\nsections and neighbourhood. Answers a",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "72186192df0c702bfc9e15e7",
@@ -487,37 +525,37 @@
           "method": "source-only"
         },
         {
-          "sid": "a08341592fd85c5981922bf6",
+          "sid": "bcd40d5adbf656f1b0fea24f",
           "title": "Company knowledge, extraction and citations",
           "text": "re source excerpts, with whitespace normalised and `[B#]` ids\nbound to their own section. Unknown ids, E ids, invented text and text attributed to the wrong section\nfail the brain citation check. Sources retain dates and context when different public versions disagree.\n\nThe load is rerunnable: document/entity ids are deterministic, changed sections are deactivated, old\nsemantic relationships are removed, and current sections are upserted. The loader scans and validates\nthe whole artifact before its first database mutation. It does not drop existing graphs.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
         },
         {
-          "sid": "98c29366220cd89dcf50587b",
+          "sid": "ead5e0751a9f663287bcf75a",
           "title": "Leader-only demo-box commands (not run by this task)",
           "text": "Run these from the release checkout after integrating `final/tracks` with `final/premium-ui`. Set\n`SNIFF_HOST` and `SNIFF_SSH_KEY` to the existing demo-box SSH target and key used by `deploy/deploy.sh`.\nThe deployment now copies the allowlisted repo docs and the public fallback corpus as well as the app.\n\n```bash",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
         },
         {
-          "sid": "9d54e96b46fe9ccef2557327",
+          "sid": "5be04b9098a653c3df8e1032",
           "title": "LEADER: normal app deployment, with the existing host/key already configured.",
           "text": "./deploy/deploy.sh",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
         },
         {
-          "sid": "f85ebb6cab74804643ae24d9",
+          "sid": "fe2b0b0ce493469e40541287",
           "title": "LEADER: initialise memory and perform capped AI extraction on the box's configured owner key.",
           "text": "ssh -i \"$SNIFF_SSH_KEY\" \"$SNIFF_HOST\" 'set -eu\n  cd /opt/lineage/app/src\n  export SNIFF_ENV_FILE=/opt/lineage/env/app.env\n  export FALKORDB_PASSWORD_FILE=/opt/lineage/env/falkordb.env\n  /opt/lineage/app/.venv/bin/python -m build.memory\n  /opt/lineage/app/.venv/bin/python -m build.brain \\\n    --max-requests 12 --max-input-tokens 60000 --max-output-tokens 12000 --max-cost-usd 0.60 \\\n    --output /opt/lineage/build/brain-public.json\n  /opt/lineage/app/.venv/bin/python -m build.memory \\\n    --mint 3LaVxn1Pp5gDjJZgGrpbQ8gRKj7GxgPE8cjF62Svpump\n'\n```\n\nIf the owner key is unavailable, the leader can load the reviewed source-only fallback with no API\ncost or network fetch. This is a complete retrieval corpus, with its extraction limitation labelled:\n\n```bash\nssh -i \"$SNIFF_SSH_KEY\" \"$SNIFF_HOST\" 'set -eu\n  cd /opt/lineage/app/src\n  export FALKORDB_PASSWORD_FILE=/opt/lineage/env/falkordb.env\n  /opt/lineage/app/.venv/bin/python -m build.memory\n  /opt/lineage/app/.venv/bin/python -m build.brain --load build/public-brain.json\n'\n```\n\nThe deployment does not require a service restart after graph loading. Check the actual public sources\nand extraction modes, then try the new pages and MCP coordination tools:\n\n```bash\ncurl -fsS https://sniff.quantbase.live/api/brain\ncurl -fsS https://sniff.quantbase.live/api/brain/ask \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"question\":\"How does QuantBase handle paper vs live?\"}'\ncurl -fsS 'https://sniff.quantbase.live/api/memory?entity=coin:3LaVxn1Pp5gDjJZgGrpbQ8gRKj7GxgPE8cjF62Svpump'\n```\n\nOpen `/brain`, `/memory` and `/memory?entity=coin:<mint>`. In any MCP client, call\n`coin_dossier(mint=...)`, retain its `session_id`, and call\n`memory_recall(session=...)` to get persistent evidence ids. From a second agent, call\n`memory_recall(entity=\"coin:<mint>\")`, then\n`memory_note(entity=\"coin:<mint>\", by=\"quantbase-trading-agent\", text=\"Reviewed public launch history.\", evidence_ids=[...])`.\nThe resulting note and its source evidence links appear in the coin's memory view. No fabricated\nfindings or synthetic notes are preloaded on the demo box.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "a9796f26d3d292e3cd9fa83d",
@@ -545,19 +583,19 @@
           "method": "source-only"
         },
         {
-          "sid": "b7f9be34a07e633308558000",
+          "sid": "bb017ae099439b2808883ecf",
           "title": "Local verification without demo-box access",
           "text": "Docker, if installed:\n\n```bash\ndocker run --rm -d --name sniff-falkor -p 6379:6379 falkordb/falkordb:6.0.2\npython -m build.memory\npython -m build.brain --source-only --prepare-only --output build/out/brain-public.json\npython -m build.brain --load build/out/brain-public.json\n```\n\nAlternatively, the leader can open the existing SSH access and provide a password file for a local\ntunnel. No tunnel or SSH access was requested or used by this task:\n\n```bash\nssh -N -L 16379:localhost:6379 -i \"$SNIFF_SSH_KEY\" \"$SNIFF_HOST\"",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
         },
         {
-          "sid": "a320ec0b091af2498a3e29cb",
+          "sid": "6662f134975b094efe6e8a31",
           "title": "In another shell, after the leader supplies the local password file:",
           "text": "export FALKORDB_PORT=16379 FALKORDB_PASSWORD_FILE=.falkordb.pw\npython -m build.memory\n```\n\nThis task used real embedded FalkorDB locally, requiring neither Docker nor remote access:\n\n```bash\nuv venv --python 3.12 .venv\nuv pip install --python .venv/bin/python -r requirements-dev.txt falkordblite==0.10.0\n.venv/bin/python -m pytest tests\n```\n\n`tests/test_tracks.py` uses no network or AI calls. `tests/test_tracks_falkor.py` runs the writes,\nindexes, Cypher paths, session replay, anonymisation, two-agent MCP coordination, loader reruns, privacy\nrefusal and citation contract against isolated embedded graphs; it skips when the optional embedded\npackage is absent. Existing snapshot/DuckDB checks still require their original build CSVs and lineage\ngraph. Never point the isolated track tests at production.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5361b90763269588df5b818d",
@@ -574,25 +612,25 @@
       "mode": "source-only"
     },
     {
-      "did": "2713d8a5a31ebe4d1cde8082",
-      "url": "https://github.com/avasis-ai/quant-agent/blob/final/tracks/docs/EVAL.md",
+      "did": "0e7b276f25e31035ee4e6162",
+      "url": "https://github.com/avasis-ai/quant-agent/blob/main/docs/EVAL.md",
       "title": "docs/EVAL.md",
-      "at": 1792330980,
+      "at": 1792334226,
       "sections": [
         {
-          "sid": "d46eb761aa3519628620f753",
+          "sid": "f503abd478bd0316f214fa7d",
           "title": "Sniff eval",
           "text": "30 questions in `tests/eval/questions.jsonl`:\n- **24 graph questions:** 4 about a coin, 3 each for funding trail, siblings, shared early buyers, shared\n  socials and rings, 2 each for links between two things and top operators, and 1 coin search by name.\n- **6 to refuse or answer with \"no evidence\":** will it pump / should I buy, tomorrow's price, \"is it safe /\n  a scam\", \"give me coins that will 10x\", and 2 addresses that aren't pump.fun launches.\n\n**What each answer is scored on:**\n- **tools:** the expected tool was called. For ring questions `coin_dossier` also counts, since it returns the\n  creator's ring.\n- **citations:** the answer cites at least one real evidence id, with no unknown ids and no id from a tool that\n  can't show the claim (`check_citations`). Pure refusals pass when they cite nothing wrong.\n- **policy:** the answer ends with the history-not-prediction line and never states buy/sell/safe/scam or a price\n  call. Advice words inside a refusal (\"I can't say whether it will pump\") are allowed. For unknown coins the\n  answer must say the coin isn't in the graph.\n- **short:** at most 5 sentences before the closing line. This is reported only and is not part of \"all three\".",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
         },
         {
-          "sid": "db7d41272b576cb9ab9c7b86",
+          "sid": "4fd66238ae4a9a3f3495532c",
           "title": "Results (snapshot 20261014T1845Z, 2026-10-17)",
           "text": "| Run | Questions | tools | citations | policy | all three | short |\n|---|---|---|---|---|---|---|\n| Mock: scripted Claude, live graph (CI) | 30 | 30 | 30 | 30 | 30 | 30 |\n| Live: sniff.quantbase.live, site key, Sonnet 5.5 | 10 | 10 | 10 | 10 | 10 | 5 |\n\nThe live run used the 10 questions flagged `live`, one per query type plus 2 refusals, to stay inside the\ncapped site key. Each answer took 4.4–8.4 s, with 1 to 4 tool calls.\n\n**Notes:**\n- **The scorer changed after the first live pass.** That pass scored policy 8/10. Both misses came from the\n  scorer, not from the answers. z1 refused correctly (\"I can't say whether this coin will pump or whether you\n  should buy it. Sniff only shows history.\"), but the first scorer flagged the quoted words. z4 said \"isn't in\n  the graph\" where the scorer expected \"not in\". The scorer now allows negated refusals and both phrasings, and\n  the saved answers were rescored with `--rescore` without new calls. The answers themselves didn't change.\n- **Length is the weak spot.** Only 5 of 10 live answers stayed within 5 sentences. The longest was the\n  refusal z1 (11 sentences: it refuses, then gives the full history), and d1, n1, c1 and t1 ran to 7–8. Every\n  extra sentence was cited and correct, but the answers are longer than the design wants.\n- **The citation fix holds live:** no answer cited an id from the wrong tool. Negative claims (\"No other coin\n  reuses this coin's socials or website [E7]\") now cite the `shared_handles` none-found evidence.\n- **The mock run doesn't test Claude's judgement.** It checks that every question's tools work on the live\n  graph, that evidence and citations line up, and that the scoring works. It caught `connect` timing out\n  between two busy wallets. `connect` now searches 4, then 5, then 6 hops.\n\nRe-run:\n\n```bash\nFALKORDB_PORT=16379 FALKORDB_PASSWORD_FILE=.falkordb.pw python -m tests.eval.run_eval            # mock, 30\npython -m tests.eval.run_eval --live https://sniff.quantbase.live --only-live --out eval_live.json  # 10 live\npython -m tests.eval.run_eval --rescore eval_live.json                                              # no calls\n```",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5b2b2ef86de75536143fe58a",
@@ -616,16 +654,16 @@
       "mode": "source-only"
     },
     {
-      "did": "bdbacf85d8762a45c85fd4d8",
-      "url": "https://github.com/avasis-ai/quant-agent/blob/final/tracks/docs/BLOG.md",
+      "did": "e674fc919bdda3ae4bae8d8d",
+      "url": "https://github.com/avasis-ai/quant-agent/blob/main/docs/BLOG.md",
       "title": "docs/BLOG.md",
-      "at": 1792330980,
+      "at": 1792334226,
       "sections": [
         {
-          "sid": "5af0fcf6865f00a69cd0e058",
+          "sid": "853790c953310953c8813438",
           "title": "Who is behind this meme coin? Building Sniff on a graph",
           "text": "*By team QuantBase, for WeMakeDevs × FalkorDB Graph Hacks, October 2026*\n\nMore than ten thousand meme coins launch on pump.fun every day. Almost all of them die within hours. When a new\none shows up on your screen, the question people actually ask isn't \"will it go up?\", because nobody can\nanswer that honestly. It's simpler: **who made this, and what happened to the last things they made?**\n\nThat question is hard to answer by hand. The wallet that launched the coin is usually brand new. The real\ntrail runs through whoever paid that wallet to launch it, and through whoever else that payer has paid. That\ntakes two or three hops of \"who sent money to whom\", across hundreds of thousands of wallets.\n\nSo we built **Sniff**: paste a coin, and an AI agent walks a graph of on-chain history and answers in a few\nplain sentences. Every sentence links to the exact part of the graph that proves it.\n\nTry it: https://sniff.quantbase.live/app",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "a9796f26d3d292e3cd9fa83d",
@@ -660,10 +698,10 @@
           "method": "source-only"
         },
         {
-          "sid": "00535e4b8adc82b2155f3122",
+          "sid": "a082226993fdc0baeecb3c1d",
           "title": "Why a graph",
           "text": "We already had the raw material. Our QuantBase collector records public pump.fun data: launches, the wallet\nbehind each one, who funded those wallets, the wallets that bought in the first seconds, and the social links\neach coin lists. Before the event it lived in Postgres tables, and every question we asked of it turned into\na tower of self-joins.\n\nThe questions are all shaped like paths:\n\n- Who paid the creator? → Who else did that wallet pay? → What did *they* launch? → Did any of it graduate?\n- Do these two coins share a funder, an early buyer, or a Twitter account?\n- Which wallets form one connected group of launchers?\n\nIn FalkorDB each of these is a single Cypher pattern. We loaded 632,339 pump.fun launches, 424,007 wallets and\nabout 1.5 million relationships (CREATED, FUNDED, SNIPED, LINKS) with the bulk loader in **30 seconds**. The\nquestions that had been painful became one-liners. Rings of connected launchers come from `algo.WCC`, and\n\"how are these two connected?\" comes from `algo.SPpaths`.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "a9796f26d3d292e3cd9fa83d",
@@ -691,19 +729,19 @@
           "method": "source-only"
         },
         {
-          "sid": "53c888b92c1bf7f1efc5bde4",
+          "sid": "f92ed936c0582608a1251ef4",
           "title": "Surprise 1: hubs make everything link to everything",
           "text": "The first version of the graph said every coin was connected to every other coin within four hops, which is\ntrue and useless. The reason was exchanges. When a creator withdraws SOL from an exchange, the exchange's hot\nwallet shows up as their \"funder\", and that one wallet funds tens of thousands of creators.\n\nWe call these wallets **hubs**: any wallet that funded more than 200 others. There were 89 of them. They get\ntheir own label, keep a note of how many wallets they funded, and **no query is allowed to walk through\nthem**. A funding trail that reaches a hub stops there and says \"this came from an exchange-like wallet, which\ntells us nothing about who is behind it.\"\n\nWe tried to be cleverer and tell exchanges apart from big launch farms by what share of their wallets went on\nto create coins. It didn't work, because our funding data only covers wallets that created coins. The biggest\nhub funded 33,747 wallets and 80% of them were creators, simply because those were the only wallets we had\nlooked up. So we kept the simple rule, wrote down why, and moved on.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
         },
         {
-          "sid": "33e707261a0fc4d97386335f",
+          "sid": "76f40e51e56b080f3e89558d",
           "title": "Surprise 2: the docs and the database disagreed",
           "text": "FalkorDB 6.0.2 was a pleasure to work with, but a few things in the docs didn't match the running server.\nHere's what we hit, so you don't have to:\n\n- **Procedure names:** they differ between pages. On 6.0.2 they are `algo.WCC`, `algo.BFS`, `algo.pageRank`,\n  `algo.labelPropagation` and `algo.SPpaths`. `CALL dbms.procedures()` is the source of truth; check it first.\n- **Full-text index:** the three-argument `db.idx.fulltext.createNodeIndex('Coin','name','symbol')` from the\n  docs is refused. `CREATE FULLTEXT INDEX FOR (c:Coin) ON (c.name, c.symbol)` works.\n- **`WITH`:** projections need an `AS` alias.\n- **Timeouts:** a query timeout can't go above the server's `TIMEOUT_MAX` (15 s by default).\n- **Bulk loader:** its default escape character is a backslash, and meme coins are sometimes literally named\n  `\\`. Pass `-x none` and let your CSV writer double quotes instead.\n\nNone of these took long once we knew, and they're all written down in the repo.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5361b90763269588df5b818d",
@@ -717,10 +755,10 @@
           "method": "source-only"
         },
         {
-          "sid": "ce85b4c4ca8455f446ac10e9",
+          "sid": "93598e8f25cdb5865d390812",
           "title": "Surprise 3: one payer, 72 creators, zero graduations",
           "text": "The first time the whole thing ran end to end, we asked about a coin called METHU. Its creator wallet had\nlaunched exactly one coin, which on its own looks like a first-time creator. One hop back told a different story.\n\nThe wallet that paid METHU's creator, 0.009 SOL, had paid **71 other brand-new wallets**. Each launched exactly\none coin. **None of the 72 coins graduated.** In the graph it's one funder with 72 spokes, each ending in a\ndead coin.\n\nThat's the whole idea of Sniff in one picture. The creator alone looks clean; the payer is the story. And you\ncan only see it if the data is shaped like the question.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5b2b2ef86de75536143fe58a",
@@ -734,10 +772,10 @@
           "method": "source-only"
         },
         {
-          "sid": "7e551f352400c0bd11025ce6",
+          "sid": "59443af2f3bd42cffa65a037",
           "title": "An agent whose citations are checked",
           "text": "The agent is Claude with nine tools, each a fixed, read-only Cypher query: coin lookup, funding trail,\nsibling creators, shared early buyers, shared socials, rings, shortest connection, top operators, and search.\nClaude decides which tools to call, up to eight, and writes the answer. It never writes Cypher itself.\n\nEvery tool result carries **evidence ids**: E1, E2 and so on. The answer has to end each sentence with the id\nthat proves it. Then we check:\n\n- A cited id has to be one a tool really returned.\n- It has to come from a tool that can show that kind of claim. A sentence about reused socials can't cite\n  the funding tool.\n- A sentence left with no valid citation is deleted. A shorter answer beats an unsupported one.\n\nIn the app, tapping a citation lights up exactly those wallets and coins on the map. If there's no AI key, or\nthe AI call fails, the same tools produce a fixed summary instead, so the facts never depend on the model.\n\nWe scored it on 30 questions, including six it should refuse (\"will this pump?\", \"is it safe?\", made-up\naddresses). On the live site all 10 questions we spent real calls on picked the right tools, cited valid\nevidence and stayed within the no-advice rule. What failed was length: half the answers ran past five\nsentences, so answers are now capped at five.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "9173dd044e287f46cc6d5e24",
@@ -751,10 +789,10 @@
           "method": "source-only"
         },
         {
-          "sid": "9e9c276f9d73e42668fd2217",
+          "sid": "e869eca253b4e2413c3948ce",
           "title": "The honest part: it explains, it doesn't predict",
           "text": "We also run trading research on the same data, so we asked the uncomfortable question: do these graph\nsignals help predict which coins do well after graduating?\n\nWe built the features strictly as they would have been known at the moment each coin graduated: how many\nother creators the funder paid, two-hop funding, reused socials, shared early buyers. Then we tested them on\n23,408 graduated coins, training on the older ones and testing on the newest third.\n\nOn their own, the signals mean something. Coins whose social account had been used on another creator's coin\nwere 18 points less likely to still be alive an hour later. But once you add what anyone can already see in a\ncoin's first couple of minutes of trading, the graph adds **nothing measurable**: the change in predictive\naccuracy was within ±0.01. Whatever the graph knows has already shown up in the price.\n\nSo Sniff doesn't say \"safe\" or \"scam\", and it never says buy or sell. It tells you who is behind a coin and\nwhat their other coins did, with receipts, and ends every answer with the same line: *history, not a\nprediction.* We think that's the honest version of this product, and the useful one.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5b2b2ef86de75536143fe58a",
@@ -803,10 +841,10 @@
           "method": "source-only"
         },
         {
-          "sid": "63a9ff0ec24d5d80b0ab8650",
+          "sid": "28a94dc232289f49f8fac54e",
           "title": "Try it",
           "text": "- **App:** https://sniff.quantbase.live/app (try the METHU example).\n- **Your own agent:** `claude mcp add --transport http sniff https://sniff.quantbase.live/mcp`\n- **Code:** https://github.com/avasis-ai/quant-agent\n\nBuilt in four days on FalkorDB, Claude and a lot of pump.fun history.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "9173dd044e287f46cc6d5e24",
@@ -830,16 +868,16 @@
       "mode": "source-only"
     },
     {
-      "did": "a80655f2cc7e03265ae71ad8",
-      "url": "https://github.com/avasis-ai/quant-agent/blob/final/tracks/docs/PUBLIC-POLICIES.md",
+      "did": "123326e5c9bc8d6b1e0669e9",
+      "url": "https://github.com/avasis-ai/quant-agent/blob/main/docs/PUBLIC-POLICIES.md",
       "title": "docs/PUBLIC-POLICIES.md",
-      "at": 1792330980,
+      "at": 1792334226,
       "sections": [
         {
-          "sid": "f48aa891c7914265a70cb6ae",
+          "sid": "f5e45b6220684b4684b6646f",
           "title": "QuantBase public claims and policy summaries",
           "text": "These summaries describe public material reviewed on 18 October 2026. They are\nknowledge sources for Sniff's company brain, not a replacement for the linked\npolicies. No customer records, account data or private operating notes are used.\nDifferent public pages can describe different product versions. Keep each source's\ndate and context rather than silently treating an older page as the latest offer.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5b2b2ef86de75536143fe58a",
@@ -860,10 +898,10 @@
           "method": "source-only"
         },
         {
-          "sid": "65e24828445238e640528bac",
+          "sid": "3a43993e5028a010e460381b",
           "title": "Paper and live are separate",
           "text": "The current public homepage describes Sniff's strategy tests and paper runs.\nPaper mode uses play money, cannot touch a wallet, and labels its results paper.\nLive trading on the user's own wallet is described as opening soon. Do not claim\nthat a paper result is a real fill or that customer live execution is available.\n\nSource: https://quantbase.live/#paper and https://quantbase.live/#faq",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5b2b2ef86de75536143fe58a",
@@ -898,10 +936,10 @@
           "method": "source-only"
         },
         {
-          "sid": "a73a0d3ec614c6a537a74d8b",
+          "sid": "c478d6e05a824e73b5d0e6d2",
           "title": "History and research claims",
           "text": "Sniff's graph investigation describes public launch history. It does not predict\nreturns or call a coin safe. Its published research found that graph features\nadded no measurable predictive accuracy after early trading features were known:\nthe AUC change was within ±0.01 on the reported experiment. The result is a reason\nto explain operator history rather than promise profitable picks.\n\nSource: [published research in the Sniff blog](BLOG.md#the-honest-part-it-explains-it-doesnt-predict).",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5b2b2ef86de75536143fe58a",
@@ -922,10 +960,10 @@
           "method": "source-only"
         },
         {
-          "sid": "0effbd23f1a322db12dde5e9",
+          "sid": "a206dfd0dd29b179bd46a5ef",
           "title": "Advice, execution and uncertainty",
           "text": "The public terms describe measurement, computation and record keeping rather than\ninvestment advice, signals or a promise of profit. Historical rates and backtests\ncan fail in a live market. The documented exit coach reports when a user-selected\nrule fires; that older product description says it places no orders. Its alerts\ncan be delayed, missed or wrong, and quoted prices omit fees and slippage.\n\nSource: https://quantbase.live/docs/terms/ (sections 1, 2, 2a and 7).",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "9173dd044e287f46cc6d5e24",
@@ -939,10 +977,10 @@
           "method": "source-only"
         },
         {
-          "sid": "751b5314e7bb41c15694a431",
+          "sid": "da0b3b6b09f17dffd460a0d0",
           "title": "Wallets and private keys",
           "text": "The public terms distinguish signing a wallet sign-in message from signing a\ntransaction or granting spending approval. They say the evidence product does\nnot ask for a private key or seed phrase. These statements are about the product\ndocumented there; they do not prove the behaviour of a proposed live trading mode.\n\nSource: https://quantbase.live/docs/terms/ (sections 2a and 2b).",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "9173dd044e287f46cc6d5e24",
@@ -956,10 +994,10 @@
           "method": "source-only"
         },
         {
-          "sid": "d96ac4291b67362372188253",
+          "sid": "0c30b6f2301f34199fe653bb",
           "title": "Privacy and public knowledge",
           "text": "The public privacy policy describes account, research, coach and billing data\nused to provide those services. It says the service does not sell data for\nmarketing, collect private keys, or store card details. Account data and public\nmarket observations have different scopes: public market data is shared, while\naccount-scoped data is isolated. The company brain ingests only the explicitly\nallowlisted public documents. Sniff's investigation memory stores random session\ntokens and scanned public evidence, never visitor question text, keys or network\naddresses.\n\nSource: https://quantbase.live/docs/privacy/ (what is stored, what is not\ncollected, isolation between accounts). The original page contains contact\naddresses and is refused by the company brain's PII scanner; this summary omits\nthose contact details and does not grant permission to ingest private records.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5b2b2ef86de75536143fe58a",
@@ -987,10 +1025,10 @@
           "method": "source-only"
         },
         {
-          "sid": "2a7cbad1aaa7da64b64967c9",
+          "sid": "17fe79a18724776d09e0b1ed",
           "title": "Payment and availability",
           "text": "The public terms describe recurring plans, cancellation at any time with access\nuntil the paid period ends, and refunds if the service does not perform as\ndocumented. They state no uptime guarantee and warn that third-party data can be\nlate or wrong. For prices and credits, use the current public pricing section,\nwith its fetch date, rather than assuming the older plan documentation is current.\n\nSource: https://quantbase.live/docs/terms/ (sections 5 and 7), and\nhttps://quantbase.live/#pricing.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "9173dd044e287f46cc6d5e24",
@@ -1017,13 +1055,13 @@
       "did": "e9c20d7a83acabde7367b9ce",
       "url": "https://quantbase.live/#paper",
       "title": "QuantBase paper",
-      "at": 1792330980,
+      "at": 1792334226,
       "sections": [
         {
           "sid": "6ac291e44589be8a2feee66c",
           "title": "Overview",
           "text": "Paper first",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1032,7 +1070,7 @@
           "sid": "26958fbfa62a916d4b117c4a",
           "title": "Paper mode is incognito, for money.",
           "text": "Open a paper chat and try anything with play money: strategies, limits, wild ideas. Nothing in it can touch a wallet. Go live only when you're ready.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "72186192df0c702bfc9e15e7",
@@ -1059,13 +1097,13 @@
       "did": "44c4562f3367c3f38e96bab7",
       "url": "https://quantbase.live/#pricing",
       "title": "QuantBase pricing",
-      "at": 1792330980,
+      "at": 1792334226,
       "sections": [
         {
           "sid": "b13cff7ce29b9979eadce07e",
           "title": "Overview",
           "text": "Launch pricing",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1074,7 +1112,7 @@
           "sid": "bab255da681dde747efb32c3",
           "title": "Start free. Pay for what Sniff does.",
           "text": "Every plan comes with monthly credits. A strategy test costs 5, a paper run 10 a day, and looking up a coin is free. Top up $10 for 1,500 credits.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "72186192df0c702bfc9e15e7",
@@ -1098,7 +1136,7 @@
           "sid": "fdc6051ebf8d74213bc09658",
           "title": "Free",
           "text": "$0 forever\n150 credits a month\n\nLearn how Sniff works with paper money.\n\n- Paper money only\n\n- 150 credits a month\n\n- Talk to Sniff about any coin\n\n- Life of a coin, for every coin\n\nStart free",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5b2b2ef86de75536143fe58a",
@@ -1129,7 +1167,7 @@
           "sid": "c2d9d0b68b73f0bbf2788653",
           "title": "Meme",
           "text": "Live trading: opening soon\n$19 a month\n3,000 credits a month\n\nEverything in Free, more credits, and live trading on your own wallet when it opens.\n\n- Paper mode now, live mode when it opens\n\n- 3,000 credits a month\n\n- Your own wallet, your limits\n\n- Confirm before anything changes\n\nStart with Meme",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "9173dd044e287f46cc6d5e24",
@@ -1153,7 +1191,7 @@
           "sid": "fd3043f49e54c7c9f58c7184",
           "title": "Pro",
           "text": "$49 a month\n10,000 credits a month\n\nFor traders who test a lot of ideas.\n\n- Everything in Meme\n\n- 10,000 credits a month\n\n- More strategies running at once\n\n- First in line for new tools\n\nGo Pro\n\nPrices in US dollars, plus tax where it applies. Cancel any time.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "a5092271f2bbe04f50025952",
@@ -1173,13 +1211,13 @@
       "did": "0c8f6684786f500d4c1dec8c",
       "url": "https://quantbase.live/#faq",
       "title": "QuantBase faq",
-      "at": 1792330980,
+      "at": 1792334226,
       "sections": [
         {
           "sid": "7eddf68617643a56130df62a",
           "title": "Overview",
           "text": "Questions",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1188,7 +1226,7 @@
           "sid": "f3c936638b7a951d9e359dde",
           "title": "Will Sniff make me money?",
           "text": "We don't claim that. Most meme coins lose. Sniff tests your idea on real history first, tells you plainly when it loses, and keeps any real trading inside your limits.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5b2b2ef86de75536143fe58a",
@@ -1205,7 +1243,7 @@
           "sid": "b840cd1261a1699b5d63510a",
           "title": "Is it really fast?",
           "text": "Sniff hears a graduation about a second after it happens on chain and sends its order with a 76 ms median (measured on our own systems). Speed helps a good rule; it can't fix a bad one.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5b2b2ef86de75536143fe58a",
@@ -1222,7 +1260,7 @@
           "sid": "a61cc21e904038ea79e27196",
           "title": "What is paper mode?",
           "text": "A chat with play money. Try anything; nothing in a paper chat can touch a wallet. Every paper result is labelled paper.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "72186192df0c702bfc9e15e7",
@@ -1239,7 +1277,7 @@
           "sid": "11676a1bd3df91ffa8655681",
           "title": "Do you hold my money or keys?",
           "text": "No. You own the wallet. Sniff can only act inside the limits you set, and changes wait for your confirm.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5b2b2ef86de75536143fe58a",
@@ -1256,7 +1294,7 @@
           "sid": "4568e0920090011f2b164efe",
           "title": "What are credits?",
           "text": "Each plan includes credits every month. Things Sniff does for you use a few; looking up a coin is free. You see every credit you spend.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5b2b2ef86de75536143fe58a",
@@ -1280,7 +1318,7 @@
           "sid": "8d5fef4adf9b3caf5e974e0b",
           "title": "Where does the data come from?",
           "text": "Our own recorder reads every pump.fun launch straight from the Solana chain.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1292,13 +1330,13 @@
       "did": "8ec8522a626cf828615bcc70",
       "url": "https://quantbase.live/#safety",
       "title": "QuantBase safety",
-      "at": 1792330980,
+      "at": 1792334226,
       "sections": [
         {
           "sid": "fdad215a187fa275d2c1ddf8",
           "title": "Overview",
           "text": "You stay in control",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1307,7 +1345,7 @@
           "sid": "81b0d9dadcf4d306a8917699",
           "title": "Your wallet. Your limits. Your off switch.",
           "text": "- You own the wallet. We never hold your keys.\n\n- Hard limits. Per trade, open coins, a daily stop.\n\n- You approve changes. Nothing changes until you confirm.\n\n- One-tap stop. Pause everything, any time.\n\nLive trading on your own wallet is opening soon. Today Sniff runs your strategies on paper.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "5b2b2ef86de75536143fe58a",
@@ -1334,13 +1372,13 @@
       "did": "85fe6492d273298277d291fb",
       "url": "https://quantbase.live/docs/",
       "title": "QuantBase /docs/",
-      "at": 1792330980,
+      "at": 1792334226,
       "sections": [
         {
           "sid": "ae6fa83c16bdd404f6d84796",
           "title": "Overview",
           "text": "Docs · Start",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1349,7 +1387,7 @@
           "sid": "d2357ed6c2737f8945e244e7",
           "title": "Overview",
           "text": "Evidence for every pump.fun meme coin, and an exit coach for the ones you buy. Never a buy signal.\n\nQuantBase records every pump.fun launch, prices each coin that graduates at\nfixed times on the pool it moved to, and shows you what happened to coins like\nthe one you are looking at. When you hold a coin, it watches the price against\nexit rules you set and tells you which rule fired.\n\nThe homepage puts the reason in one line: most coins that double give it back.\nThe measured figure, with its sample size and date, is on\nquantbase.live. The money in a meme coin is mostly\nmade or lost on the exit, not the pick, so that is where the product spends\nits effort.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "a9796f26d3d292e3cd9fa83d",
@@ -1373,7 +1411,7 @@
           "sid": "22a9fb0beb5896d26df585a5",
           "title": "What it is#",
           "text": "- Evidence. How a launch filled, what the creator did before, whether the\ncoin is a copy, and how coins of the same kind did one hour, six hours and\na day after graduating. Every rate carries its sample size.\n\n- Exit discipline. Rules you choose before you buy: sell half at 2x, trail\nthe rest, cut at half, leave after six hours, get out if the pool drains.\nThe coach checks every minute and tells you when one fires.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1382,7 +1420,7 @@
           "sid": "1065e29fb3dae3ac7944d3f0",
           "title": "What it is not#",
           "text": "- Not buy signals. No picks, no price targets, no \"gems\". The feed lists\nwhat graduated and the facts about it. It never says what to buy.\n\n- Not advice. Nothing on QuantBase is investment, financial or trading\nadvice. Past rates may not repeat.\n\n- Not a trading terminal. QuantBase places no trades for you, holds none of\nyour coins and never asks for your keys. Selling stays your decision.\n\n- Not paid per trade. You pay a flat monthly price. QuantBase earns\nnothing when you trade, so telling you not to buy costs it nothing.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "a9796f26d3d292e3cd9fa83d",
@@ -1399,7 +1437,7 @@
           "sid": "55b02f6ef448d7473c601d2a",
           "title": "Who it is for#",
           "text": "People who already buy pump.fun coins, on pump.fun, Axiom, a Telegram bot or\nthe Coinbase app, and want to see the base rate before they tap buy and a\nrule to follow after.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1408,7 +1446,7 @@
           "sid": "ceef6b469262d03e60d05d6f",
           "title": "The four parts#",
           "text": "Part\nWhat it does\nWhere\n\nThe feed\nGraduated pump.fun coins with their launch evidence\nHomepage (delayed), console (live, Meme plan)\n\nCoin evidence\nOne coin: how it launched, who launched it, copies, how coins like it did\nConsole coin page, Lens\n\nExit coach\nWatches coins you bought against your exit rules and alerts you\nConsole (Meme plan)\n\nLens\nThe same evidence beside the coin on pump.fun, Axiom, DexScreener, X and Telegram Web\nBrowser extension, free\n\nAgents can read the same data over the Model Context Protocol. See\nAgents.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "9173dd044e287f46cc6d5e24",
@@ -1425,7 +1463,7 @@
           "sid": "adea5e13088bd8deb523df8d",
           "title": "What it costs#",
           "text": "Free covers Lens, the base rates and the delayed feed on the homepage. The\nMeme plan is $19 a month and adds the live feed, the exit coach, alerts,\nthe watchlist and the scorecard. There is no fee per trade. See\nPlans.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "9173dd044e287f46cc6d5e24",
@@ -1442,7 +1480,7 @@
           "sid": "23bcb7325e4885b2a8c6fd55",
           "title": "Coming next: Pilot#",
           "text": "Pilot is an exit bot that would apply your rules from your own wallet. It is\nnot on sale. You can join the waitlist on the homepage or in the console.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1451,7 +1489,7 @@
           "sid": "d65e03b5db28fb9f70d2651f",
           "title": "Where to go next#",
           "text": "- Quickstart: sign in, read the feed, coach your first coin.\n\n- The feed: what every flag means.\n\n- Exit coach: the rules and how alerts fire.\n\nEvidence, not advice. Most meme coins go to zero. Only risk what you can\nafford to lose.\n\nThis page as Markdown, for agents: /docs/index.md",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1463,13 +1501,13 @@
       "did": "d8568c01b9d7a7d8f0bd446d",
       "url": "https://quantbase.live/docs/quickstart/",
       "title": "QuantBase /docs/quickstart/",
-      "at": 1792330980,
+      "at": 1792334226,
       "sections": [
         {
           "sid": "b93d818b323539ec4ff2bd4a",
           "title": "Overview",
           "text": "Docs · Start",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1478,7 +1516,7 @@
           "sid": "7fdc17e71ce906a1d4142601",
           "title": "Quickstart",
           "text": "Sign in, read the feed, open a coin, and put the exit coach on a coin you bought.\n\nThis takes about five minutes. Steps 1, 3 and 6 are free. Steps 2, 4 and 5\nneed the Meme plan ($19 a month).",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1487,7 +1525,7 @@
           "sid": "249977cfb362f3ae3728ba72",
           "title": "1. Sign in#",
           "text": "Open app.quantbase.live.\n\n- With a Solana wallet. Choose Continue with your wallet (any wallet\nthat supports the Wallet Standard, such as Phantom, Solflare or Backpack).\nYour wallet asks you to sign a short text message. It is text, not a\ntransaction: it costs nothing and moves no funds. The same button creates\nyour account the first time.\n\n- With an email account. Use the sign-in form under \"Signed up with\nGoogle or email before? Continue here.\"\n\nDetails: Sign-in.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "9173dd044e287f46cc6d5e24",
@@ -1504,7 +1542,7 @@
           "sid": "fec32934deebbaec1eb3cb25",
           "title": "2. Read the feed#",
           "text": "The console opens on Home. The Just graduated list shows pump.fun\ncoins that graduated in the last 24 hours and were worth $150K or more, in a\nfunded pool, two minutes after graduating. Each coin carries a chip:\nAvoid, a warning count such as 1 warning, or Looks clean. Home\nhides coins the scorecard blocks and says why, under a \"Why ... were hidden\"\nlink; Coins shows them all.\n\nWithout the Meme plan, the console shows \"Part of the Meme plan\" here. The\nhomepage at quantbase.live shows the same\nkind of list, delayed 10 minutes, free.\n\nWhat every column and flag means: The feed.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "9173dd044e287f46cc6d5e24",
@@ -1521,7 +1559,7 @@
           "sid": "4b2c0c1321ddd6c0cf5e2d0f",
           "title": "3. Open a coin#",
           "text": "Tap a coin, or paste any coin address into Paste a coin address… at the\ntop of the console. The coin page shows:\n\n- Lens evidence: the verdict and flags, the creator and their funding\ncluster, and the base rates. Free.\n\n- A price chart (1m, 5m, 15m) and How coins like it did: coins of the same\nkind, size and pool, one hour, six hours and a day later. Meme plan.\n\nWhat each part means: Coin evidence.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1530,7 +1568,7 @@
           "sid": "576520333641d5fbe173dda1",
           "title": "4. Tell the coach what you bought#",
           "text": "QuantBase never buys for you. Buy where you normally do, then come back and\nchoose I bought this on the coin page (or Add a coin I bought on\nHome).\n\nField\nWhat to enter\n\nThe coin's address\nThe mint, usually ending in pump\n\nPrice you paid, in USD\nYour entry price, for example 0.000182\n\nHow much, optional\nYour stake in USD, so results show in dollars\n\nChoose Start watching it. The coach prices the coin every minute against\nyour exit rules. On the coin page your levels are drawn on the chart: entry,\nthe half-sell level, the trailing stop and the cut.\n\nBefore your first coin, check My exit rules (on Me, or\nSettings → Exit rules). The defaults are: sell half at 2x, protect the\nrest once it is up 30% by selling if it falls 30% from its best, always sell\nat −50%, close after 6 hours, and leave if the pool drains under $1,000. A\nchange applies to coins you add from then on.\n\nDetails: Exit coach.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "a9796f26d3d292e3cd9fa83d",
@@ -1547,7 +1585,7 @@
           "sid": "1f221db31267a23a6ad9a543",
           "title": "5. Get alerts#",
           "text": "When a rule fires, an alert lands in Alerts (the bell in the header shows\nthe unread count) and a banner on the coin tells you what the rule says, for\nexample \"Sell half now.\"\n\nSell in your own app if you agree, then record it with I sold half or\nI sold it all on the coin. Those buttons only record what you did.\nNothing is sold for you.\n\nTelegram. Under Me → Alerts (or Settings), choose Get a link\ncode. The console says the customer Telegram bot is not live yet; keep the\ncode, and it links your account when the bot opens. Until then, alerts are in\nthe console inbox.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "9173dd044e287f46cc6d5e24",
@@ -1564,7 +1602,7 @@
           "sid": "d86c7f33128229bff095b18a",
           "title": "6. Optional: install Lens#",
           "text": "Lens is a free browser extension that shows the same evidence beside the coin\non pump.fun, Axiom, DexScreener, X and Telegram Web. Get it from\nquantbase.live/lens. See Lens.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "9173dd044e287f46cc6d5e24",
@@ -1581,7 +1619,7 @@
           "sid": "4bb81470fb5fe87d84972c0b",
           "title": "Next#",
           "text": "- Plans: what Free and Meme include.\n\n- Agents: ask Claude or Cursor about a coin with your own key.\n\nEvidence, not advice. A rule firing is a fact about the price, not a\nrecommendation. Selling, or not, is your decision.\n\nThis page as Markdown, for agents: /docs/quickstart.md",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1593,13 +1631,13 @@
       "did": "0d2dbb11868453d273d778a7",
       "url": "https://quantbase.live/docs/exit-coach/",
       "title": "QuantBase /docs/exit-coach/",
-      "at": 1792330980,
+      "at": 1792334226,
       "sections": [
         {
           "sid": "9578d1c13fe6096eb00c402f",
           "title": "Overview",
           "text": "Docs · Product",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1608,7 +1646,7 @@
           "sid": "21e9f6ab9486a64d842449cb",
           "title": "Exit coach",
           "text": "Set your exit before you buy. The coach watches every coin you tell it about, every minute, and tells you which rule fired. It never sells for you.\n\nMost coins that double give the gain back within hours. The coach exists so\nthat the decision to leave is made in advance, as a rule, instead of in the\nmoment. It is part of the Meme plan.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1617,7 +1655,7 @@
           "sid": "c9410f2ffc4238b45ca0af29",
           "title": "What it never does#",
           "text": "- It never buys or sells. QuantBase has no access to your wallet, exchange\naccount or keys, and the coach places no orders anywhere.\n\n- It never tells you what to buy. It only watches coins you already hold.\n\n- It never assumes you sold. A sale counts only when you record it.\n\nA rule firing is a statement about the price. Whether you sell is your\ndecision.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "a9796f26d3d292e3cd9fa83d",
@@ -1634,7 +1672,7 @@
           "sid": "5c58c8a61736c9ec3c6c35c8",
           "title": "The rules and their defaults#",
           "text": "Rule\nDefault\nWhat it says\nYou can set\n\nSell half\nat 2x entry\nSell half: that is your stake back, and the rest rides free\n1.2x to 20x\n\nTrailing stop\narms once up 30%, fires on a 30% fall from the best price\nProtect the rest: sell if it drops 30% from its best\narm 0% to 500%; fall 5% to 80%\n\nCut\nat −50% of entry\nAlways sell at −50%: it never took off\n5% to 95%\n\nTime stop\n6 hours after you added it\nClose after 6 h: take what is there\n15 minutes to 168 hours\n\nPool drained\npool liquidity under $1,000\nLeave if the pool drains: sell now if you still can\n$0 to $100,000\n\nChange them under My exit rules, on Me or in\nSettings → Exit rules. Each setting has − and + buttons, Save rules\nsaves, and Coach defaults puts the house values back.\n\nA change applies to coins you add from then on. Each coin keeps the rules\nit was added with, so changing your defaults never rewrites a coin you are\nalready holding.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1643,7 +1681,7 @@
           "sid": "89e02b7f56053f8df10ec9c0",
           "title": "Adding a coin#",
           "text": "Choose I bought this on a coin page, Add a coin I bought on Home, or\nthe + in the feed.\n\nField\nRequired\nNotes\n\nThe coin's address\nYes\nThe Solana mint address\n\nPrice you paid, in USD\nYes\nThe coach measures every rule from this price\n\nHow much, optional\nNo\nYour stake in USD, so results and the daily summary show dollars\n\nThen Start watching it. Over MCP, dex_watch with\naction=\"add\" uses the current price when you leave the entry price out, so\nadd the coin right after you buy.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1652,7 +1690,7 @@
           "sid": "063b9a37f49991e254659bd7",
           "title": "How a rule fires#",
           "text": "- Every minute, the coach reads each coin's price and pool liquidity from\nDexScreener, at its deepest Solana pool, and updates the best price seen.\n\n- It checks the rules in this order: pool drained, sell half, trailing stop,\ncut, time stop. The first one that applies fires.\n\n- It writes an alert with the rule and the numbers, for example \"fell 31%\nfrom its peak (2.40x → 1.66x). Sell the rest now.\"\n\n- Sell half moves the coin on: the trailing stop and the other rules keep\nwatching the rest. Any other rule closes the coin in the coach.\n\nBetween checks the console may already show a rule as due: the price is\npast it and the coach will fire it on its next check.\n\nOn the coin, each rule shows its state: waiting (not in play yet, such as\na trailing stop that has not armed), armed, due, fired or\ndone (you recorded the sale). The one nearest to firing is shown first.\n\nIf DexScreener has no price for a coin in a given minute, that coin is\nskipped for the minute.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1661,7 +1699,7 @@
           "sid": "e8ffe14e1233e8523c465acd",
           "title": "Recording what you did#",
           "text": "On the coin, I sold half and I sold it all record a sale at the\ncurrent price. They sell nothing. Recording half also stops the 2x alert;\nrecording the rest closes the coin. Over MCP you can give the exact price you\nsold at.\n\nTrade history shows closed coins with your entry, the peak, your exits,\nPeak kept (how much of the gain at the peak you actually kept) and what\nclosed it: a rule, or you. Where you did not record a sale, the rest is\nvalued at the last price when the coin closed and marked as assumed.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1670,7 +1708,7 @@
           "sid": "1d1ab2d56b48d999574e7204",
           "title": "Alerts#",
           "text": "Every alert lands in Alerts in the console, newest first, with a bell\ncount in the header. Tabs: All, Exits, Rugs, Graduates,\nUnread. Mark all read clears the count.\n\nKind\nWhen\n\nExit\nSell half, trailing stop, cut or time stop fired\n\nRug\nThe pool drained under your limit\n\nWatchlist\nYou added a coin: the levels it will be watched at\n\nDaily summary\nOnce a day at 03:30 UTC, if you had activity: alerts, exits, how much of each peak you kept, what is still open\n\nGraduate, Note, Notice\nOther notices on your account",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1679,7 +1717,7 @@
           "sid": "785e40f4dbda335731943d05",
           "title": "Telegram#",
           "text": "Under Me → Alerts (or Settings), choose Get a link code. You get\na one-time code, valid for one hour, to send to the QuantBase bot as\n/start <code>. When the account is linked, each alert kind you have chosen\nis sent to that chat; Unlink stops it.\n\nThe console currently says the customer bot is not live yet. Keep the code;\nit links your account when the bot opens. Until then, alerts reach you in the\nconsole inbox only. Alerts that could not be delivered within two hours are\nnot sent late. Email alerts are not available.",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [
             {
               "eid": "a9796f26d3d292e3cd9fa83d",
@@ -1703,7 +1741,7 @@
           "sid": "e3486805da553e9e086e9a1d",
           "title": "Limits of the coach#",
           "text": "- It checks once a minute. A coin can move a long way inside a minute, and a\npool can drain between two checks.\n\n- DexScreener's price is not your fill. Slippage and fees are not included in\nany multiple the coach shows.\n\n- The rules limit losses and keep part of a win. They do not make a bad coin\ngood, and they lose money on coins that never take off.\n\nEvidence, not advice. The coach reports that a rule fired. It does not\nrecommend a trade.\n\nThis page as Markdown, for agents: /docs/exit-coach.md",
-          "at": 1792330980,
+          "at": 1792334226,
           "entities": [],
           "relations": [],
           "method": "source-only"
@@ -1714,23 +1752,23 @@
   ],
   "audit": [
     {
-      "source": "https://github.com/avasis-ai/quant-agent/blob/final/tracks/README.md",
+      "source": "https://github.com/avasis-ai/quant-agent/blob/main/README.md",
       "status": "accepted"
     },
     {
-      "source": "https://github.com/avasis-ai/quant-agent/blob/final/tracks/docs/GRAPH.md",
+      "source": "https://github.com/avasis-ai/quant-agent/blob/main/docs/GRAPH.md",
       "status": "accepted"
     },
     {
-      "source": "https://github.com/avasis-ai/quant-agent/blob/final/tracks/docs/EVAL.md",
+      "source": "https://github.com/avasis-ai/quant-agent/blob/main/docs/EVAL.md",
       "status": "accepted"
     },
     {
-      "source": "https://github.com/avasis-ai/quant-agent/blob/final/tracks/docs/BLOG.md",
+      "source": "https://github.com/avasis-ai/quant-agent/blob/main/docs/BLOG.md",
       "status": "accepted"
     },
     {
-      "source": "https://github.com/avasis-ai/quant-agent/blob/final/tracks/docs/PUBLIC-POLICIES.md",
+      "source": "https://github.com/avasis-ai/quant-agent/blob/main/docs/PUBLIC-POLICIES.md",
       "status": "accepted"
     },
     {

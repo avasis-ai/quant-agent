@@ -232,6 +232,40 @@ def test_changed_brain_sections_and_relationships_stop_being_retrieved(real_grap
     assert brain.ask("refunds")["sources"][0]["section_id"] == current["sid"]
 
 
+def test_reload_retires_old_branch_documents_and_sections_from_both_retrievals(real_graph):
+    old_url = "https://github.com/avasis-ai/quant-agent/blob/final/tracks/docs/PUBLIC-POLICIES.md"
+    kg.ensure_indexes("brain")
+    # Model the deployed records from before the URL fix, which had no Doc.active flag.
+    kg.write("brain", "CREATE (d:Doc {did: 'old-doc', url: $url, title: 'Old policy', mode: 'source-only'}) "
+             "CREATE (s:Section {sid: 'old-section', title: 'Obsolete', text: 'obsoletepolicy paper mode', active: true}) "
+             "CREATE (s)-[:PART_OF]->(d) "
+             "CREATE (e:Entity:Policy {eid: 'old-entity', name: 'obsoletepolicy', kind: 'Policy'}) "
+             "CREATE (s)-[:MENTIONS]->(e)", {"url": old_url})
+    corpus = sample_corpus()
+    builder.load(corpus)
+    assert brain.ask("obsoletepolicy")["sources"] == []
+    assert [d["url"] for d in brain.status()["docs"]] == [builder.REPO_URL + "README.md"]
+    assert next(c["count"] for c in brain.status()["counts"] if c["labels"] == ["Doc"]) == 1
+    assert kg.read("brain", "MATCH (d:Doc {did: 'old-doc'}) RETURN d.active AS active") == [{"active": False}]
+    assert kg.read("brain", "MATCH (s:Section {sid: 'old-section'}) RETURN s.active AS active") == [{"active": False}]
+    for _ in range(2):
+        builder.load(corpus)
+        result = brain.ask("paper mode")
+        assert result["sources"] and all(s["url"].startswith(builder.REPO_URL) for s in result["sources"])
+
+
+def test_reload_retires_a_document_removed_from_the_corpus(real_graph):
+    corpus = sample_corpus()
+    removed = copy.deepcopy(corpus["documents"][0])
+    removed.update(url=builder.REPO_URL + "docs/GRAPH.md", did=builder.ident(builder.REPO_URL + "docs/GRAPH.md"))
+    removed["sections"][0].update(sid="retire-me", text="obsoletepolicy has been retired.", entities=[])
+    corpus["documents"].append(removed)
+    builder.load(corpus)
+    builder.load(sample_corpus())
+    assert brain.ask("obsoletepolicy")["sources"] == []
+    assert len(brain.status()["docs"]) == 1
+
+
 def test_multiple_brain_calls_do_not_collide_or_allow_cross_source_citations(real_graph):
     corpus = sample_corpus()
     other = copy.deepcopy(corpus["documents"][0]["sections"][0])

@@ -1,0 +1,66 @@
+{
+  "generated": "2026-10-18T14:49:17.958Z",
+  "checks": [
+    "Local second agent recalls real evidence and attaches an explicitly unverified MCP note",
+    "/app brain citations, complete returned graph and mode-specific key banner at 1440",
+    "/memory one-click METHU, second-agent attribution and fit/zoom at 1440",
+    "/brain examples have clean complete excerpts and preserve original sections at 1440",
+    "/blog matches the corrected evidence and source-only descriptions at 1440",
+    "/app brain citations, complete returned graph and mode-specific key banner at 390",
+    "/memory one-click METHU, second-agent attribution and fit/zoom at 390",
+    "/brain examples have clean complete excerpts and preserve original sections at 390",
+    "/blog matches the corrected evidence and source-only descriptions at 390"
+  ],
+  "errors": [],
+  "accessibility": [
+    {
+      "name": "app-brain-1440",
+      "violations": []
+    },
+    {
+      "name": "memory-1440",
+      "violations": []
+    },
+    {
+      "name": "brain-example-1440",
+      "violations": []
+    },
+    {
+      "name": "brain-example-1440",
+      "violations": []
+    },
+    {
+      "name": "brain-example-1440",
+      "violations": []
+    },
+    {
+      "name": "blog-1440",
+      "violations": []
+    },
+    {
+      "name": "app-brain-390",
+      "violations": []
+    },
+    {
+      "name": "memory-390",
+      "violations": []
+    },
+    {
+      "name": "brain-example-390",
+      "violations": []
+    },
+    {
+      "name": "brain-example-390",
+      "violations": []
+    },
+    {
+      "name": "brain-example-390",
+      "violations": []
+    },
+    {
+      "name": "blog-390",
+      "violations": []
+    }
+  ],
+  "note_scope": "Local loopback database only; no production note was posted."
+}

@@ -8,15 +8,20 @@
   const DEFAULT_QUESTION = 'Who is behind this coin?';
   const date = timestamp => timestamp ? new Date(timestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }) : 'Not recorded';
   const visitorKey = () => { try { return sessionStorage.getItem('sniff.claudeKey') || ''; } catch { return ''; } };
+  const coinLegend = document.querySelector('.legend').innerHTML;
+  const coinPolicy = document.querySelector('.map-policy').textContent;
+  const coinGraphLabel = $('graph').getAttribute('aria-label');
+  const plainExcerpt = text => text.replace(/^\s*(?:#{1,6}\s+|[-*]\s+)/gm, '').replace(/\*\*|__/g, '').replace(/`([^`]+)`/g, '$1');
   const STEP = {
     search_coins: 'Looking up the coin', coin_dossier: 'Checking the creator and funders',
     funding_trail: 'Following the funding trail', siblings: 'Checking the funder’s other creators',
     shared_snipers: 'Comparing early buyers', shared_handles: 'Looking for reused socials',
     ring: 'Inspecting the funding ring', connect: 'Finding a connecting path', top_operators: 'Finding the busiest operators',
+    brain_ask: 'Retrieving public source sections',
   };
   let graph, request = null, run = 0, selectedMint = null, cardEvidence = [], agentEvidence = [], currentMint = null;
   let searchRows = [], searchIndex = -1, searchTimer, searchRequest, hasVerdict = false;
-  let dossierMint = null;
+  let dossierMint = null, brainGraph = null, brainSources = [];
 
   function address(value, kind = 'account') {
     return `<a class="addr" href="https://solscan.io/${kind}/${encodeURIComponent(value || '')}" target="_blank" rel="noopener noreferrer">${esc(short(value))}<span class="sr-only"> on Solscan (opens in a new tab)</span></a>`;
@@ -25,6 +30,13 @@
     return id ? `<button type="button" class="ev" data-e="${esc(id)}" aria-label="Show ${id.startsWith('c') ? 'dossier evidence ' + esc(id.slice(1)) : 'evidence ' + esc(id)}" aria-pressed="false">${esc(label || '[' + id + ']')}</button>` : '';
   }
   function cardCitation(id) { return citation(id ? 'c' + id : null, '↗'); }
+  function sourceLink(url, label) {
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol === 'https:') return `<a href="${esc(parsed.href)}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`;
+    } catch {}
+    return esc(label);
+  }
 
   function graphSelection(selection) {
     document.querySelectorAll('.ev').forEach(button => {
@@ -39,7 +51,8 @@
       $('evline').innerHTML = `<b>${esc(label)}</b> ${esc(selection.item.summary)}`;
     } else {
       const node = selection.node;
-      if (selection.kind === 'hub') $('evline').innerHTML = '<b>Hub · dead end.</b> This exchange-like wallet paid more than 200 wallets. Sniff does not connect creators through it.';
+      if (brainGraph) $('evline').innerHTML = `<b>${esc(node.label)}</b> · ${esc(node.name || node.key)}${node.url ? ' · ' + sourceLink(node.url, 'Open public source') : ''}${node.citation ? ' · ' + citation(node.citation) : ''}`;
+      else if (selection.kind === 'hub') $('evline').innerHTML = '<b>Hub · dead end.</b> This exchange-like wallet paid more than 200 wallets. Sniff does not connect creators through it.';
       else if (selection.kind === 'coin') $('evline').innerHTML = `<b>${esc(node.name || short(node.mint))}</b> · ${node.graduated ? 'Graduated' : 'Did not graduate'} · ${address(node.mint, 'token')}`;
       else if (selection.kind === 'ring') $('evline').innerHTML = `<b>Funding ring</b> · ${esc(node.creators)} creators · ${esc(node.coins)} coins · ${esc(node.graduations)} graduated`;
       else if (selection.kind === 'handle') $('evline').textContent = `${node.handle || ''} on ${node.platform || 'social / website'} · used by ${node.coins ?? '?'} coins`;
@@ -54,7 +67,16 @@
   function refreshGraph() {
     // Each API response has its own E1… sequence. Prefix the fixed dossier ids.
     const items = [...agentEvidence, ...cardEvidence];
-    initGraph().setEvidence(items, currentMint ? 'coin:' + currentMint : null);
+    $('map-title').textContent = brainGraph ? 'Public source graph' : 'The connection map';
+    $('graph').setAttribute('aria-label', brainGraph ? 'Public source graph. Arrow keys pan, plus and minus zoom. Use B citations or Graph details to inspect sources.' : coinGraphLabel);
+    if (brainGraph) {
+      document.querySelector('.legend').textContent = [...new Set(brainGraph.nodes.map(node => node.label))].join(' · ');
+      document.querySelector('.map-policy').textContent = 'MENTIONS connects literal source anchors; PART_OF connects sections to documents.';
+    } else {
+      document.querySelector('.legend').innerHTML = coinLegend;
+      document.querySelector('.map-policy').textContent = coinPolicy;
+    }
+    initGraph().setEvidence(items, currentMint ? 'coin:' + currentMint : null, brainGraph);
     const count = graph.cy?.nodes().length || 0;
     syncViewport();
     $('graph-count').textContent = count ? `${count} nodes · ${graph.cy.edges().length} links` : 'No connections returned';
@@ -68,11 +90,21 @@
     $('node-list').innerHTML = [...graph.nodes.entries()].map(([key, node]) => `<button type="button" data-node="${esc(key)}">${esc(node.label)} · ${esc(graph.label(node))}</button>`).join('');
     $('source-details').hidden = !items.length;
     $('evidence-count').textContent = String(items.length);
-    $('evidence-list').innerHTML = items.map(item => `<button type="button" data-source="${esc(item.id)}"><strong>${esc(item.id.startsWith('c') ? 'Dossier' : item.id)}</strong>${esc(item.summary)}</button>`).join('');
+    $('evidence-list').innerHTML = brainGraph ? brainSources.map(source => `<article class="brain-source" id="source-${esc(source.id)}" tabindex="-1"><h3>${sourceLink(source.url, '[' + source.id + '] ' + source.title)}</h3><p class="meta">${esc(source.section_title)} · Fetched ${esc(date(source.fetched_at))}</p><blockquote>${esc(plainExcerpt(source.excerpt))}</blockquote><details><summary>Read the source section</summary><pre>${esc(source.text)}</pre></details><button type="button" data-source="${esc(source.id)}">Show ${esc(source.id)} on the graph</button></article>`).join('') : items.map(item => `<button type="button" data-source="${esc(item.id)}"><strong>${esc(item.id.startsWith('c') ? 'Dossier' : item.id)}</strong>${esc(item.summary)}</button>`).join('');
     graphSelection({ type: 'clear' });
   }
   function showEvidence(id) {
     graph?.highlight(id);
+    if (id.startsWith('B')) {
+      $('source-details').open = true;
+      const source = $('source-' + id);
+      if (source) {
+        source.querySelector('details').open = true;
+        source.focus({ preventScroll: true });
+        source.scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block: 'start' });
+        return;
+      }
+    }
     if (innerWidth <= 768) $('results').scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block: 'start' });
   }
   function syncViewport() {
@@ -143,12 +175,19 @@
   }
   function verdict(event) {
     hasVerdict = true;
+    if (event.mode === 'brain') {
+      brainGraph = event.graph || { nodes: [], edges: [] };
+      brainSources = event.sources || [];
+      refreshGraph();
+      $('note').textContent = '';
+    }
     const available = new Set(agentEvidence.map(item => item.id));
     // Escape before inserting markup; unrecognized tags are plain text.
-    const text = esc((event.text || '').replace(/(\[E\d+\][.!?]?)\s+(?=[A-Z])/g, '$1\n\n').replace(/\s+(For context:)/g, '\n\n$1'))
-      .replace(/\[(E\d+)\]/g, (tag, id) => available.has(id) ? citation(id) : tag);
+    const answer = event.mode === 'brain' ? plainExcerpt(event.text || '') : event.text || '';
+    const text = esc(answer.replace(/(\[[EB]\d+\][.!?]?)\s+(?=[A-Z])/g, '$1\n\n').replace(/\s+(For context:)/g, '\n\n$1'))
+      .replace(/\[([EB]\d+)\]/g, (tag, id) => available.has(id) ? citation(id) : tag);
     $('verdict').innerHTML = text.split(/\n{2,}/).map(paragraph => `<p${paragraph.startsWith('For context:') ? ' class="answer-context"' : ''}>` + paragraph.replace(/\n/g, '<br>') + '</p>').join('');
-    $('mode').textContent = event.mode === 'agent' ? 'Written by Claude from graph evidence' : 'Fixed dossier · direct graph checks';
+    $('mode').textContent = event.mode === 'brain' ? 'Public source excerpts' : event.mode === 'agent' ? 'Written by Claude from graph evidence' : 'Fixed dossier · direct graph checks';
     $('answer-status').textContent = 'Evidence ready';
     $('answer-actions').hidden = false;
   }
@@ -161,7 +200,7 @@
     document.body.classList.add('has-investigation');
     currentMint = mint;
     question = question.trim() || DEFAULT_QUESTION;
-    agentEvidence = []; cardEvidence = []; dossierMint = null; hasVerdict = false;
+    agentEvidence = []; cardEvidence = []; dossierMint = null; hasVerdict = false; brainGraph = null; brainSources = [];
     closeSuggestions();
     if (updateUrl) {
       const parameters = new URLSearchParams();
@@ -197,8 +236,8 @@
       if (token !== run) return;
       if (event.type === 'start') {
         pending.remove();
-        pending = stepRow(event.mode === 'agent' ? 'Claude is planning the graph queries' : 'Running the fixed graph checks', 'run');
-        if (event.mode !== 'agent') $('note').innerHTML = 'Using the fixed dossier. Add a Claude key in <a href="/settings">Settings</a> for a written answer.';
+        pending = stepRow(event.mode === 'brain' ? 'Finding public company sources' : event.mode === 'agent' ? 'Claude is planning the graph queries' : 'Running the fixed graph checks', 'run');
+        if (event.mode === 'dossier') $('note').innerHTML = 'Using the fixed dossier. Add a Claude key in <a href="/settings">Settings</a> for a written answer.';
       } else if (event.type === 'step') {
         pending.remove();
         stepRow(STEP[event.tool] || event.tool, event.ok ? 'ok' : 'bad', event.ms);

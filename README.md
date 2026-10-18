@@ -2,8 +2,10 @@
 
 **Sniff any coin before you buy.** Paste a pump.fun meme coin and Sniff tells you who made it, who paid the
 wallet that made it, what else those people launched, and how those coins ended. It walks a FalkorDB graph of
-632,339 pump.fun launches and 424,007 wallets. Claude writes the answer, and every sentence in it links to the
-part of the graph that proves it. Sniff shows history, not predictions.
+632,339 pump.fun launches and 424,007 wallets. For factual answer text, every sentence must cite
+evidence of the matching kind; the server rejects answers that don't. This checks citation IDs and tool
+compatibility, not whether every claim is true. Server-owned context and refusal text are explicit exceptions.
+Sniff shows history, not predictions.
 
 Entry for WeMakeDevs × FalkorDB **Graph Hacks: Context for AI Agents**, Tracks 01, 02 and 03.
 Team **QuantBase**. Built during the event window, Oct 15–18, 2026 (IST).
@@ -32,14 +34,25 @@ the 72 coins graduated.
 | Track | Working feature | Try it |
 |---|---|---|
 | **01: Agents That Act on Connected Data** | The `lineage` graph connects launches, creators, funders, early buyers and socials. Nine fixed Cypher tools return graph evidence with checked `[E#]` citations. | [Investigate a coin](https://sniff.quantbase.live/app) |
-| **02: Agent Memory and Coordination** | The `memory` graph records `Session → Question → Evidence → Coin/Wallet` with timestamps. Same-session follow-ups reuse exact tool results, keeping original tool provenance. Other agents can recall findings and add attributed, unverified notes. Coin views aggregate across sessions without exposing visitor tokens. | [Memory graph](https://sniff.quantbase.live/memory), MCP `memory_recall` and `memory_note` |
-| **03: Company Brain** | The `brain` graph connects public docs, sections, products, features, policies, decisions, findings and metrics. Graph neighbourhoods plus full-text retrieval return exact source excerpts with checked `[B#]` citations. The rerunnable builder uses the existing AI client with a cheap model and explicit call, token and cost limits; every extracted quote must occur in the source. | [Ask the company brain](https://sniff.quantbase.live/brain), MCP `brain_ask` |
+| **02: Agent Memory and Coordination** | The `memory` graph records `Session → Question → Evidence → Coin/Wallet` with timestamps. Same-session follow-ups reuse exact tool results, keeping original tool provenance. Other agents can recall findings and add attributed, unverified notes. Coin views aggregate across sessions without exposing visitor tokens. | [METHU memory](https://sniff.quantbase.live/memory?entity=coin:3LaVxn1Pp5gDjJZgGrpbQ8gRKj7GxgPE8cjF62Svpump), MCP `memory_recall` and `memory_note` |
+| **03: Company Brain** | The loaded `brain` is source-only: public docs and sections connect to literal entity anchors through `MENTIONS` and `PART_OF`. Graph retrieval runs alongside full-text retrieval and returns source excerpts with checked `[B#]` citations. The capped AI builder can add quote-grounded `SUPPORTS`, `CONTRADICTS` and `DECIDED_ON` relationships; those richer edges are not demonstrated live. | [Ask the company brain](https://sniff.quantbase.live/brain), MCP `brain_ask` |
 
-The new graphs require the leader's load step in [docs/GRAPH.md](docs/GRAPH.md#memory-and-company-brain-tracks-02-and-03).
-They were tested locally with real embedded FalkorDB. This branch does not deploy them. The included public
-corpus is explicitly **source-only** (literal anchors, no AI call); the leader can load it immediately or
-run capped AI extraction. Sources containing secrets or PII are refused before loading. Full legal pages
-with contact emails are excluded; cited public policy summaries supply their relevant claims instead.
+**Verified live state — 18 October 2026.** All three tracks are deployed. The final live review verified
+METHU investigations, persistent session reuse, all 12 MCP tools, and paper/live, research and privacy
+brain questions. Read-only checks on 18 October confirmed an active site key, four aggregate METHU
+findings, no public METHU agent notes, and 12 source-only brain documents. No AI extraction ran for that
+corpus: its edges are `MENTIONS`/`PART_OF`. The reviewed integration test demonstrates second-agent notes;
+a real public second-agent note remains a leader action.
+
+The deployed brain still has the old branch URLs until the leader deploys these fixes and reloads the
+regenerated corpus. [FIX-RESULT.md](docs/final/FIX-RESULT.md) provides the exact reload command and local
+validation. The [live review](docs/final/ASTRA-REVIEW.md) records the production observations.
+
+The builder reads repository sources from published `main`, checks local allowlisted drafts for privacy,
+and fetches only allowlisted public site pages. A local/repository privacy match fails the build; a web
+source with a privacy match is refused as a whole. If a required web source is refused or unavailable,
+the build also fails. Full legal pages with contact emails are excluded; cited public policy summaries
+supply their relevant claims instead.
 
 ## How it works
 
@@ -69,11 +82,11 @@ graph LR
 
 ```mermaid
 graph TD
-  Q[Question or coin] --> L[Claude Sonnet 5.5<br/>up to 8 tool calls]
+  Q[Question or coin] --> L[Claude Sonnet 5.5<br/>up to 8 model/tool rounds]
   L -- tool call --> T[9 read-only tools<br/>fixed Cypher on FalkorDB]
   T -- rows + evidence ids E1, E2… --> L
   L --> V[Answer, 2–5 sentences,<br/>each citing an E id]
-  V --> K[Citation check<br/>unknown or off-topic ids removed]
+  V --> K[Citation check<br/>every matched topic needs evidence]
   K --> U[App: answer + map that lights up each E id]
   T -. no key or AI error .-> D[Fixed dossier from the same tools]
   D --> U
@@ -83,12 +96,15 @@ graph TD
   `shared_handles`, `ring`, `connect`, `top_operators`. Each one is a fixed, parameterised, read-only Cypher
   query (`app/queries.py`); the model never writes Cypher.
 - **Evidence ids:** every tool result carries ids (`E1`, `E2`, …) naming the nodes and edges behind it.
-- **Checked citations:** a sentence may only cite an id that a tool really returned, and only from a tool that
-  can show that kind of claim (a sentence about socials must cite `shared_handles`). Anything else is removed,
-  and a sentence left with no valid citation is dropped. A tool that finds nothing returns a "none found" id,
-  so "no other coin reuses its socials" is cited too.
-- **No key, or the AI is down:** a fixed dossier built from the same tools answers instead. The facts never
-  depend on the model.
+- **Checked citations:** every sentence must cite evidence of the matching kind; the server rejects answers that don't.
+  Uncited factual sentences are dropped. Every matched topic needs a compatible tool citation: a sentence
+  mixing funding and socials needs both kinds. Unknown IDs and incompatible citations are removed.
+  A tool that finds nothing still returns a citable "none found" ID. This is a citation-ID/tool compatibility
+  check, not a check of subjects, numbers, or whether every claim is true: a false number can still pass
+  with a compatible ID. B citations additionally require a literal excerpt from their own source section.
+  Only explicit server-owned context/refusal text is allowed without citations; the server adds the
+  computed base-rate line after checking the model's text.
+- **No key, or the AI is down:** the same tools produce a fixed dossier through server templates.
 - **Wording:** answers describe history only and end with the base rate: 3.7% of the launches in this graph
   graduated.
 
@@ -184,7 +200,7 @@ closing line.
   there wasn't one. Early-buyer data starts on Oct 8.
 - Nothing here is financial advice.
 
-## Run it yourself
+## Reproduce
 
 ```bash
 pip install -r requirements.txt
@@ -194,9 +210,17 @@ falkordb-bulk-insert lineage --enforce-schema --id-type STRING -x none \
   -N Coin Coin.csv -N Wallet Wallet.csv -N Hub Hub.csv -N Handle Handle.csv \
   -R CREATED CREATED.csv -R FUNDED FUNDED.csv -R SNIPED SNIPED.csv -R LINKS LINKS.csv   # 30 s
 python -m build.indexes && python -m build.rings                  # indexes, then WCC rings
+python -m build.memory                                           # persistent memory indexes
+python -m build.brain --load build/public-brain.json               # reviewed source-only corpus
+# To fetch a fresh corpus from published main + public web sources, without AI:
+python -m build.brain --source-only --prepare-only --output build/out/brain-public.json
+# Optional: python -m build.brain --load build/out/brain-public.json
 uvicorn app.main:app --port 8080
 python -m pytest tests                                            # live-graph tests need FALKORDB_PORT / FALKORDB_PASSWORD_FILE
 ```
+
+Optional capped AI extraction and graph setup commands are in [GRAPH.md](docs/GRAPH.md#memory-and-company-brain-tracks-02-and-03).
+Regenerate the local article with `python -m build.blog`.
 
 Details and the snapshot's columns are in [`docs/GRAPH.md`](docs/GRAPH.md).
 

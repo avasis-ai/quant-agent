@@ -50,7 +50,10 @@ def retrieve(question: str) -> dict:
     # Prefer sections containing all question terms, and specific headings over boilerplate.
     def rank(row):
         body = (row["title"] + " " + row["text"]).lower()
-        return (sum(bool(re.search(r"\b" + re.escape(t.lower()) + r"\b", body)) for t in terms),
+        policy = (bool(set(terms) & {"privacy", "private", "keys", "policies"})
+                  and row["doc_title"] == "docs/PUBLIC-POLICIES.md"
+                  and row["title"] in {"Privacy and public knowledge", "Wallets and private keys"})
+        return (policy, sum(bool(re.search(r"\b" + re.escape(t.lower()) + r"\b", body)) for t in terms),
                 sum(t.lower() in row["title"].lower() for t in terms),
                 row["url"].startswith("https://quantbase.live/"), float(row.get("score", 0)))
     selected = sorted(candidates.values(), key=rank, reverse=True)[:5]
@@ -68,13 +71,13 @@ def retrieve(question: str) -> dict:
 
 
 def _excerpt(text: str, terms: list[str], limit: int = 650) -> str:
-    paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip() and not p.strip().startswith("Source:")]
-    best = max(paragraphs or [text], key=lambda p: sum(t.lower() in p.lower() for t in terms))
-    best = re.sub(r"\s+", " ", best).strip()
-    if len(best) <= limit:
-        return best
-    # End at a word boundary; preserve an exact contiguous source excerpt.
-    return best[:limit].rsplit(" ", 1)[0] + "…"
+    # Treat each Markdown list item as a paragraph, preserving its exact text in
+    # the source section. Prefer a short paragraph at equal relevance, but never
+    # cut off its qualifications/negation to satisfy the advisory length target.
+    paragraphs = [p.strip() for p in re.split(r"\n\s*\n|\n(?=\s*[-*]\s)", text)
+                  if p.strip() and not p.strip().startswith("Source:")]
+    best = max(paragraphs or [text], key=lambda p: (sum(t.lower() in p.lower() for t in terms), len(p) <= limit))
+    return re.sub(r"\s+", " ", best).strip()
 
 
 def check_citations(answer: str, evidence: list[dict]) -> tuple[str, list[str]]:
@@ -136,6 +139,7 @@ def ask(question: str) -> dict:
 
 
 def status() -> dict:
-    counts = kg.read("brain", "MATCH (n) RETURN labels(n) AS labels, count(n) AS count")
-    docs = kg.read("brain", "MATCH (d:Doc) RETURN d.title AS title, d.url AS url, d.at AS fetched_at, d.mode AS extraction ORDER BY title")
+    counts = kg.read("brain", "MATCH (n) WHERE n.active = true OR n.active IS NULL RETURN labels(n) AS labels, count(n) AS count")
+    # Before the first replacement load older deployments have no active flag.
+    docs = kg.read("brain", "MATCH (d:Doc) WHERE d.active = true OR d.active IS NULL RETURN d.title AS title, d.url AS url, d.at AS fetched_at, d.mode AS extraction ORDER BY title")
     return {"counts": counts, "docs": docs, "public_only": True}

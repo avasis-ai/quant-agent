@@ -1,7 +1,7 @@
 ---
 title: "Sniff: four days, one graph, and an honest answer about meme coins"
 published: false
-description: "How team QuantBase built Sniff on FalkorDB: a graph of 632,339 pump.fun launches, an agent whose every sentence must cite the graph, and the test that told us what Sniff can't do."
+description: "How team QuantBase built Sniff on FalkorDB: a graph of 632,339 pump.fun launches, an agent with citation checks, and the test that told us what Sniff can't do."
 tags: falkordb, graphdatabase, ai, agents
 cover_image: https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/01-hero.jpg
 ---
@@ -63,20 +63,23 @@ With hubs out of the way, `algo.WCC` found **6,556 rings**: groups of wallets an
 
 ## Day 2: an agent that has to show its receipts
 
-An AI model writing about wallets and money is exactly where you don't want made-up facts. So we built the agent around one rule: **every sentence has to prove itself.**
+An AI model writing about wallets and money is exactly where you don't want made-up facts. So we built the agent around one rule for factual answer text: **every sentence must cite evidence of the matching kind; the server rejects answers that don't**. Only explicit server-owned context and refusal text may appear without citations.
 
-Claude gets nine tools: coin lookup, funding trail, sibling creators, shared early buyers, shared socials, rings, shortest connection, top operators, and search. Each tool is a fixed, read-only Cypher query. The model picks which ones to call, up to eight times, and writes the answer. It never writes Cypher itself.
+Claude gets nine tools: coin lookup, funding trail, sibling creators, shared early buyers, shared socials, rings, shortest connection, top operators, and search. Each tool is a fixed, read-only Cypher query. The model picks which ones to call over at most **eight model/tool rounds**, and writes the answer. One round may contain several tool calls. It never writes Cypher itself.
 
-Every tool result carries **evidence ids**: E1, E2, and so on, each naming the exact nodes and edges behind it. The answer must end each sentence with the id that proves it. Then a citation checker reads the answer before anyone sees it:
+Every tool result carries **evidence ids**: E1, E2, and so on, each naming the exact nodes and edges behind it. The answer must end each factual sentence with an ID from a compatible tool. Then a citation checker reads the answer before anyone sees it:
 
 - An id the tools never returned is removed.
-- An id from the wrong kind of tool is removed. A sentence about reused socials can't cite the funding tool.
-- A sentence left with no valid id is **deleted**. A shorter answer beats an unsupported one.
+- An id from the wrong kind of tool is removed. A sentence about reused socials can't cite only the funding tool.
+- Every matched topic must have compatible evidence. Funding plus socials needs citations of both kinds; one cannot bypass the other.
+- A factual sentence with no valid id, including one that was uncited from the start, is **deleted**. The server adds its own computed context line afterward.
+
+This checks citation IDs and tool compatibility. It does **not** verify that every claim is true, that a number matches a result, or that a claim names the right subject. For example, a made-up launch count can still pass with a real coin-dossier ID. Readers can inspect the linked evidence; the checker does not replace that judgment.
 
 ![The agent loop: a question goes to Claude, which calls nine read-only tools, drafts an answer with evidence ids, passes a citation check, and reaches the app; a fixed dossier is the fallback](https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/04-agent-loop.png)
-*The model chooses the tools and the words. The graph decides what's true.*
+*The model chooses the tools and the words. The checker enforces citation IDs and matching evidence kinds; the map lets you inspect the evidence.*
 
-If there's no AI key, or the AI call fails, the same tools produce a fixed summary instead. The facts never depend on the model.
+If there's no AI key, or the AI call fails, the same tools produce a fixed summary instead. That summary uses server-owned templates rather than model-written prose.
 
 That evening we asked about a coin called **METHU**. Its creator had launched exactly one coin, which on its own looks like a first-timer. One hop back told a different story. The wallet that paid METHU's creator 0.009 SOL had paid **71 other brand-new wallets**. Each launched exactly one coin. **None of the 72 coins graduated.**
 
@@ -109,20 +112,23 @@ The useful part is what happens next. Before Sniff calls a tool, it checks wheth
 
 Memory is also how agents work together. `memory_recall` and `memory_note` sit on the same MCP endpoint as the investigation tools. Another agent, for example the QuantBase trading agent, can ask "what has anyone found about this coin?" Sniff answers with every session's evidence about that coin, anonymised and with timestamps. That agent can then attach its own note with its name on it. The two agents never chat: they coordinate through the graph, and every note says who wrote it. The `/memory` page draws that trail for any coin or session.
 
-**Company brain (Track 03).** The third graph, `brain`, holds what QuantBase itself knows, from public sources only: this repo's docs, the public pages of quantbase.live, and the findings we've already published. A build script cuts each source into sections and pulls out the decisions, findings, metrics, products, features and policies in them. It then links them with `MENTIONS`, `SUPPORTS`, `CONTRADICTS`, `PART_OF` and `DECIDED_ON`.
+**Company brain (Track 03).** The loaded `brain` is a **source-only corpus of 12 public documents**, with zero AI requests and zero extracted entity-to-entity relationships. Public repository docs and quantbase.live pages become sections with literal anchors for products, features, policies, decisions, findings and metrics. The live graph connects them through **`MENTIONS` and `PART_OF`**. This is source retrieval, not a demonstrated semantic decision graph.
 
-Ask "how does QuantBase handle paper vs live?" on the `/brain` page, or through `brain_ask`, and it runs a real graph retrieval:
-- it finds the entities you named;
-- it walks up to two typed hops out from them;
-- it finds the exact sections that mention what it reached;
-- it falls back to a FalkorDB full-text index over section text when the words don't match an entity.
+The optional AI builder uses the existing cheap-model client with explicit request, token and cost caps. It can add `SUPPORTS`, `CONTRADICTS` and `DECIDED_ON` edges only when names and supporting quotes occur in the source. Those richer edges are a builder capability; they are **not shown in the loaded live corpus**.
 
-The answer cites those sections as **[B#]**, the same contract as the E ids on Day 2: no citation, no claim.
+Ask "how does QuantBase handle paper vs live?" on `/brain`, or through `brain_ask`, and it runs graph retrieval alongside FalkorDB full-text retrieval:
 
-The privacy gate runs before anything is loaded. It looks for emails, API keys, AWS ids, private keys, seed phrases and wallet key arrays, and a single match fails the whole build. It never prints what it found.
+- it finds literal entity anchors matching the question;
+- the query permits up to two typed entity hops when extracted relationships exist; the current source-only corpus has none;
+- it retrieves the exact sections mentioning those entities;
+- full-text search runs on every question alongside the graph query, and both result sets are ranked together.
+
+Answers quote source excerpts with **[B#]** citations. Each excerpt must occur in its own cited section; this verifies attribution, not whether the public source is true. The expanded section preserves the original source text. Repository links point at published `main`; reloading the reviewed corpus retires old documents and sections, including records under the previous branch URLs.
+
+The privacy gate runs before loading. It checks for emails, API keys, AWS ids, private keys, seed phrases and wallet key arrays, and never prints matched values. A privacy match in a local/repository source fails the build. A web source with a match is refused in full; other accepted sources can still be loaded. The build fails if a required web source is missing or refused.
 
 ![Two small graphs: on the left, Session ASKED Question FOUND Evidence ABOUT Coin or Wallet, with a Note from another agent; on the right, Doc, Section, Decision and Finding linked by PART_OF, MENTIONS and SUPPORTS](https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/06-memory-brain.png)
-*Day 4: the agent remembers what it found, shares it with other agents, and looks up its own company's rules, with citations either way.*
+*Day 4 architecture: the live brain uses MENTIONS/PART_OF; SUPPORTS in this illustration is an optional AI-builder capability. Agent notes are attributed observations, labelled "agent note · not verified".*
 
 ## The twist: it explains, it doesn't predict
 
@@ -185,7 +191,7 @@ Our feedback, kindly meant: one generated reference page for procedure names per
 
 The day before the event began, sniff.quantbase.live was a coming-soon page with one thing on it: a small animated pixel dog, sniffing a coin, on a 3.2-second loop.
 
-Four days later, behind that dog there is a graph of 632,339 launches, an agent that can't state a fact it can't prove, a map that lights up the proof, and a test we ran on ourselves that told us what not to promise. And the dog has a job: it's the agent inside QuantBase.
+Four days later, behind that dog there is a graph of 632,339 launches, an agent whose factual sentences need citations of the matching kind, a map that highlights that evidence, and a test we ran on ourselves that told us what not to promise. And the dog has a job: it's the agent inside QuantBase.
 
 ![A small dog sitting on a cliff at sunrise, looking over a valley with a lit town, while ember sparks draw a pixel-art dog in the sky](https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/10-close.jpg)
 *From a pixel dog on a coming-soon page to a product. History, not a prediction.*

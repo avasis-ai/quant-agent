@@ -81,6 +81,12 @@ def main() -> None:
     article = render(body, sizes)
     template = re.sub(r'(<main id="story" class="blog-story">\n).*?(</main>)',
                       lambda m: m[1] + article + m[2], template, flags=re.S)
+    template = re.sub(r'<title>.*?</title>',
+                      lambda _: '<title>' + html.escape(fields['title']) + ' · QuantBase</title>', template)
+    template = re.sub(r'<meta property="og:title" content="[^"]*">',
+                      lambda _: '<meta property="og:title" content="' + html.escape(fields['title'], quote=True) + '">', template)
+    template = re.sub(r'(<h1 id="blog-title">).*?(</h1>)',
+                      lambda m: m[1] + inline(fields['title']) + m[2], template)
     for name in ("description", "og:description"):
         attr = "property" if name.startswith("og:") else "name"
         template = re.sub(f'<meta {attr}="{name}" content="[^"]*">',

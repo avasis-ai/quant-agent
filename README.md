@@ -1,6 +1,6 @@
 # Sniff, by QuantBase
 
-**Sniff any coin before you buy.** Paste a pump.fun meme coin and Sniff tells you who made it, who paid the
+**Follow the money behind a meme coin.** Paste a pump.fun meme coin and Sniff tells you who made it, who paid the
 wallet that made it, what else those people launched, and how those coins ended. It walks a FalkorDB graph of
 632,339 pump.fun launches and 424,007 wallets. For factual answer text, every sentence must cite
 evidence of the matching kind; the server rejects answers that don't. This checks citation IDs and tool
@@ -8,6 +8,8 @@ compatibility, not whether every claim is true. Server-owned context and refusal
 Sniff shows history, not predictions.
 
 Entry for WeMakeDevs × FalkorDB **Graph Hacks: Context for AI Agents**, Tracks 01, 02 and 03.
+
+The full production version of this agent lives in [QuantBase](https://quantbase.live). QuantBase began as a research platform for manual algorithmic trading; we've rebuilt it around Sniff as an autonomous meme-coin trading platform. Paper trading is live today; live trading on your own wallet is opening soon.
 Team **QuantBase**. Built during the event window, Oct 15–18, 2026 (IST).
 
 | | |
@@ -18,13 +20,13 @@ Team **QuantBase**. Built during the event window, Oct 15–18, 2026 (IST).
 | **Company brain** | https://sniff.quantbase.live/brain |
 | **Full build story** | https://sniff.quantbase.live/blog |
 | **Demo video** | https://youtu.be/fz89p-YZS6o |
-| **Blog post** | https://dev.to/quantbase/who-is-behind-this-meme-coin-building-sniff-on-a-graph-4nnc |
+| **Blog post** | https://dev.to/quantbase/sniff-four-days-one-graph-and-an-honest-answer-about-meme-coins-47af |
 | **Bring your own Claude key** | https://sniff.quantbase.live/settings |
 | **MCP endpoint (12 graph tools)** | `https://sniff.quantbase.live/mcp` |
 
 | Ask | Evidence on the map | Phone |
 |---|---|---|
-| ![Live steps](docs/final/shots-merged/app-streaming-1440.png) | ![Evidence highlight](docs/final/shots-merged/app-evidence-1440.png) | ![Mobile](docs/final/shots-merged/app-investigation-390.png) |
+| ![Landing](docs/final/shots-qb/pass-2/home-hero-1440.png) | ![Evidence highlight](docs/final/shots-qb/pass-2/app-evidence-1440.png) | ![Mobile](docs/final/shots-qb/pass-2/app-investigation-390.png) |
 
 Try the **METHU** example: one wallet paid 72 brand-new creators, each launched exactly one coin, and none of
 the 72 coins graduated.

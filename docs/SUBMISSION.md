@@ -13,7 +13,7 @@ Submission deadline: **18 October 2026, 23:59 IST**. Review-fix commit deadline:
 | Live demo | https://sniff.quantbase.live |
 | MCP endpoint | https://sniff.quantbase.live/mcp |
 | Video | https://youtu.be/fz89p-YZS6o |
-| Blog post | https://dev.to/quantbase/who-is-behind-this-meme-coin-building-sniff-on-a-graph-4nnc |
+| Blog post | https://dev.to/quantbase/sniff-four-days-one-graph-and-an-honest-answer-about-meme-coins-47af |
 
 **Updated short description (≤ 300 characters):**
 
@@ -51,7 +51,7 @@ Cytoscape.js, DuckDB (data prep and test ground truth), AWS EC2 and Caddy.
    returned source URLs anonymously and confirm no retired branch URLs remain in `/api/brain` or answers.
 2. From a second agent, recall the real METHU findings over MCP and post one real attributed observation.
    The memory UI labels notes **agent note · not verified**. No synthetic note is preloaded.
-3. Update the **existing** [submitted dev.to article](https://dev.to/quantbase/who-is-behind-this-meme-coin-building-sniff-on-a-graph-4nnc)
+3. Update the **existing** [submitted dev.to article](https://dev.to/quantbase/sniff-four-days-one-graph-and-an-honest-answer-about-meme-coins-47af)
    from **[BLOG-FINAL.md](BLOG-FINAL.md)**, retaining its URL. Verify QuantBase attribution and all ten images.
    `docs/BLOG.md` is the older article and is not the publishing source.
 4. Confirm the submitted form selects **all three tracks** and keeps the intended video and blog URLs.

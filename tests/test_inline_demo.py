@@ -54,7 +54,7 @@ def test_generic_followup_can_remain_a_question(search):
     assert search == []
 
 
-@pytest.mark.parametrize("question,expected", [("Subprime Cat", None), ("Who funded Subprime Cat?", None), ("Who funded its creator?", MINT)])
+@pytest.mark.parametrize("question,expected", [("Subprime Cat", None), ("Who funded Subprime Cat?", None), ("Who funded its creator?", MINT), ("And what did we learn?", MINT)])
 def test_session_coin_reuse_is_limited_to_explicit_followups(monkeypatch, question, expected):
     ctx = memory.Investigation(memory.session_id(None), "fixture", available=True)
     monkeypatch.setattr(memory, "begin", lambda *_: ctx)
@@ -78,3 +78,23 @@ def test_resolve_endpoint_uses_existing_lookup_rate_limit(shared_client, monkeyp
     monkeypatch.setattr(main, "lookup_limit", Limiter(1, 3600))
     assert client.get("/api/resolve", params={"q": "Subprime Cat"}).json()["coin"]["mint"] == MINT
     assert client.get("/api/resolve", params={"q": "Higher"}).status_code == 429
+
+
+def test_exact_name_wins_over_a_different_coin_with_the_same_ticker(monkeypatch):
+    rows = [{"mint": OTHER, "name": "methuselah", "symbol": "METHU"}, {"mint": MINT, "name": "METHU", "symbol": "METHU"}]
+    monkeypatch.setattr(tools, "run_tool", lambda *_: ({"rows": rows}, True))
+    result = resolve.resolve("Who funded METHU?")
+    assert result["coin"]["mint"] == MINT
+    assert len(result["rows"]) == 2 and result["note"]
+
+
+def test_coin_late_in_a_long_question_is_not_dropped_by_four_word_search(monkeypatch):
+    calls = []
+    def search(ev, tool, args):
+        calls.append(args["query"])
+        return {"rows": [{"mint": MINT, "name": "Subprime Cat", "symbol": "SPCAT"}] if "Subprime" in args["query"] else []}, True
+    monkeypatch.setattr(tools, "run_tool", search)
+    question = "Do you see any evidence suggesting Subprime Cat reused a funding ring?"
+    result = resolve.resolve(question)
+    assert result["coin"]["mint"] == MINT and result["question"] == question
+    assert len(calls) > 1

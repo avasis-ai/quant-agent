@@ -119,7 +119,7 @@
   function renderCard(response) {
     const dossier = response.coin_dossier || {};
     if (dossier.error) return `<p class="note err">${esc(dossier.error)}</p>`;
-    if (!dossier.found) return `<p class="note">${esc(dossier.note || 'This coin is not in the snapshot. Try one of the example investigations above.')}</p>`;
+    if (!dossier.found) return '<p class="note">Not in our snapshot (ends 14 Oct 2026). Try one of the recorded examples above or check the mint address.</p>';
     const coin = dossier.coin, creator = dossier.creator, funders = dossier.funders || [], ring = dossier.ring;
     const sibling = response.siblings?.rows?.[0];
     const handles = response.shared_handles?.rows || [];
@@ -193,6 +193,8 @@
   }
 
   async function investigate(mint, question = '', updateUrl = true) {
+    $('resolve-note').hidden = true;
+    $('coin').removeAttribute('aria-invalid');
     request?.abort();
     request = new AbortController();
     const { signal } = request;
@@ -366,6 +368,9 @@
     const signal = request.signal;
     busy(true);
     $('note').textContent = 'Looking up the coin…';
+    $('resolve-note').hidden = false;
+    $('resolve-note').className = 'note';
+    $('resolve-note').textContent = 'Looking up the coin…';
     try {
       const result = await window.SniffInvestigation.resolve(input || question, signal);
       if (signal.aborted) return;
@@ -375,8 +380,23 @@
         $('coin').setAttribute('aria-invalid', 'true');
         $('note').textContent = result.message + ' Choose METHU, Subprime Cat, Women in Finance or Higher above.';
         $('note').className = 'note err';
+        $('resolve-note').textContent = $('note').textContent;
+        $('resolve-note').className = 'note err';
         $('cardPanel').hidden = true;
         $('verdict').replaceChildren();
+        $('mode').textContent = '';
+        $('answer-empty').hidden = true;
+        $('answer-status').textContent = 'Coin not found';
+        $('source-details').hidden = true;
+        $('graph-details').hidden = true;
+        $('step-details').hidden = true;
+        $('answer-actions').hidden = true;
+        $('graph-count').textContent = 'No matching coin';
+        $('graph-loading').hidden = true;
+        $('graph-empty').hidden = false;
+        $('graph-empty').querySelector('h3').textContent = 'Coin not in our snapshot.';
+        $('graph-empty').querySelector('p').textContent = 'Snapshot ends 14 Oct 2026. Choose a recorded example above.';
+        document.body.classList.add('has-investigation');
         graph?.cy?.elements().remove();
         return;
       }
@@ -387,7 +407,10 @@
       await investigate(selectedMint, resolvedQuestion, updateUrl);
       if (result.note) $('note').textContent = result.note;
     } catch (error) {
-      if (!signal.aborted) { $('note').textContent = error.message; $('note').className = 'note err'; }
+      if (!signal.aborted) {
+        $('note').textContent = error.message; $('note').className = 'note err';
+        $('resolve-note').textContent = error.message; $('resolve-note').className = 'note err';
+      }
     } finally { if (!signal.aborted) busy(false); }
   }
   $('form').addEventListener('submit', event => {

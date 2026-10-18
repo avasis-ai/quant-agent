@@ -14,7 +14,12 @@
   <link rel="stylesheet" href="/static/shared.css">
   <link rel="stylesheet" href="/static/home.css">
   <script src="/static/home.js" defer></script>
+  <script src="/static/vendor/cytoscape-3.33.1.min.js" defer></script>
+  <script src="/static/graph.js" defer></script>
+  <script src="/static/investigation-client.js" defer></script>
+  <script src="/static/inline-demo.js" defer></script>
 <link rel="stylesheet" href="/static/quantbase.css">
+<link rel="stylesheet" href="/static/inline-demo.css">
 </head>
 <body class="qb-website qb-story-home">
 <a href="#main" class="skip-link">Skip to content</a>
@@ -28,14 +33,22 @@
     <a class="production-badge" href="https://quantbase.live">Sniff by QuantBase <span>Full production agent ↗</span></a>
     <h1 id="hero-title">Follow the money<br><em>behind a meme coin.</em></h1>
     <p class="hero-description">Sniff investigates a coin’s creator, funder and connected launches, with graph evidence behind every answer.</p>
-      <form class="hero-ask glass" action="/app" method="get">
+      <form id="inline-form" class="hero-ask glass" action="/app" method="get">
         <label for="home-question">Which coin are you looking into?</label>
         <div class="hero-input-row">
           <input id="home-question" name="q" placeholder="Paste a coin address or ask a question" maxlength="500" required autocomplete="off" spellcheck="false">
           <button class="button primary" type="submit" aria-label="Investigate this coin"><span aria-hidden="true">↗</span></button>
         </div>
       </form>
-    <div class="hero-links"><a class="example-link" href="/app?mint=3LaVxn1Pp5gDjJZgGrpbQ8gRKj7GxgPE8cjF62Svpump">Try METHU <span class="example-context">one funder, 72 creators</span><span aria-hidden="true">↗</span></a><a href="https://youtu.be/fz89p-YZS6o" class="video-play" id="watch-demo" aria-haspopup="dialog"><span class="play-circle" aria-hidden="true">▶</span>Watch the build</a></div>
+    <div class="inline-examples" aria-label="Try a recorded coin">
+      <button type="button" data-inline-mint="3LaVxn1Pp5gDjJZgGrpbQ8gRKj7GxgPE8cjF62Svpump" title="One funder, 72 creators">METHU</button>
+      <button type="button" data-inline-mint="2f6jt6sR7CcuJ9sxWcqhXHBgE5r8kS3gXBJvaUWtpump" title="943-creator funding ring">Subprime Cat</button>
+      <button type="button" data-inline-mint="95JVHQQhHAPTJDVjw37ViiEwehstLEeX61Gbf13Upump" title="Reused socials and 32 other launches">Women in Finance</button>
+      <button type="button" data-inline-mint="wV46Y351erjX7CiAyRRvzJgeWdtqpHXXBmv9LVzpump" title="Graduated, in a 16-creator ring">Higher</button>
+      <button type="button" data-inline-mint="251ndGnv5tN45Fr4jpBtSeuvfyEZCN6Jk7K9u9pgpump" title="Another launch in the biggest funding ring">Agent Alley</button>
+      <button type="button" data-inline-mint="b1U8BazMzFbrCpD2rLmVTbiJSdHUh7mUWy3dn5Spump" title="Graduated launch, hub-funded creator">Chill House Vrax</button>
+    </div>
+    <div class="hero-links"><a href="https://youtu.be/fz89p-YZS6o" class="video-play" id="watch-demo" aria-haspopup="dialog"><span class="play-circle" aria-hidden="true">▶</span>Watch the build</a></div>
 <div class="hero-flow" id="hero-flow" data-flow="playing">
 <svg class="hero-flow-canvas" viewBox="0 0 1000 300" role="img" aria-labelledby="flow-title flow-desc">
 <title id="flow-title">Follow the coin to the wallets behind it</title><desc id="flow-desc">A coin lights up. A trail travels to its creator, then its funder, and fans out to other creators and coins in the funding ring. The trail stops at an exchange-like hub. This is a schematic illustration, not a second investigation.</desc>
@@ -49,6 +62,18 @@
 <path class="flow-branch-base" d="M650 170Q720 170.0 890.0 170.0"/><path class="flow-trace flow-trace-branch" pathLength="1" d="M650 170Q720 170.0 890.0 170.0"/><g class="flow-node flow-node-branch" transform="translate(890.0 170.0)"><circle class="flow-node-base" r="11"/><circle class="flow-node-light" r="11"/></g><path class="flow-branch-base" d="M650 170Q720 228.7 857.8 228.7"/><path class="flow-trace flow-trace-branch" pathLength="1" d="M650 170Q720 228.7 857.8 228.7"/><g class="flow-node flow-node-branch" transform="translate(857.8 228.7)"><circle class="flow-node-base" r="11"/><circle class="flow-node-light" r="11"/></g><path class="flow-branch-base" d="M650 170Q720 253.0 780.0 253.0"/><path class="flow-trace flow-trace-branch" pathLength="1" d="M650 170Q720 253.0 780.0 253.0"/><g class="flow-node flow-node-branch" transform="translate(780.0 253.0)"><circle class="flow-node-base" r="11"/><circle class="flow-node-light" r="11"/></g><path class="flow-branch-base" d="M650 170Q720 228.7 702.2 228.7"/><path class="flow-trace flow-trace-branch" pathLength="1" d="M650 170Q720 228.7 702.2 228.7"/><g class="flow-node flow-node-branch" transform="translate(702.2 228.7)"><circle class="flow-node-base" r="11"/><circle class="flow-node-light" r="11"/></g><path class="flow-branch-base" d="M650 170Q720 170.0 670.0 170.0"/><path class="flow-trace flow-trace-branch" pathLength="1" d="M650 170Q720 170.0 670.0 170.0"/><g class="flow-node flow-node-branch" transform="translate(670.0 170.0)"><circle class="flow-node-base" r="11"/><circle class="flow-node-light" r="11"/></g><path class="flow-branch-base" d="M650 170Q720 111.3 702.2 111.3"/><path class="flow-trace flow-trace-branch" pathLength="1" d="M650 170Q720 111.3 702.2 111.3"/><g class="flow-node flow-node-branch" transform="translate(702.2 111.3)"><circle class="flow-node-base" r="11"/><circle class="flow-node-light" r="11"/></g><path class="flow-branch-base" d="M650 170Q720 87.0 780.0 87.0"/><path class="flow-trace flow-trace-branch" pathLength="1" d="M650 170Q720 87.0 780.0 87.0"/><g class="flow-node flow-node-branch" transform="translate(780.0 87.0)"><circle class="flow-node-base" r="11"/><circle class="flow-node-light" r="11"/></g><path class="flow-branch-base" d="M650 170Q720 111.3 857.8 111.3"/><path class="flow-trace flow-trace-branch" pathLength="1" d="M650 170Q720 111.3 857.8 111.3"/><g class="flow-node flow-node-branch" transform="translate(857.8 111.3)"><circle class="flow-node-base" r="11"/><circle class="flow-node-light" r="11"/></g><text x="780" y="293" text-anchor="middle" class="flow-label">The funding ring</text>
 </svg>
 <div class="hero-flow-legend" aria-label="Graph trail"><span><svg aria-hidden="true"><use href="/static/brand/graph-icons.svg#coin"/></svg>Coin</span><i aria-hidden="true">→</i><span><svg aria-hidden="true"><use href="/static/brand/graph-icons.svg#creator"/></svg>Creator</span><i aria-hidden="true">→</i><span><svg aria-hidden="true"><use href="/static/brand/graph-icons.svg#funder"/></svg>Funder</span><i aria-hidden="true">→</i><span>Ring</span><button id="pause-flow" type="button" aria-pressed="false">Pause animation</button></div></div>
+  </section>
+  <section class="inline-demo container" id="inline-demo" aria-labelledby="inline-title" hidden>
+    <div class="inline-heading"><div><span class="inline-kicker">Live graph investigation</span><h2 id="inline-title" tabindex="-1">Following the trail.</h2></div><a id="inline-full" class="text-link" href="/app" hidden>Open full investigation →</a></div>
+    <p id="inline-status" class="inline-status" role="status" aria-live="polite">Looking up the coin…</p>
+    <div class="inline-matches" id="inline-matches" hidden><label for="inline-match-select">Matching coins · choose a mint</label><select id="inline-match-select"></select></div>
+    <div id="inline-dossier" class="inline-dossier" aria-label="Coin dossier" hidden></div>
+    <div class="inline-body" id="inline-body" hidden>
+      <div class="inline-findings"><div class="inline-answer" id="inline-answer"></div><p class="inline-mode" id="inline-mode"></p><details class="inline-steps" id="inline-step-details" open><summary>Investigation steps <span id="inline-step-count"></span></summary><ol id="inline-steps"></ol></details></div>
+      <div class="inline-map"><div class="inline-map-top"><span>Follow the evidence</span><button type="button" id="inline-fit">Fit graph</button></div><div id="inline-graph" tabindex="0" role="group" aria-label="Coin, creator, funder and funding ring. Arrow keys pan; plus and minus zoom. Select citations to inspect evidence."></div><p class="inline-map-policy">Coin → creator → funder → ring. Hubs are dead ends; they never link creators.</p><p class="inline-selection" id="inline-selection" aria-live="polite">Select an evidence tag or a node to inspect its source.</p></div>
+    </div>
+    <details class="inline-sources" id="inline-sources" hidden><summary>Inspect graph evidence <span id="inline-source-count"></span></summary><div id="inline-source-list"></div></details>
+    <div class="inline-retry" id="inline-retry" hidden><p>Explore a recorded trail:</p><button type="button" data-inline-mint="2f6jt6sR7CcuJ9sxWcqhXHBgE5r8kS3gXBJvaUWtpump">Subprime Cat</button><button type="button" data-inline-mint="wV46Y351erjX7CiAyRRvzJgeWdtqpHXXBmv9LVzpump">Higher</button><button type="button" id="inline-again">Try again</button></div>
   </section>
   <section class="story-opening container" id="how" aria-labelledby="new-coin-title">
     <div class="story-intro" data-reveal><div class="story-glyph" aria-hidden="true"><svg><use href="/static/brand/graph-icons.svg#coin"/></svg></div><h2 id="new-coin-title">A new coin.<br><span class="heading-muted">An unfamiliar creator.</span></h2><p>A name. A chart. A crowd buying in. But who made it? Before you buy, you should be able to follow the trail.</p></div>

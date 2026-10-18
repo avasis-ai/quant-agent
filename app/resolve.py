@@ -27,10 +27,18 @@ def resolve(text: str) -> dict:
         result, ok = tools.run_tool(ev, "coin_dossier", {"mint": query})
         rows = [result["coin"]] if ok and result.get("found") else []
     else:
-        result, ok = tools.run_tool(ev, "search_coins", {"query": query})
-        rows = result.get("rows", []) if ok else []
-    if not ok:
-        return {"status": "error", "message": "Coin search is unavailable. Please try again.", "rows": []}
+        # The existing full-text tool accepts four words. Search bounded chunks
+        # so a name later in a natural-language question is not silently lost.
+        chunks = [" ".join(words[start:start + 4]) for start in range(0, min(len(words), 16), 4)]
+        if len(words) > 16:
+            chunks.append(" ".join(words[-4:]))
+        by_mint, ok = {}, True
+        for chunk in dict.fromkeys(chunks):
+            result, success = tools.run_tool(ev, "search_coins", {"query": chunk})
+            ok = ok and success
+            for row in result.get("rows", []) if success else []:
+                by_mint.setdefault(row["mint"], row)
+        rows = list(by_mint.values())
     normalized = normalize(text)
     matches = []
     for row in rows:
@@ -38,9 +46,16 @@ def resolve(text: str) -> dict:
         if mints or any(alias and (normalized == alias or f" {alias} " in f" {normalized} ") for alias in aliases):
             matches.append({key: value for key, value in row.items() if key != "evidence"})
     # Prefer the longest named match ("Subprime Cat" over a coin called "Cat").
-    matches.sort(key=lambda row: max((len(normalize(row.get(field, ""))) for field in ("name", "symbol") if normalize(row.get(field, "")) in normalized), default=0), reverse=True)
+    def rank(row):
+        name = normalize(row.get("name", ""))
+        name_match = len(name) if name and f" {name} " in f" {normalized} " else 0
+        alias_match = max((len(normalize(row.get(field, ""))) for field in ("name", "symbol") if normalize(row.get(field, "")) in normalized), default=0)
+        return name_match, alias_match
+    matches.sort(key=rank, reverse=True)
     if matches:
         coin = matches[0]
         return {"status": "found", "coin": coin, "question": text if question and normalize(text) not in (normalize(coin.get("name", "")), normalize(coin.get("symbol", ""))) else DEFAULT_QUESTION,
-                "rows": matches, "note": "Several coins share this name. Showing the best search match; use a mint to select another." if len(matches) > 1 else ""}
+                "rows": matches, "note": "Several coins match this name or ticker. Verify the selected mint." if len(matches) > 1 else ""}
+    if not ok:
+        return {"status": "error", "message": "Coin search is unavailable. Please try again.", "rows": []}
     return {"status": "missing", "coin": None, "question": text if question else DEFAULT_QUESTION, "rows": [], "message": NOT_FOUND}

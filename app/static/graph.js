@@ -9,8 +9,9 @@
   const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   class SniffGraph {
-    constructor(container, onSelect = () => {}) {
+    constructor(container, onSelect = () => {}, options = {}) {
       this.container = container;
+      this.options = options;
       this.onSelect = onSelect;
       this.evidence = [];
       this.nodes = new Map();
@@ -89,6 +90,10 @@
           } },
         ],
       });
+      if (options.compact) this.cy.style()
+        .selector('node').style({ 'font-size': 15, 'text-max-width': 135 })
+        .selector('node.focus').style({ 'font-size': 17 })
+        .selector('edge').style({ 'font-size': 11 }).update();
       this.cy.on('tap', 'node', event => this.selectNode(event.target));
       this.cy.on('tap', event => { if (event.target === this.cy) this.clear(); });
       this.cy.on('mouseover', 'node', () => { container.style.cursor = 'pointer'; });
@@ -151,7 +156,7 @@
         for (const edge of item.edges || []) addEdge(edge, item.id);
         // The siblings tool returns an aggregate, not individual wallet edges.
         // Its separate group node is explicitly labelled as an aggregate.
-        if (item.tool === 'siblings' && item.nodes?.length >= 2) {
+        if (!this.options.compact && item.tool === 'siblings' && item.nodes?.length >= 2) {
           const match = /paid (\d+) other creators: (\d+) coins, (\d+) graduated/.exec(item.summary);
           if (match) {
             const funder = item.nodes[0];
@@ -196,6 +201,26 @@
     arrange(animate = true) {
       if (!this.cy?.nodes().length) return;
       this.layout?.stop();
+      if (this.options.compact) {
+        // Read the trail left to right, retaining the actual edge directions.
+        const focus = this.cy.nodes('.focus')[0];
+        const creators = focus?.incomers('edge[type="CREATED"]').sources() || this.cy.collection();
+        const vertical = this.container.clientWidth < 400;
+        const ranks = new Map();
+        const positions = new Map();
+        this.cy.nodes().forEach(node => {
+          const kind = node.data('kind');
+          const rank = node.id() === focus?.id() ? 0 : creators.contains(node) ? 1 : kind === 'hub' ? 2 : kind === 'ring' || kind === 'group' ? 3 : kind === 'coin' ? 4 : 2;
+          const offset = (ranks.get(rank) || 0) * 105;
+          ranks.set(rank, (ranks.get(rank) || 0) + 1);
+          positions.set(node.id(), vertical ? { x: offset, y: rank * 100 } : { x: rank * 140, y: offset });
+        });
+        this.layout = this.cy.layout({ name: 'preset', positions: node => positions.get(node.id()), fit: true,
+          padding: 35, animate: animate && !reduced(), animationDuration: 450,
+          stop: () => this.cy.fit(undefined, 40) });
+        this.layout.run();
+        return;
+      }
       const primary = new Set();
       const focus = this.cy.nodes('.focus');
       const ancestors = focus.toArray();

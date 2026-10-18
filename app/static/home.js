@@ -62,3 +62,77 @@
     });
   });
 })();
+
+// Progressive enhancement: the story reads in full without JavaScript or motion.
+(() => {
+  const motion = matchMedia('(prefers-reduced-motion: reduce)');
+  const sections = [...document.querySelectorAll('[data-reveal]')];
+  const observer = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.remove('reveal-pending');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: .08 }) : null;
+  if (observer && !motion.matches) sections.forEach(section => {
+    section.classList.add('reveal-pending');
+    observer.observe(section);
+  });
+  motion.addEventListener('change', () => {
+    if (motion.matches) {
+      observer?.disconnect();
+      sections.forEach(section => section.classList.remove('reveal-pending'));
+    }
+  });
+  document.querySelectorAll('.story-art img').forEach(img => {
+    const ready = () => { if (img.naturalWidth) img.classList.add('is-ready'); };
+    img.addEventListener('load', ready);
+    img.addEventListener('error', () => img.classList.remove('is-ready'));
+    ready();
+  });
+
+  const trigger = document.getElementById('watch-demo');
+  const dialog = document.getElementById('demo-dialog');
+  const player = document.getElementById('demo-player');
+  if (!trigger || !dialog?.showModal || !player) return;
+  trigger.addEventListener('click', event => {
+    event.preventDefault();
+    const frame = document.createElement('iframe');
+    frame.src = 'https://www.youtube-nocookie.com/embed/fz89p-YZS6o?autoplay=1';
+    frame.title = 'Sniff by QuantBase · Graph Hacks demo';
+    frame.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    player.replaceChildren(frame);
+    dialog.showModal();
+  });
+  document.getElementById('close-demo').addEventListener('click', () => dialog.close());
+  dialog.addEventListener('click', event => {
+    if (event.target === dialog) {
+      const bounds = dialog.getBoundingClientRect();
+      if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close();
+    }
+  });
+  dialog.addEventListener('close', () => {
+    player.replaceChildren();
+    trigger.focus({ preventScroll: true });
+  });
+})();
+
+(() => {
+  const flow = document.getElementById('hero-flow');
+  const button = document.getElementById('pause-flow');
+  if (!flow || !button) return;
+  const motion = matchMedia('(prefers-reduced-motion: reduce)');
+  let paused = false;
+  const sync = () => {
+    const stop = paused || motion.matches || document.hidden;
+    flow.dataset.flow = stop ? 'paused' : 'playing';
+    button.textContent = motion.matches ? 'Motion off' : paused ? 'Play animation' : 'Pause animation';
+    button.setAttribute('aria-pressed', String(paused || motion.matches));
+    button.disabled = motion.matches;
+  };
+  button.addEventListener('click', () => { paused = !paused; sync(); });
+  motion.addEventListener('change', sync);
+  document.addEventListener('visibilitychange', sync);
+  sync();
+})();

@@ -1,66 +1,81 @@
 # Sniff · QuantBase Ember
 
-Sniff is a graph investigation product for pump.fun traders and a Graph Hacks
-submission for technical reviewers. The primary action is to investigate a coin.
-The graph must explain the evidence, and the copy must distinguish recorded
-history from predictions. This is one system across the landing, workspace and
-settings, memory, brain and blog pages.
+Sniff is a graph investigation product for pump.fun and the QuantBase Graph Hacks
+submission. It shares the established QuantBase design system, rather than a
+separate Sniff identity. Recorded history and evidence remain distinct from
+predictions, agent notes and illustrated explanations.
 
-## Direction
+## Source of truth
 
-Atmospheric, precise and spacious. Marketing uses a Map / Diagram composition:
-large left-aligned type alongside a real, interactive graph. The application uses
-a wide workbench with the dossier above a graph and a right-hand evidence column.
-Memory and Brain use a shared workbench: a query form, graph and evidence inspector, followed by timestamped findings or exact source sections. Blog uses a split introduction and a narrow reading column with local, full-width figures. Settings uses a quiet two-column reading layout. No invented financial data,
-customer claims, performance charts or trading controls.
+The shared implementation is `app/static/quantbase.css`, loaded last on every
+page. Its named tokens, local font faces, frame, rail, buttons, inputs, pills,
+opaque panels and motion come from `~/dev/sniff-app-prod/DESIGN-V6.md` and
+`src/styles.css`. The visual shell follows `docs/astra/final/1440-chat.png`.
+Website chrome, hero type and section rhythm follow
+`~/dev/quant-release/site/static/ember.css` and the main QuantBase website.
+Existing `tokens.css` names remain as compatibility defaults for the older
+page sheets; the shared QuantBase sheet maps them onto the canonical tokens.
 
-Design variance 7, motion intensity 4, visual density 3 on the landing. The
-workspace prioritizes readable evidence and useful canvas space. Native HTML,
-CSS and JavaScript preserve the existing FastAPI application and API contract.
+Ground #161316, cocoa #453027, reading surface #191719, raised #211E20,
+secondary raised #292527 and #332D2E, input well #171416. Text #FAF8F6,
+#E2DDDA, #BDB5B1 and #ABA29D. Ember #FF6D29; readable ember #FFAA80;
+control edge #81756F; focus #FFAE85. White actions use #FAF8F6 on #211A17.
+Positive #91C9A5, negative #F28C84 and warning #E8C17C retain semantic uses.
 
-## Theme
+Host Grotesk supplies text, navigation and display. Geist Mono supplies
+addresses, compact labels and data. Instrument Serif italic is the website's
+limited display accent. All fonts are self-hosted, with OFL licenses beside
+them. Host Grotesk and Geist Mono are byte-identical to the dashboard assets.
+The QuantBase mark and line icons are reused from that dashboard; the custom
+graph glyph set extends the same 24px grid and 1.5px stroke.
 
-The canonical tokens live in `app/static/tokens.css` (also linked as `tokens.css`
-at the repository root). Ground #161316, cocoa #453027, ember #FF6D29, supporting
-text #BABABA and white. One warm light source; glass on the frame, opaque reading
-surfaces under words. White pills are primary actions. Ember identifies a
-selected graph path or product state; green only communicates graduation.
+## Layout and components
 
-Host Grotesk is the display and body face, with Instrument Serif italic as a
-limited brand accent and Geist Mono for addresses and technical labels. All
-fonts are self-hosted with swap and their licenses. Type has generous line
-height; italic descenders have clearance. Body text is 16px, app text 14–16px,
-supporting text 12–14px. Do not use low-contrast ornamental text for information.
+`/app`, `/memory`, `/brain` and `/settings` use the cocoa glass frame with a
+12px desktop inset, 80px rail and 64px header. The top bar reads
+`quantbase.live | Sniff` and links the three graph workspaces using the source
+segmented pill treatment. Status text says “Read-only research”; it does not
+invent balances, credits or connection health. The five rail destinations
+have persistent labels and current-page semantics. On phones they form a
+fixed bottom navigation with 44px or larger targets.
 
-## Shape and spacing
+The welcome and composer use a 740px measure. Display is 48/52 desktop and
+34/37 phone; workspace titles 32/38 and 28/34. Body is 14/22; supporting text
+13/20. Data uses tabular figures. Cards have 14px corners; controls 10px;
+composer 18px; frame 24px. Glass belongs to the frame. Graphs, findings and
+source details sit on quiet, opaque reading surfaces. Existing evidence tags,
+keyboard graph controls, streaming steps and citation source views retain
+their contracts.
 
-Four-point spacing scale. Marketing content max-width 1280px, workspace max-width
-1720px. Desktop insets 48–80px, phone insets 20px. Major landing sections have
-96–128px separation. Panels use 20px corners, inputs 12px and actions full pills.
-Controls have at least 44px targets; labels always identify inputs.
+`/` is a showcase of the submitted build: investigate a coin, trace its payment,
+inspect METHU's ring, learn why hubs stop traversal, inspect citations, reuse
+agent memory, ask the company brain, then see the honest research limitation
+and the three tracks. The existing snapshot, evaluation and MCP content stays
+available. The full production agent section links QuantBase and its dashboard,
+clearly distinguishing live paper trading from forthcoming wallet trading.
 
-## Motion and interaction
+Website pages use a 1080px reading frame, floating pill header and generous
+footer. The blog keeps its narrow 720px reading column and all eight local
+figures. The unconfigured waitlist still redirects to the home page.
 
-Three primitives: a single entrance, graph evidence transitions and button press
-feedback. The landing graph cycles through the recorded funder → creator → coin
-path to explain the traversal; pause is available. No moving background or
-scroll hijacking. Graph positions animate when evidence changes. Reduced motion
-removes spatial animation and pauses automatic graph focus. Evidence paths use
-deterministic columns on desktop and vertical ranks on phones, so labels remain
-readable without a force layout spreading a small graph across a huge area. Reduced transparency
-uses opaque surfaces. Every control has a visible, immediate keyboard focus ring.
-Copy actions confirm in place. Errors stay close to their task. Search supports
-arrow keys, Enter, Escape, and screen-reader combobox semantics.
+## Motion, media and accessibility
 
-## Shared elements
+The hero uses a ten-second SVG trace: coin, creator, funder, ring, then a hub
+that ends the trail. Pause is explicit; background tabs pause the loop.
+Reduced motion shows the complete static path. Story reveals use a short
+opacity/16px entrance and progressive enhancement; content is visible without
+JavaScript. Reduced transparency replaces glass with opaque cocoa surfaces.
 
-All pages share the Sniff wordmark, QuantBase brand mark, typography, warm palette,
-navigation, action shape, focus behavior and policy language. Snapshot figures
-are maintained only in `app/static/snapshot.json`; the UI labels them as a
-snapshot. The application never infers links through exchange-like hub wallets.
+Story images are local WebP illustrations, with explicit dimensions, lazy
+loading and mobile crops where supplied. Their figures keep a gradient and
+simple graph fallback if an image fails. The hero background has a dark ember
+overlay. Illustrations explain the narrative; they are not literal graph data.
+The demo lightbox creates its YouTube player only after activation, supports
+Escape and close, clears playback on close and restores trigger focus. Its
+ordinary link remains usable without JavaScript.
 
-## References
-
-User-provided QuantBase DESIGN-V5.md and DESIGN-V6.md, palette-v5-arounda.jpg,
-palette-v5-elasti.png, Astra inspiration 1 and 3, and https://quantbase.live.
-The provided brand rules take precedence over generic skill defaults.
+Preserve all routes, query fields, API payloads, key selection, caps, memory
+provenance and evidence validation. No runtime package, font CDN, deployment
+or push is part of this redesign. Every interactive element keeps a visible
+focus indicator; screen-reader labels and 390px overflow are checked alongside
+AA accessibility scans.

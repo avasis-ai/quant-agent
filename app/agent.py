@@ -217,7 +217,9 @@ async def investigate(question: str, mint: str | None = None, visitor_key: str |
     if ctx.available:
         try:
             recalled = await asyncio.to_thread(memory.recall, session=ctx.sid)
-            if not mint and not _mint_from(question) and not COMPANY_QUESTION.search(question):
+            # Only explicit follow-ups inherit a subject, never a fresh coin name.
+            if (not mint and not _mint_from(question) and not COMPANY_QUESTION.search(question)
+                    and re.search(r"\b(this coin|that coin|its creator|its funder|that funder|that wallet|their other)\b", question, re.I)):
                 subject = await asyncio.to_thread(memory.latest_entity, ctx.sid)
                 if subject and subject.startswith("coin:"):
                     mint = subject.split(":", 1)[1]

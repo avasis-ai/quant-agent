@@ -360,13 +360,44 @@
     const button = event.target.closest('[data-index]');
     if (button) choose(searchRows[Number(button.dataset.index)]);
   });
+  async function resolveAndInvestigate(input, question = '', updateUrl = true) {
+    request?.abort();
+    request = new AbortController();
+    const signal = request.signal;
+    busy(true);
+    $('note').textContent = 'Looking up the coin…';
+    try {
+      const result = await window.SniffInvestigation.resolve(input || question, signal);
+      if (signal.aborted) return;
+      if (result.status === 'missing') {
+        selectedMint = null;
+        $('coin').value = input;
+        $('coin').setAttribute('aria-invalid', 'true');
+        $('note').textContent = result.message + ' Choose METHU, Subprime Cat, Women in Finance or Higher above.';
+        $('note').className = 'note err';
+        $('cardPanel').hidden = true;
+        $('verdict').replaceChildren();
+        graph?.cy?.elements().remove();
+        return;
+      }
+      selectedMint = result.coin?.mint || null;
+      $('coin').value = result.coin?.name || '';
+      const resolvedQuestion = question || result.question || DEFAULT_QUESTION;
+      $('q').value = resolvedQuestion === DEFAULT_QUESTION ? '' : resolvedQuestion;
+      await investigate(selectedMint, resolvedQuestion, updateUrl);
+      if (result.note) $('note').textContent = result.note;
+    } catch (error) {
+      if (!signal.aborted) { $('note').textContent = error.message; $('note').className = 'note err'; }
+    } finally { if (!signal.aborted) busy(false); }
+  }
   $('form').addEventListener('submit', event => {
     event.preventDefault();
     if ($('go').disabled) return;
     const input = $('coin').value.trim(), question = $('q').value.trim();
     if (!input && !question) { $('coin').focus(); return; }
     const mint = selectedMint || (MINT.test(input) ? input : null);
-    investigate(mint, mint ? question : question ? (input ? `About ${input}: ${question}` : question) : `Who is behind the coin ${input}?`);
+    if (mint) investigate(mint, question);
+    else resolveAndInvestigate(input, question);
   });
   function example(mint, name) { selectedMint = mint; $('coin').value = name; investigate(mint, $('q').value); }
   $('chips').addEventListener('click', event => {
@@ -403,8 +434,7 @@
   if (mint && MINT.test(mint)) {
     selectedMint = mint; $('coin').value = mint; $('q').value = question; investigate(mint, question, false);
   } else if (question) {
-    if (MINT.test(question.trim())) { $('coin').value = question.trim(); investigate(question.trim(), '', true); }
-    else { $('q').value = question; investigate(null, question, false); }
+    resolveAndInvestigate(question, '', false);
   } else if (mint) {
     $('coin').value = mint; $('coin').setAttribute('aria-invalid', 'true');
     $('note').textContent = 'That address is not a valid Solana mint. Enter a coin name or a full mint address above.';

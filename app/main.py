@@ -18,7 +18,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Redirect
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from . import agent, ai, tools, memory
+from . import agent, ai, tools, memory, resolve
 from . import mcp as sniff_mcp
 from .limits import Limiter
 from .secrets import check_passcode, install_log_masking, read_env, write_env
@@ -339,6 +339,13 @@ async def ask(body: Ask, req: Request):
 
 
 # ---- lookups for the app page (no AI) --------------------------------------------------------
+
+@app.get("/api/resolve")
+async def resolve_input(q: str, req: Request):
+    """Resolve a name, ticker, mint or a question naming a coin before investigation."""
+    limited(lookup_limit, ip(req))
+    return await asyncio.to_thread(resolve.resolve, q)
+
 
 @app.get("/api/search")
 async def search(q: str, req: Request):

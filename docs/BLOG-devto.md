@@ -8,7 +8,7 @@ So we built **Sniff**: paste a coin, and an AI agent walks a graph of on-chain h
 
 Try it: https://sniff.quantbase.live
 
-{% embed https://youtu.be/YMQKpynEsI0 %}
+{% embed https://youtu.be/fz89p-YZS6o %}
 
 ![Sniff's answer, with each claim's evidence highlighted on the map](https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/shots/04-evidence-highlight.jpg)
 

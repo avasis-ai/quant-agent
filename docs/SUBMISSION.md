@@ -12,7 +12,7 @@ Submission deadline: **18 October 2026, 23:59 IST**. Review-fix commit deadline:
 | Repository | https://github.com/avasis-ai/quant-agent |
 | Live demo | https://sniff.quantbase.live |
 | MCP endpoint | https://sniff.quantbase.live/mcp |
-| Video | https://youtu.be/YMQKpynEsI0 |
+| Video | https://youtu.be/fz89p-YZS6o |
 | Blog post | https://dev.to/quantbase/who-is-behind-this-meme-coin-building-sniff-on-a-graph-4nnc |
 
 **Updated short description (≤ 300 characters):**

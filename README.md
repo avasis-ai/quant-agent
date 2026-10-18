@@ -17,7 +17,7 @@ Team **QuantBase**. Built during the event window, Oct 15–18, 2026 (IST).
 | **Agent memory** | https://sniff.quantbase.live/memory |
 | **Company brain** | https://sniff.quantbase.live/brain |
 | **Full build story** | https://sniff.quantbase.live/blog |
-| **Demo video** | https://youtu.be/YMQKpynEsI0 |
+| **Demo video** | https://youtu.be/fz89p-YZS6o |
 | **Blog post** | https://dev.to/quantbase/who-is-behind-this-meme-coin-building-sniff-on-a-graph-4nnc |
 | **Bring your own Claude key** | https://sniff.quantbase.live/settings |
 | **MCP endpoint (12 graph tools)** | `https://sniff.quantbase.live/mcp` |

@@ -5,6 +5,11 @@ submission. It shares the established QuantBase design system, rather than a
 separate Sniff identity. Recorded history and evidence remain distinct from
 predictions, agent notes and illustrated explanations.
 
+Design dials: variance 5, motion 3, density 4. The source brand fixes the
+palette and frame; motion explains graph traversal, and the application keeps
+room for evidence. The redesign retires the separate large Sniff wordmark and
+unframed workbench while preserving navigation, forms and evidence controls.
+
 ## Source of truth
 
 The shared implementation is `app/static/quantbase.css`, loaded last on every

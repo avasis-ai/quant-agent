@@ -81,7 +81,7 @@ try {
       assert.equal(await page.locator('[data-stat="wallets"]').textContent(), '424,007');
       assert.equal(await page.locator('[data-stat="rings"]').textContent(), '6,556');
       assert.equal(await page.locator('[data-stat="links"]').textContent(), '1.5M');
-      assert.equal(await page.locator('a[href="https://app.quantbase.live"]').count(), 1);
+      assert.ok(await page.locator('a[href="https://app.quantbase.live"]').count() >= 1);
       assert.match(await page.locator('#tracks').textContent(), /Three tracks,[\s\S]*one product/);
       for (const route of ['/memory', '/brain', '/blog']) assert.ok(await page.locator(`.site-nav a[href="${route}"]`).count());
       assert.equal(await page.locator('.eval-table tbody tr').count(), 2);
@@ -119,6 +119,11 @@ try {
       await page.goto(base + '/app', { waitUntil: 'networkidle' });
       assert.equal(await page.locator('#graph-empty').isVisible(), true);
       assert.equal(await page.locator('#zoom-in').isDisabled(), true);
+      if (width === 390) {
+        const action = await page.locator('#go').boundingBox();
+        const rail = await page.locator('.qb-rail').boundingBox();
+        assert.ok(action.y + action.height <= rail.y, 'Primary action must clear bottom navigation.');
+      }
       await screenshot(page, `app-empty-${width}`);
       await overflow(page); await axe(page, `app-empty-${width}`);
     });
@@ -230,6 +235,8 @@ try {
       if (width === 390) {
         await page.locator('.nav-menu summary').click();
         assert.equal(await page.locator('.nav-menu-links a[href="/memory"]').isVisible(), true);
+        const menu = await page.locator('.nav-menu-links').boundingBox();
+        assert.ok(menu.x >= 0 && menu.x + menu.width <= width, 'Mobile menu must fit within the viewport.');
         await axe(page, `mobile-navigation-${width}`);
         await page.screenshot({ path: path.join(shots, 'navigation-390.png') });
         await page.locator('.nav-menu-links a[href="/memory"]').click();

@@ -1,0 +1,22 @@
+{
+  "generated": "2026-10-18T16:36:47.568Z",
+  "base": "http://127.0.0.1:8081",
+  "checks": [
+    {
+      "width": 1440,
+      "anonymous": true,
+      "visitorKeyHeader": false,
+      "claudeAnswer": true,
+      "interactiveCitation": true,
+      "sharedKeyStatus": true
+    },
+    {
+      "width": 390,
+      "anonymous": true,
+      "visitorKeyHeader": false,
+      "claudeAnswer": true,
+      "interactiveCitation": true,
+      "sharedKeyStatus": true
+    }
+  ]
+}

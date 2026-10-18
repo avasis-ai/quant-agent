@@ -18,63 +18,74 @@
         container.innerHTML = '<p class="graph-unavailable">The graph renderer could not load. You can still read the evidence and answer.</p>';
         return;
       }
+      // Cytoscape draws to canvas, so resolve the shared CSS tokens once at creation.
+      const theme = getComputedStyle(document.documentElement);
+      const token = (name, fallback) => theme.getPropertyValue(name).trim() || fallback;
+      const colors = {
+        ink: token('--ink', '#FAF8F6'), text: token('--ink-2', '#E2DDDA'),
+        muted: token('--ink-3', '#BDB5B1'), soft: token('--ink-4', '#ABA29D'),
+        sunk: token('--sunk', '#171416'), raised: token('--raised', '#211E20'),
+        raised2: token('--raised-2', '#292527'), raised3: token('--raised-3', '#332D2E'),
+        edge: token('--line-3', '#81756F'), ember: token('--qb', '#FF6D29'),
+        emberText: token('--qb-ink', '#FFAA80'), positive: token('--live', '#91C9A5'),
+      };
       this.cy = cytoscape({
         container, minZoom: .02, maxZoom: 1.2,
         boxSelectionEnabled: false, selectionType: 'single',
         style: [
           { selector: 'node', style: {
-            label: 'data(label)', color: '#e8e4e2', 'font-family': 'Host Grotesk, sans-serif', 'font-size': 12,
+            label: 'data(label)', color: colors.text, 'font-family': 'Host Grotesk, sans-serif', 'font-size': 12,
             'font-weight': 400, 'text-valign': 'bottom', 'text-margin-y': 10,
-            'text-wrap': 'wrap', 'text-max-width': 150, 'text-outline-width': 3, 'text-outline-color': '#191619',
-            'background-color': '#342a29', 'border-width': 1.5, 'border-color': '#a99a94', width: 28, height: 28,
+            'text-wrap': 'wrap', 'text-max-width': 150, 'text-outline-width': 3, 'text-outline-color': colors.sunk,
+            'background-color': colors.raised3, 'border-width': 1.5, 'border-color': colors.soft, width: 28, height: 28,
             'overlay-opacity': 0,
           } },
           { selector: 'node[kind="coin"]', style: {
-            shape: 'round-rectangle', 'background-color': '#3d2821', 'border-color': '#ffac83', width: 32, height: 32,
+            shape: 'round-rectangle', 'background-color': '#3d2821', 'border-color': colors.emberText, width: 32, height: 32,
             'background-image': 'data(image)', 'background-width': '75%', 'background-height': '75%',
           } },
-          { selector: 'node[kind="coin"][grad="yes"]', style: { 'background-color': '#24362b', 'border-color': '#91c9a5' } },
+          { selector: 'node[kind="coin"][grad="yes"]', style: { 'background-color': '#24362b', 'border-color': colors.positive } },
           { selector: 'node[kind="hub"]', style: {
-            shape: 'hexagon', 'background-color': '#272326', 'border-style': 'dashed', 'border-color': '#aaa09d',
-            width: 38, height: 38, color: '#bababa',
+            shape: 'hexagon', 'background-color': colors.raised2, 'border-style': 'dashed', 'border-color': colors.soft,
+            width: 38, height: 38, color: colors.muted,
           } },
-          { selector: 'node[kind="handle"]', style: { shape: 'diamond', width: 34, height: 34, 'background-color': '#322a2d' } },
+          { selector: 'node[kind="handle"]', style: { shape: 'diamond', width: 34, height: 34, 'background-color': colors.raised3 } },
           { selector: 'node[kind="ring"]', style: {
-            shape: 'ellipse', width: 48, height: 48, 'border-width': 5, 'border-color': '#9e6448',
-            'background-color': '#241c1b', 'background-opacity': .8,
+            shape: 'ellipse', width: 48, height: 48, 'border-width': 5, 'border-color': colors.emberText,
+            'background-color': colors.raised, 'background-opacity': .8,
           } },
           { selector: 'node[kind="group"]', style: {
             shape: 'round-rectangle', width: 58, height: 38, 'border-style': 'dotted',
-            'background-color': '#2b2526', 'border-color': '#a99a94',
+            'background-color': colors.raised2, 'border-color': colors.soft,
           } },
           { selector: 'node[kind="doc"], node[kind="section"]', style: {
-            shape: 'round-rectangle', width: 38, height: 30, 'border-color': '#ffac83',
+            shape: 'round-rectangle', width: 38, height: 30, 'border-color': colors.emberText,
           } },
           { selector: 'node.focus', style: {
-            width: 42, height: 42, 'border-width': 2, 'border-color': '#ff6d29',
-            'background-color': '#67311e', 'font-size': 14, 'font-weight': 600, color: '#ffffff',
-            'underlay-color': '#ff6d29', 'underlay-padding': 12, 'underlay-opacity': .07, 'underlay-shape': 'ellipse',
+            width: 42, height: 42, 'border-width': 2, 'border-color': colors.ember,
+            'background-color': '#67311e', 'font-size': 14, 'font-weight': 600, color: colors.ink,
+            'underlay-color': colors.ember, 'underlay-padding': 12, 'underlay-opacity': .07, 'underlay-shape': 'ellipse',
           } },
           { selector: 'edge', style: {
-            width: 1.3, 'line-color': '#72605a', 'target-arrow-color': '#72605a',
+            width: 1.3, 'line-color': colors.edge, 'target-arrow-color': colors.edge,
             'target-arrow-shape': 'triangle', 'arrow-scale': .75, 'curve-style': 'bezier',
-            label: 'data(label)', 'font-size': 10, 'font-family': 'Geist Mono, monospace', color: '#bababa',
-            'text-rotation': 'autorotate', 'text-background-color': '#191619',
+            label: 'data(label)', 'font-size': 10, 'font-family': 'Geist Mono, monospace', color: colors.muted,
+            'text-rotation': 'autorotate', 'text-background-color': colors.sunk,
             'text-background-opacity': 1, 'text-background-padding': 4, 'text-margin-y': -3,
             'overlay-opacity': 0,
           } },
-          { selector: 'edge[type="FUNDED"]', style: { 'line-color': '#aa7a63', 'target-arrow-color': '#aa7a63', width: 1.8 } },
+          { selector: 'edge[type="FUNDED"]', style: { 'line-color': colors.emberText, 'target-arrow-color': colors.emberText, width: 1.8 } },
           { selector: 'edge[type="LINKS"], edge[type="SHARED"]', style: { 'line-style': 'dashed', 'target-arrow-shape': 'none' } },
-          { selector: 'edge[type="IN_RING"]', style: { 'line-style': 'dotted', 'target-arrow-shape': 'none', 'line-color': '#9e6448' } },
+          { selector: 'edge[type="IN_RING"]', style: { 'line-style': 'dotted', 'target-arrow-shape': 'none', 'line-color': colors.emberText } },
           { selector: 'edge.hub-edge', style: { 'line-style': 'dashed' } },
           { selector: '.dim', style: { opacity: .13 } },
           { selector: 'node.hi', style: {
-            'border-color': '#ff9a6b', 'border-width': 2.5, color: '#ffffff', 'z-index': 10,
-            'underlay-color': '#ff6d29', 'underlay-padding': 12, 'underlay-opacity': .12, 'underlay-shape': 'ellipse',
+            'border-color': colors.emberText, 'border-width': 2.5, color: colors.ink, 'z-index': 10,
+            'underlay-color': colors.ember, 'underlay-padding': 12, 'underlay-opacity': .12, 'underlay-shape': 'ellipse',
           } },
           { selector: 'edge.hi', style: {
-            'line-color': '#ff9a6b', 'target-arrow-color': '#ff9a6b', width: 2.5,
-            color: '#ffcfb6', 'z-index': 10, 'underlay-color': '#ff6d29', 'underlay-padding': 4, 'underlay-opacity': .08,
+            'line-color': colors.emberText, 'target-arrow-color': colors.emberText, width: 2.5,
+            color: colors.ink, 'z-index': 10, 'underlay-color': colors.ember, 'underlay-padding': 4, 'underlay-opacity': .08,
           } },
         ],
       });

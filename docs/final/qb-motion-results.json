@@ -1,0 +1,19 @@
+{
+  "generated": "2026-10-18T16:36:05.214Z",
+  "checks": [
+    {
+      "width": 1440,
+      "pauseResume": true,
+      "reducedMotionSwitch": true,
+      "missingImageFallback": true,
+      "noJsVideoLink": true
+    },
+    {
+      "width": 390,
+      "pauseResume": true,
+      "reducedMotionSwitch": true,
+      "missingImageFallback": true,
+      "noJsVideoLink": true
+    }
+  ]
+}

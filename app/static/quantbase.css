@@ -487,3 +487,40 @@ input::placeholder, textarea::placeholder { color: var(--ink-4); }
   .flow-node-light { animation: none !important; opacity: 1; }
   .hero-flow-legend button { color: var(--ink-3); }
 }
+/* Second comparison pass: keep the dashboard frame visible while its reading pane scrolls. */
+@media (min-width: 769px) {
+  .qb-dashboard { overflow: hidden; }
+  .qb-shell { position: fixed; inset: 12px; width: auto; min-height: 0; margin: 0; grid-template-rows: var(--header-height) minmax(0,1fr); }
+  .qb-rail { position: relative; top: auto; height: 100%; min-height: 0; }
+  .qb-content { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scroll-padding-block: 24px; scrollbar-width: thin; scrollbar-color: var(--raised-3) transparent; }
+  .qb-app:not(.has-investigation) .workspace-heading { min-height: max(560px,calc(100dvh - 270px)); padding-top: clamp(80px,15vh,154px); }
+  .qb-app .workspace-footer { padding: 24px 0 8px; }
+}
+/* Anchor the website menu to the full header, keeping both columns inside narrow viewports. */
+.qb-website .nav-menu { position: static; }
+.qb-website .nav-menu-links { top: calc(100% + 8px); right: 8px; width: 320px; max-width: calc(100% - 16px); }
+@media (max-width: 640px) {
+  .story-new-coin .story-art, .story-trail .story-art, .story-ring .story-art { aspect-ratio: 4 / 5; }
+}
+@media (max-width: 768px) {
+  .qb-app:not(.has-investigation) .workspace-heading { padding-top: 32px; padding-bottom: 24px; }
+  .qb-app:not(.has-investigation) .qb-welcome-identity { margin-bottom: 20px; }
+  .qb-app:not(.has-investigation) .chips { margin-top: 20px; }
+  .qb-app:not(.has-investigation) .chip { min-height: 68px; }
+  .qb-app:not(.has-investigation) .fields { gap: 10px; }
+  .qb-app:not(.has-investigation) .composer-meta { margin-top: 12px; }
+}
+/* Website footer: the same brand/three-column/risk-note structure as QuantBase. */
+.qb-website .site-footer { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,2fr); gap: 40px 64px; }
+.footer-columns { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 24px; }
+.footer-columns nav { display: flex; flex-direction: column; align-items: start; }
+.footer-columns h2 { margin: 0 0 12px; color: var(--qb-ink); font: 500 11px/18px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.footer-columns a { display: inline-flex; align-items: center; min-height: 40px; color: var(--ink-2); font-size: 13px; line-height: 20px; text-decoration: none; }
+.footer-columns a:hover { color: var(--ink); }
+.footer-risk { grid-column: 1 / -1; padding-top: 24px; border-top: 1px solid var(--line); margin: 0; font-size: 12px; line-height: 20px; color: var(--ink-3); }
+.footer-risk strong { color: var(--ink-2); font-weight: 500; }
+@media (max-width: 768px) {
+  .qb-website .site-footer { grid-template-columns: minmax(0,1fr); gap: 32px; }
+  .footer-columns { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px 20px; }
+  .footer-columns a { min-height: 44px; }
+}

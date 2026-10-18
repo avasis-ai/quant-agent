@@ -8,18 +8,24 @@ Deadline: **Oct 18, 2026, 23:59 IST**. Our own target: submitted by **18:00 IST*
 |---|---|
 | Project name | Sniff |
 | Team | QuantBase (code F92P7R) |
-| Track | 01: Agents That Act on Connected Data |
+| Tracks | 01: Agents That Act on Connected Data; 02: Agent Memory and Coordination; 03: Company Brain |
 | Repository | https://github.com/avasis-ai/quant-agent |
 | Live demo | https://sniff.quantbase.live |
 | MCP endpoint | https://sniff.quantbase.live/mcp |
 | Video | https://youtu.be/YMQKpynEsI0 |
 | Blog post | https://dev.to/quantbase/who-is-behind-this-meme-coin-building-sniff-on-a-graph-4nnc |
 
-**Short description (≤ 300 characters, 281 now):**
+**Updated short description (≤ 300 characters):**
 
-> Sniff shows who is behind a pump.fun meme coin. An AI agent walks a FalkorDB graph of 632k launches and
-> 424k wallets (who made a coin, who paid them, what else they launched) and answers in plain sentences,
-> each linked to the graph evidence that proves it. History, not prediction.
+> Sniff investigates meme-coin operators through FalkorDB lineage, remembers findings across agent sessions,
+> and answers QuantBase product and policy questions from a public company graph. Every answer links to its
+> graph evidence or source section. History, not a prediction.
+
+All three tracks are integrated on `final/merged` and verified locally. Before updating the submitted
+entry, the leader must deploy the merged branch and load both new graphs using
+[the exact commands in GRAPH.md](GRAPH.md#leader-only-demo-box-commands-not-run-by-this-task).
+The included public corpus is explicitly source-only; the builder supports capped Haiku extraction
+through the configured owner key. The merge report is [MERGE-RESULT.md](final/MERGE-RESULT.md). No deployment or form update was performed.
 
 **Tech used:** FalkorDB 6.0.2 (bulk loader, range and full-text indexes, `algo.WCC`, `algo.SPpaths`,
 read-only queries with timeouts), Claude Sonnet 5.5 with tool use, MCP (streamable HTTP), Python, FastAPI,
@@ -47,7 +53,9 @@ Cytoscape.js, DuckDB (data prep and test ground truth), AWS EC2 and Caddy.
 
 - [x] https://sniff.quantbase.live loads, and the METHU example answers.
 - [ ] `/settings` shows the site key as Active.
-- [ ] `claude mcp add --transport http sniff https://sniff.quantbase.live/mcp` lists 9 tools.
+- [ ] `claude mcp add --transport http sniff https://sniff.quantbase.live/mcp` lists 12 tools after the tracks deploy.
+- [ ] `/memory` recalls a real METHU investigation and a second agent can add an attributed note over MCP.
+- [ ] `/brain` answers the paper/live question with `[B#]` source sections and a knowledge graph.
 - [ ] The README renders on GitHub, including the screenshots and mermaid diagrams.
 - [x] The video link works when you're logged out.
 

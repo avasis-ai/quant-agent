@@ -264,6 +264,8 @@
   }
 
   function closeSuggestions() {
+    clearTimeout(searchTimer);
+    searchRequest?.abort();
     $('sugg').hidden = true;
     $('coin').setAttribute('aria-expanded', 'false');
     $('coin').removeAttribute('aria-activedescendant');

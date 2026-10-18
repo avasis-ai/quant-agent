@@ -1,6 +1,6 @@
 # Brief: the final premium Sniff site for Graph Hacks (Codex). HARD DEADLINE: done and committed by 21:45 IST, 18 Oct
 
-This repo is "Sniff by Quant Agent", our WeMakeDevs × FalkorDB Graph Hacks entry (Track 01), live at https://sniff.quantbase.live
+This repo is "Sniff by QuantBase", our WeMakeDevs × FalkorDB Graph Hacks entry (Track 01), live at https://sniff.quantbase.live
 (FastAPI app in app/, static UI in app/static/, FalkorDB graph `lineage`). Read README.md, docs/GRAPH.md and app/static/app.html first.
 Abhay: the current Sniff page "looks a bit sloppy and compact". Rebuild the UI as a premium platform and make clear to the
 hackathon reviewers that this is a serious product: the graph intelligence is becoming a core feature of the QuantBase dashboard.
@@ -42,4 +42,4 @@ hackathon reviewers that this is a serious product: the graph intelligence is be
   or the live API read-only).
 - Finish with docs/final/RESULT.md.
 
-## UPDATE (18 Oct ~19:00 IST): the TEAM NAME IS NOW "QuantBase" (changed on the hackathon page). Everywhere you would write "Quant Agent" or "by Quant Agent", write "QuantBase" / "by QuantBase" (including the video credits: "Built by QuantBase on FalkorDB").
+## UPDATE (18 Oct ~19:00 IST): the TEAM NAME IS NOW "QuantBase" (changed on the hackathon page). Use "QuantBase" / "by QuantBase" throughout (including the video credits: "Built by QuantBase on FalkorDB").

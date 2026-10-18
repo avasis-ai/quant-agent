@@ -250,7 +250,19 @@ def test_app_page_and_lookups(client):
 def test_pages_assets_and_legacy_waitlist_keep_their_routes(client, tmp_path):
     assert client.get("/settings").status_code == 200
     assert client.get("/settings").headers["cache-control"] == "no-store"
-    for asset in ("shared.css", "tokens.css", "home.js", "investigate.js", "graph.js", "settings.js",
+    for route in ("/", "/app", "/memory", "/brain", "/blog", "/settings"):
+        response = client.get(route)
+        assert response.status_code == 200, route
+        assert 'href="/static/shared.css"' in response.text, route
+        for target in ("/memory", "/brain", "/blog"):
+            assert f'href="{target}"' in response.text, (route, target)
+    blog = client.get("/blog")
+    assert blog.headers["cache-control"] == "no-cache"
+    assert 'src="/blog-assets/01-hero.jpg"' in blog.text
+    image = client.get("/blog-assets/01-hero.jpg")
+    assert image.status_code == 200 and image.headers["content-type"] == "image/jpeg"
+    assert client.get("/blog-assets/../README.md").status_code == 404
+    for asset in ("shared.css", "tokens.css", "home.js", "investigate.js", "graph.js", "settings.js", "blog.css",
                   "fonts/host-grotesk.woff2", "vendor/cytoscape-3.33.1.min.js"):
         assert client.get("/static/" + asset).status_code == 200, asset
     snapshot = client.get("/static/snapshot.json").json()

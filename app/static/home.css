@@ -221,3 +221,19 @@ code { font-family: var(--font-mono); font-size: .85em; }
   .limit-copy { grid-template-columns: 1fr; gap: var(--space-md); }
   .closing h2 { font-size: 35px; }
 }
+
+/* Three connected tracks, sharing the QuantBase Ember system. */
+.tracks-section { padding-block: var(--space-3xl); }
+.track-list { border-top: 1px solid var(--color-rule-2); }
+.track-list article { display: grid; grid-template-columns: 44px minmax(0, 1fr) 180px; gap: var(--space-lg); align-items: start; padding-block: var(--space-lg); border-bottom: 1px solid var(--color-rule); }
+.track-number { font-size: var(--text-xs); color: var(--color-accent-text); padding-top: var(--space-3xs); }
+.track-list h3 { font-size: var(--text-xl); letter-spacing: -.025em; margin-bottom: var(--space-xs); }
+.track-list p { max-width: 70ch; font-size: var(--text-sm); margin: 0; }
+.track-list code { color: var(--color-ink-2); font: 400 11px/1.5 var(--font-mono); overflow-wrap: anywhere; }
+.track-list .text-link { justify-self: end; }
+@media (max-width: 768px) {
+  .tracks-section { padding-block: var(--space-2xl); }
+  .track-list article { grid-template-columns: 28px minmax(0, 1fr); gap: var(--space-xs) var(--space-sm); }
+  .track-list .text-link { grid-column: 2; justify-self: start; }
+  .track-list h3 { font-size: var(--text-lg); }
+}

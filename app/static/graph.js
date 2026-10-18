@@ -17,7 +17,7 @@
         return;
       }
       this.cy = cytoscape({
-        container, minZoom: .18, maxZoom: 2.5,
+        container, minZoom: .02, maxZoom: 1.2,
         boxSelectionEnabled: false, selectionType: 'single',
         style: [
           { selector: 'node', style: {
@@ -210,7 +210,10 @@
       // Using label-aware automatic breadth-first spacing made small graphs tiny.
       this.layout = this.cy.layout({ name: 'preset', positions: node => positions.get(node.id()),
         fit: true, padding: vertical ? 30 : 48, animate: animate && !reduced(),
-        animationDuration: 500, animationEasing: 'ease-out-cubic' });
+        animationDuration: 500, animationEasing: 'ease-out-cubic',
+        // Final label bounds are available after the nodes finish moving.
+        // Fit again so initial load and container resizes include every label.
+        stop: () => this.cy.fit(undefined, 52) });
       this.layout.run();
     }
 

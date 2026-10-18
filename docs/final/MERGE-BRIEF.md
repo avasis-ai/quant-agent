@@ -18,7 +18,7 @@ Then:
 3. **Map zoom bug:** the connection map in /app opens at 250% with giant labels (docs/final/shots/app-evidence-1440.png). It
    should fit the whole graph on load (fit with padding, a sensible max zoom ~1.2) and keep labels at readable sizes.
 4. **Team name** is **QuantBase** everywhere: README, LICENSE copyright line, docs/SUBMISSION.md, docs/BLOG.md, app pages.
-   Replace every "Quant Agent" (git grep). Do not change the GitHub repo name.
+   Use the current team name throughout tracked text (git grep). Do not change the GitHub repo name.
 5. Run the full test suite (all green), take fresh screenshots of every page at 1440 and 390 into docs/final/shots-merged/,
    and fix anything ugly.
 6. Commit (author avasis-ai <abhay@avasis.ai>), and finish with docs/final/MERGE-RESULT.md.

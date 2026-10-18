@@ -1,4 +1,4 @@
-"""Sniff's agent tools: the 8 core graph questions plus coin search, as Claude tool definitions.
+"""Sniff's tools: nine lineage reads, shared investigation memory, and the public company brain.
 
 Every tool returns compact rows plus evidence. Evidence is the contract between the graph, the
 agent and the UI: each item has an id ("E1", "E2", ...), the tool and arguments that produced it,
@@ -86,7 +86,39 @@ def cap(obj: Any, limit: int = MAX_RESULT_CHARS) -> str:
         rows = obj["rows"]
         keep = max(1, len(rows) // 2)
         return cap({**obj, "rows": rows[:keep], "truncated": obj.get("truncated", 0) + len(rows) - keep}, limit)
-    return text[: limit - 20] + '..."(cut)"'
+    # An oversized single row or graph must still be valid JSON for MCP clients.
+    # Keep the existing evidence outside this compact result; callers receive it separately.
+    trimmed = json.loads(text)
+    for _ in range(100):
+        candidates = []
+
+        def visit(value, parent=None, key=None):
+            if isinstance(value, list) and len(value) > 1:
+                candidates.append((len(json.dumps(value, default=str)), parent, key, value))
+            if isinstance(value, str) and len(value) > 128:
+                candidates.append((len(value), parent, key, value))
+            if isinstance(value, dict):
+                for k, v in value.items():
+                    visit(v, value, k)
+            elif isinstance(value, list):
+                for k, v in enumerate(value):
+                    visit(v, value, k)
+
+        visit(trimmed)
+        if not candidates:
+            break
+        _, parent, key, value = max(candidates, key=lambda c: c[0])
+        replacement = value[:max(1, len(value) // 2)]
+        if isinstance(value, str):
+            replacement += "…"
+        if parent is None:
+            trimmed = replacement
+        else:
+            parent[key] = replacement
+        out = json.dumps(trimmed, default=str, separators=(",", ":"))
+        if len(out) <= limit:
+            return out
+    return json.dumps({"truncated": True, "note": "Result is too large; narrow the query."})
 
 
 # ---- evidence --------------------------------------------------------------------------------
@@ -95,14 +127,18 @@ def cap(obj: Any, limit: int = MAX_RESULT_CHARS) -> str:
 class Evidence:
     items: list[dict] = field(default_factory=list)
     _seen: dict[str, str] = field(default_factory=dict)
+    memory: Any = None  # memory.Investigation, kept request-local
 
-    def add(self, tool: str, args: dict, summary: str, nodes: list[dict], edges: list[dict] | None = None) -> str:
+    def add(self, tool: str, args: dict, summary: str, nodes: list[dict], edges: list[dict] | None = None,
+            *, identity: str | None = None) -> str:
         edges = edges or []
         sig = json.dumps([tool, sorted(n["key"] for n in nodes),
                           sorted((e["type"], e["src"], e["dst"]) for e in edges)])
+        if identity:
+            sig += ":" + identity
         if sig in self._seen:
             return self._seen[sig]
-        eid = f"E{len(self.items) + 1}"
+        eid = f"E{1 + sum(i['id'].startswith('E') for i in self.items)}"
         self._seen[sig] = eid
         self.items.append({"id": eid, "tool": tool, "args": args, "summary": summary,
                            "nodes": nodes, "edges": edges})
@@ -405,10 +441,100 @@ def run_tool(ev: Evidence, name: str, args: dict) -> tuple[dict, bool]:
         return {"error": f"Unknown tool {name}."}, False
     fn = TOOLS[name][0]
     try:
-        return fn(ev, **{k: v for k, v in (args or {}).items() if v not in (None, "")}), True
+        args = {k: v for k, v in (args or {}).items() if v not in (None, "")}
+        is_lineage = name not in {"memory_recall", "memory_note", "brain_ask"}
+        before = len(ev.items)
+        if ev.memory and is_lineage:
+            from . import memory
+            try:
+                result = memory.cached(ev.memory, name, args, ev)
+                if result is not None:
+                    memory.remember(ev.memory, name, args, result, ev.items[before:])
+                    return result, True
+            except Exception as exc:
+                ev.memory.error = type(exc).__name__
+        result = fn(ev, **args)
+        if ev.memory and (is_lineage or name == "memory_recall"):
+            from . import memory
+            try:
+                memory.remember(ev.memory, name, args, result, ev.items[before:])
+            except Exception as exc:
+                ev.memory.error = type(exc).__name__
+        return result, True
     except BadInput as e:
         return {"error": str(e)}, False
+    except ValueError as e:
+        if name in {"memory_recall", "memory_note", "brain_ask"}:
+            return {"error": str(e)}, False
+        return {"error": f"Invalid value for {name}."}, False
     except TypeError:
         return {"error": f"Wrong arguments for {name}."}, False
     except Exception as e:  # noqa: BLE001 - a graph timeout or error; the agent should try something else
         return {"error": f"The graph query failed ({type(e).__name__})."}, False
+
+
+def t_memory_recall(ev: Evidence, entity: str | None = None, session: str | None = None) -> dict:
+    from .memory import recall
+    result = recall(entity=entity, session=session or (ev.memory.sid if ev.memory and not entity else None), hydrate=True)
+    for row in result["rows"]:
+        payload = row.pop("payload", None)
+        if not payload:
+            continue
+        item = json.loads(payload)
+        persistent = row.get("id") or row["evidence_ids"][0]
+        existing = next((i for i in ev.items if i["tool"] == item["tool"] and i["summary"] == item["summary"]
+                         and i["args"] == item["args"]), None)
+        eid = existing["id"] if existing else ev.add(item["tool"], item["args"], item["summary"], item["nodes"],
+                                                    item["edges"], identity="memory:" + persistent)
+        target = next(i for i in ev.items if i["id"] == eid)
+        target["memory"] = {"id": persistent, "at": row["at"], "by": "sniff", "scope": result["scope"]}
+        row["evidence"] = eid
+    return result
+
+
+def t_memory_note(ev: Evidence, entity: str, by: str, text: str, evidence_ids: list[str] | None = None) -> dict:
+    from .memory import note
+    return note(entity, by, text, evidence_ids)
+
+
+def t_brain_ask(ev: Evidence, question: str) -> dict:
+    from .brain import ask
+    result = ask(question)
+    by_section = {i["source"]["section_id"]: i for i in ev.items if i.get("tool") == "brain_ask"}
+    mapping, current = {}, []
+    for item in result["evidence"]:
+        old = item["id"]
+        section = item["source"]["section_id"]
+        if section in by_section:
+            target = by_section[section]
+        else:
+            target = {**item, "id": f"B{1 + sum(i['id'].startswith('B') for i in ev.items)}"}
+            ev.items.append(target)
+            by_section[section] = target
+        mapping[old] = target["id"]
+        current.append(target)
+    result["answer"] = re.sub(r"\[(B\d+)\]", lambda m: "[" + mapping.get(m[1], m[1]) + "]", result["answer"])
+    result["cited"] = [mapping[i] for i in result["cited"]]
+    result["evidence"] = current
+    for source in result["sources"]:
+        source["id"] = mapping[source["id"]]
+    for node in result["graph"]["nodes"]:
+        if node.get("citation"):
+            node["citation"] = mapping[node["citation"]]
+    return result
+
+
+TOOLS.update({
+    "memory_recall": (t_memory_recall, "Recall what Sniff already learned, with timestamps and original tool provenance. "
+                      "Give entity coin:<mint>/wallet:<address> for anonymised findings across sessions, or session for "
+                      "one random session token. With no arguments uses this investigation's session.",
+                      {"type": "object", "properties": {"entity": {"type": "string"}, "session": {"type": "string"}}}),
+    "memory_note": (t_memory_note, "Coordinate with another agent by adding a public, attributed note about a coin or wallet. "
+                    "No secrets or PII. by is a self-declared agent label, never a verified identity. Notes remain unverified.",
+                    {"type": "object", "properties": {"entity": {"type": "string"}, "by": {"type": "string"},
+                     "text": {"type": "string"}, "evidence_ids": {"type": "array", "items": {"type": "string"}}},
+                     "required": ["entity", "by", "text"]}),
+    "brain_ask": (t_brain_ask, "Ask QuantBase's public company knowledge graph about products, policies, decisions, "
+                  "research and metrics. Retrieves entity neighbourhoods plus original source sections; cite [B#] evidence.",
+                  _schema(question=("string", "A question about QuantBase or Sniff's public knowledge."))),
+})

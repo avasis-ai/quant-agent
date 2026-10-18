@@ -4,14 +4,14 @@ Sniff is a graph investigation product for pump.fun traders and a Graph Hacks
 submission for technical reviewers. The primary action is to investigate a coin.
 The graph must explain the evidence, and the copy must distinguish recorded
 history from predictions. This is one system across the landing, workspace and
-settings pages.
+settings, memory, brain and blog pages.
 
 ## Direction
 
 Atmospheric, precise and spacious. Marketing uses a Map / Diagram composition:
 large left-aligned type alongside a real, interactive graph. The application uses
 a wide workbench with the dossier above a graph and a right-hand evidence column.
-Settings uses a quiet two-column reading layout. No invented financial data,
+Memory and Brain use a shared workbench: a query form, graph and evidence inspector, followed by timestamped findings or exact source sections. Blog uses a split introduction and a narrow reading column with local, full-width figures. Settings uses a quiet two-column reading layout. No invented financial data,
 customer claims, performance charts or trading controls.
 
 Design variance 7, motion intensity 4, visual density 3 on the landing. The

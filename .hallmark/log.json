@@ -7,5 +7,14 @@
     "vibe": "precise spacious warm graph intelligence",
     "enrichment": "interactive graph",
     "brief": "QuantBase Ember landing, graph investigation workspace and settings for Sniff."
+  },
+  {
+    "date": "2026-10-18",
+    "scope": "app",
+    "macrostructure": "Workbench / Long Document",
+    "theme": "QuantBase Ember (DESIGN.md)",
+    "theme_axes": "warm dark / Host Grotesk and Geist Mono / ember",
+    "enrichment": "existing graph data and committed blog images",
+    "brief": "Integrate all three Sniff tracks; restyle memory, brain and blog within the shared Ember design system."
   }
 ]

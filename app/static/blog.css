@@ -1,0 +1,47 @@
+/* Hallmark · genre: atmospheric · macrostructure: Long Document · design-system: DESIGN.md · designed-as-app
+ * audience: Graph Hacks reviewers and builders · tone: honest and precise
+ * Hallmark · pre-emit critique: P5 H5 E4 S5 R5 V4
+ */
+.blog-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: var(--space-lg) var(--space-xl); align-items: center; padding-block: var(--space-2xl); border-bottom: 1px solid var(--color-rule); }
+.blog-hero>img { grid-column: 2; grid-row: 1; width: 100%; height: 520px; object-fit: cover; border-radius: var(--radius-card); }
+.hero-copy { grid-column: 1; grid-row: 1 / 3; }
+.blog-hero h1 { font-size: clamp(2.75rem, 4.4vw, 4.5rem); line-height: 1.06; margin-bottom: var(--space-md); max-width: 16ch; }
+.heading-muted { color: var(--color-muted); }
+.lede { font-size: var(--text-md); max-width: 52ch; }
+.blog-meta { display: flex; flex-wrap: wrap; gap: var(--space-xs); font-size: 10px; color: var(--color-muted); margin-top: var(--space-lg); }
+.blog-meta span { color: var(--color-accent-text); }
+.hero-cap { grid-column: 2; margin: 0; font-size: var(--text-xs); max-width: 54ch; }
+.blog-story { width: min(720px, calc(100% - 40px)); margin-inline: auto; padding-block: var(--space-lg) var(--space-2xl); font-size: var(--text-md); line-height: 1.8; }
+.blog-story h2 { font-size: clamp(1.875rem, 3vw, 2.625rem); line-height: 1.15; margin: var(--space-3xl) 0 var(--space-md); scroll-margin-top: var(--space-lg); }
+.blog-story h2 .n { display: block; font: 400 11px/1.5 var(--font-mono); letter-spacing: .1em; color: var(--color-accent-text); margin-bottom: var(--space-sm); }
+.blog-story p, .blog-story li { color: var(--color-ink-2); }
+.blog-story p { margin-bottom: var(--space-md); }
+.blog-story strong { color: var(--color-ink); font-weight: 600; }
+.blog-story a { color: var(--color-accent-text); }
+.blog-story ul { padding-left: var(--space-md); margin-block: 0 var(--space-lg); }
+.blog-story li { padding-left: var(--space-2xs); margin-bottom: var(--space-xs); }
+.blog-story li::marker { color: var(--color-accent-text); }
+.blog-story code { font: 400 .8em/1.6 var(--font-mono); overflow-wrap: anywhere; background: var(--color-raised); border: 1px solid var(--color-rule); border-radius: var(--radius-tag); padding: 2px 5px; }
+.blog-story pre { background: var(--color-well); border: 1px solid var(--color-rule-2); border-radius: var(--radius-input); padding: var(--space-md); overflow-x: auto; margin-block: var(--space-md); }
+.blog-story pre code { background: transparent; border: 0; padding: 0; white-space: pre-wrap; }
+.blog-story figure { width: calc(100% + 240px); margin: var(--space-xl) -120px; }
+.blog-story figure img { display: block; width: 100%; height: auto; border: 1px solid var(--color-rule); border-radius: var(--radius-card); }
+.blog-story figcaption { font-size: var(--text-sm); line-height: 1.6; color: var(--color-muted); margin-top: var(--space-sm); padding-left: var(--space-sm); border-left: 2px solid var(--color-accent); }
+.blog-story em { font-family: var(--font-body); letter-spacing: normal; }
+@media (max-width: 1100px) { .blog-story figure { width: 100%; margin-inline: 0; } .blog-hero { gap: var(--space-lg); } }
+@media (max-width: 850px) {
+  .blog-hero { grid-template-columns: minmax(0, 1fr); padding-block: var(--space-xl); }
+  .hero-copy { grid-column: 1; grid-row: 1; }
+  .blog-hero h1 { max-width: 20ch; }
+  .blog-hero>img { grid-column: 1; grid-row: 2; height: auto; aspect-ratio: 3/2; }
+  .hero-cap { grid-column: 1; }
+}
+@media (max-width: 640px) {
+  .blog-hero h1 { font-size: 44px; }
+  .blog-hero .eyebrow { font-size: 10px; }
+  .lede, .blog-story { font-size: var(--text-base); }
+  .blog-story h2 { margin-top: var(--space-2xl); }
+  .blog-story figure { margin-block: var(--space-lg); }
+  .blog-story figcaption { font-size: var(--text-xs); }
+  .blog-meta { gap: var(--space-2xs); font-size: 9px; }
+}

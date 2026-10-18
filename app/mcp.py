@@ -1,9 +1,9 @@
-"""Sniff over MCP: the same 9 read-only graph tools the agent uses, for any MCP client (Claude Code,
-Claude Desktop, other agents). Streamable HTTP at /mcp, stateless, JSON responses.
+"""Sniff over MCP: nine lineage tools, memory recall/notes, and public company knowledge.
+Streamable HTTP at /mcp, stateless, JSON responses.
 
-No AI key is involved: every tool is a fixed, parameterised read of the graph, so a call costs the
-site nothing but a query. Calls are rate-limited per IP and per day like /api/ask. Each call gets a
-fresh evidence list, so ids restart at E1 per call.
+No AI key is involved at runtime. Lineage reads save scanned public evidence to a separate memory
+graph; memory_note writes an unverified public observation. Calls are rate-limited per IP and day.
+Each call gets local E/B citation ids; session_id connects follow-ups without identifying a visitor.
 """
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
 from mcp.server.fastmcp.server import StreamableHTTPASGIApp
 
-from . import tools
+from . import tools, memory
 from .limits import Limiter
 
 PATH = "/mcp"
@@ -24,6 +24,9 @@ daily = Limiter(5000, 24 * 60 * 60)   # all MCP requests together per day
 
 INSTRUCTIONS = """Sniff answers who is behind a pump.fun meme coin on Solana, from a graph of public on-chain
 history: coins, their creators, who funded the creators, early buyers, shared socials and funding rings.
+Call memory_recall before re-querying; pass the returned session_id on follow-up calls to reuse evidence.
+memory_note lets another agent add a public, attributed observation (self-declared, unverified).
+brain_ask retrieves QuantBase's public product, research and policy knowledge with [B#] sources.
 Start with coin_dossier for a coin (search_coins if you only have a name). Hubs are funders of more than 200
 wallets, likely exchanges: they end funding trails and never link two things. Every result carries evidence
 ids; cite them. This is history, not a prediction or advice."""
@@ -38,72 +41,97 @@ server = FastMCP(
 )
 
 
-async def _run(name: str, args: dict[str, Any]) -> dict:
-    ev = tools.Evidence()
+async def _run(name: str, args: dict[str, Any], session_id: str | None = None) -> dict:
+    ctx = await asyncio.to_thread(memory.begin, session_id, name)
+    ev = tools.Evidence(memory=ctx)
     res, ok = await asyncio.to_thread(tools.run_tool, ev, name, args)
     if not ok:
         raise ValueError(res.get("error") or "The tool failed.")
-    return {"result": json.loads(tools.cap(res, 20000)), "evidence": ev.items}
+    return {"result": json.loads(tools.cap(res, 20000)), "evidence": ev.items, "session_id": ctx.sid,
+            "memory_available": ctx.available and not ctx.error,
+            **({"memory_error": ctx.error} if ctx.error else {})}
 
 
 @server.tool()
-async def search_coins(query: str) -> dict:
+async def search_coins(query: str, session_id: str | None = None) -> dict:
     """Find pump.fun coins by words from their name or ticker. Use when you have a name, not an address.
     Several coins can share a name: pick by mint."""
-    return await _run("search_coins", {"query": query})
+    return await _run("search_coins", {"query": query}, session_id)
 
 
 @server.tool()
-async def coin_dossier(mint: str) -> dict:
+async def coin_dossier(mint: str, session_id: str | None = None) -> dict:
     """Start here for a coin (mint address): its creator, the creator's other coins and how many graduated,
     who funded the creator (hubs marked), and the creator's funding ring if any."""
-    return await _run("coin_dossier", {"mint": mint})
+    return await _run("coin_dossier", {"mint": mint}, session_id)
 
 
 @server.tool()
-async def funding_trail(address: str) -> dict:
+async def funding_trail(address: str, session_id: str | None = None) -> dict:
     """Who funded a wallet, up to 3 hops back. A hub (likely an exchange) ends a trail and proves nothing."""
-    return await _run("funding_trail", {"address": address})
+    return await _run("funding_trail", {"address": address}, session_id)
 
 
 @server.tool()
-async def siblings(mint: str) -> dict:
+async def siblings(mint: str, session_id: str | None = None) -> dict:
     """Other creators paid by the same (non-hub) funder as this coin's creator, and how their coins did."""
-    return await _run("siblings", {"mint": mint})
+    return await _run("siblings", {"mint": mint}, session_id)
 
 
 @server.tool()
-async def shared_snipers(mint: str) -> dict:
+async def shared_snipers(mint: str, session_id: str | None = None) -> dict:
     """Other coins this coin's early buyers also bought early, scored by how rare each buyer is.
     Bots (wallets with more than 100 early buys) are ignored."""
-    return await _run("shared_snipers", {"mint": mint})
+    return await _run("shared_snipers", {"mint": mint}, session_id)
 
 
 @server.tool()
-async def shared_handles(mint: str) -> dict:
+async def shared_handles(mint: str, session_id: str | None = None) -> dict:
     """Other coins that reuse this coin's X, Telegram or website, by how many other creators."""
-    return await _run("shared_handles", {"mint": mint})
+    return await _run("shared_handles", {"mint": mint}, session_id)
 
 
 @server.tool()
-async def ring(mint: str | None = None, address: str | None = None) -> dict:
+async def ring(mint: str | None = None, address: str | None = None, session_id: str | None = None) -> dict:
     """The funding ring (creators linked to each other through funding) that a coin's creator or a wallet
     belongs to: its size, coins, graduations and top creators. Give a mint or an address."""
-    return await _run("ring", {"mint": mint, "address": address})
+    return await _run("ring", {"mint": mint, "address": address}, session_id)
 
 
 @server.tool()
-async def connect(a: str, b: str) -> dict:
+async def connect(a: str, b: str, session_id: str | None = None) -> dict:
     """Shortest funding, creation or social link between two coins or wallets (up to 6 hops), never
     through a hub or a platform-sized handle. Empty means no link was found."""
-    return await _run("connect", {"a": a, "b": b})
+    return await _run("connect", {"a": a, "b": b}, session_id)
 
 
 @server.tool()
-async def top_operators(days: int = 7) -> dict:
+async def top_operators(days: int = 7, session_id: str | None = None) -> dict:
     """Funders behind the most creators whose coins launched in the last `days` (1-30) of the graph,
     with how many of those coins graduated."""
-    return await _run("top_operators", {"days": days})
+    return await _run("top_operators", {"days": days}, session_id)
+
+
+@server.tool()
+async def memory_recall(entity: str | None = None, session: str | None = None) -> dict:
+    """Recall public findings about coin:<mint>/wallet:<address> across anonymised sessions, or one random
+    session token. Includes timestamps, provenance and graph. Agent notes are unverified observations."""
+    return await _run("memory_recall", {"entity": entity, "session": session}, session)
+
+
+@server.tool()
+async def memory_note(entity: str, by: str, text: str, evidence_ids: list[str] | None = None,
+                      session_id: str | None = None) -> dict:
+    """Add another agent's public observation with its self-declared label and optional persistent memory
+    evidence ids. Secrets and PII are refused. This records provenance, not a verified identity or fact."""
+    return await _run("memory_note", {"entity": entity, "by": by, "text": text, "evidence_ids": evidence_ids}, session_id)
+
+
+@server.tool()
+async def brain_ask(question: str, session_id: str | None = None) -> dict:
+    """Ask QuantBase's PUBLIC company graph about products, paper vs live, research, decisions or policies.
+    Returns entity neighbourhoods, exact source sections and checked [B#] citations. No internal documents."""
+    return await _run("brain_ask", {"question": question}, session_id)
 
 
 def _client_ip(scope: dict) -> str:

@@ -5,24 +5,41 @@ wallet that made it, what else those people launched, and how those coins ended.
 632,339 pump.fun launches and 424,007 wallets. Claude writes the answer, and every sentence in it links to the
 part of the graph that proves it. Sniff shows history, not predictions.
 
-Entry for WeMakeDevs × FalkorDB **Graph Hacks: Context for AI Agents**, Track 01 (Agents That Act on Connected
-Data). Team **QuantBase**. Built during the event window, Oct 15–18, 2026 (IST).
+Entry for WeMakeDevs × FalkorDB **Graph Hacks: Context for AI Agents**, Tracks 01, 02 and 03.
+Team **QuantBase**. Built during the event window, Oct 15–18, 2026 (IST).
 
 | | |
 |---|---|
 | **Home** | https://sniff.quantbase.live |
 | **Investigation workspace** | https://sniff.quantbase.live/app |
+| **Agent memory** | https://sniff.quantbase.live/memory |
+| **Company brain** | https://sniff.quantbase.live/brain |
+| **Full build story** | https://sniff.quantbase.live/blog |
 | **Demo video** | https://youtu.be/YMQKpynEsI0 |
 | **Blog post** | https://dev.to/quantbase/who-is-behind-this-meme-coin-building-sniff-on-a-graph-4nnc |
 | **Bring your own Claude key** | https://sniff.quantbase.live/settings |
-| **MCP endpoint (9 graph tools)** | `https://sniff.quantbase.live/mcp` |
+| **MCP endpoint (12 graph tools)** | `https://sniff.quantbase.live/mcp` |
 
 | Ask | Evidence on the map | Phone |
 |---|---|---|
-| ![Live steps](docs/final/shots/app-streaming-1440.png) | ![Evidence highlight](docs/final/shots/app-evidence-1440.png) | ![Mobile](docs/final/shots/app-investigation-390.png) |
+| ![Live steps](docs/final/shots-merged/app-streaming-1440.png) | ![Evidence highlight](docs/final/shots-merged/app-evidence-1440.png) | ![Mobile](docs/final/shots-merged/app-investigation-390.png) |
 
 Try the **METHU** example: one wallet paid 72 brand-new creators, each launched exactly one coin, and none of
 the 72 coins graduated.
+
+## Tracks
+
+| Track | Working feature | Try it |
+|---|---|---|
+| **01: Agents That Act on Connected Data** | The `lineage` graph connects launches, creators, funders, early buyers and socials. Nine fixed Cypher tools return graph evidence with checked `[E#]` citations. | [Investigate a coin](https://sniff.quantbase.live/app) |
+| **02: Agent Memory and Coordination** | The `memory` graph records `Session → Question → Evidence → Coin/Wallet` with timestamps. Same-session follow-ups reuse exact tool results, keeping original tool provenance. Other agents can recall findings and add attributed, unverified notes. Coin views aggregate across sessions without exposing visitor tokens. | [Memory graph](https://sniff.quantbase.live/memory), MCP `memory_recall` and `memory_note` |
+| **03: Company Brain** | The `brain` graph connects public docs, sections, products, features, policies, decisions, findings and metrics. Graph neighbourhoods plus full-text retrieval return exact source excerpts with checked `[B#]` citations. The rerunnable builder uses the existing AI client with a cheap model and explicit call, token and cost limits; every extracted quote must occur in the source. | [Ask the company brain](https://sniff.quantbase.live/brain), MCP `brain_ask` |
+
+The new graphs require the leader's load step in [docs/GRAPH.md](docs/GRAPH.md#memory-and-company-brain-tracks-02-and-03).
+They were tested locally with real embedded FalkorDB. This branch does not deploy them. The included public
+corpus is explicitly **source-only** (literal anchors, no AI call); the leader can load it immediately or
+run capped AI extraction. Sources containing secrets or PII are refused before loading. Full legal pages
+with contact emails are excluded; cited public policy summaries supply their relevant claims instead.
 
 ## How it works
 
@@ -96,8 +113,9 @@ graph TD
 
 ## Use Sniff from your own agent (MCP)
 
-The same 9 tools are served over MCP (streamable HTTP). No AI key is needed: every tool is a plain graph read,
-rate-limited per IP.
+The nine lineage tools plus `memory_recall`, `memory_note` and `brain_ask` are served over MCP (streamable
+HTTP). No AI key is needed to call them. Lineage reads also save scanned public evidence in `memory`;
+`memory_note` writes a public agent observation. Calls are rate-limited per IP.
 
 ```bash
 claude mcp add --transport http sniff https://sniff.quantbase.live/mcp
@@ -111,10 +129,22 @@ Any client that takes a JSON config:
 
 Then ask: "Use sniff to check who is behind `<mint>`." Every result carries evidence ids to cite.
 
+MCP results include a random `session_id`. Pass it on subsequent lineage calls to reuse recorded evidence.
+`memory_recall(entity="coin:<mint>")` shows anonymised cross-session findings;
+`memory_recall(session="<session_id>")` opens one session. Another agent can add
+`memory_note(entity="coin:<mint>", by="quantbase-trading-agent", text="A public observation")`.
+The agent label is self-declared, and a note never becomes verified lineage evidence.
+
 ## API
 
-- `POST /api/ask {"question": "...", "mint": "<optional>"}`: JSON, or server-sent events (`step`, `evidence`,
-  `verdict`, `done`) with `Accept: text/event-stream`.
+- `POST /api/ask {"question": "...", "mint": "<optional>", "session_id": "<optional>"}`: JSON, or server-sent
+  events (`step`, `evidence`, `verdict`, `done`) with `Accept: text/event-stream`. A random HttpOnly cookie
+  carries the session in the browser. Neither visitor questions nor network addresses are saved in memory.
+- `GET /api/memory?entity=coin:<mint>` or `?session=<session_id>`: findings and the memory graph; with no
+  parameter uses the browser's session.
+- `POST /api/brain/ask {"question": "How does QuantBase handle paper vs live?"}`: cited public source
+  excerpts, full source sections and a knowledge graph. No runtime AI call is needed.
+- `GET /api/brain`: corpus sources, fetch dates and extraction modes.
 - `GET /api/dossier?mint=`: the fixed coin card, no AI.
 - `GET /api/search?q=`: coin search by name, ticker or address.
 - Share a coin: `/app?mint=<address>`.
@@ -199,9 +229,10 @@ not a prediction"), and reviewed the work, including checking every core query a
 DuckDB ground truth (`tests/test_queries.py`). The commit history shows the work as it happened during
 the event. At runtime, Sniff's answers are written by Claude from the graph's evidence, as described above.
 
-The final QuantBase Ember landing page, investigation workspace, settings interface and browser QA
-were rebuilt with OpenAI Codex on October 18. The final screenshots use the repository's full graph
-snapshot locally; the validation details are in `docs/final/RESULT.md`.
+The final QuantBase Ember landing page, investigation workspace, settings interface, memory and brain
+viewers, blog styling and browser QA were completed with OpenAI Codex on October 18. Codex merged all
+three tracks and corrected graph zoom and full-text retrieval during integration. The final screenshots
+use the repository's full graph snapshot locally; validation is in [MERGE-RESULT.md](docs/final/MERGE-RESULT.md).
 
 ## License
 

@@ -31,7 +31,7 @@
 <main id="main">
   <section class="showcase-hero container" aria-labelledby="hero-title">
     <a class="production-badge" href="https://quantbase.live">Sniff by QuantBase <span>Full production agent ↗</span></a>
-    <h1 id="hero-title">Follow the money<br><em>behind a meme coin.</em></h1>
+    <h1 id="hero-title">Follow the money<br><em>behind a meme&nbsp;coin.</em></h1>
     <p class="hero-description">Sniff investigates a coin’s creator, funder and connected launches, with graph evidence behind every answer.</p>
       <form id="inline-form" class="hero-ask glass" action="/app" method="get">
         <label for="home-question">Which coin are you looking into?</label>
@@ -99,7 +99,7 @@
       <div class="visual-topline"><span class="mono">A coin is never just a coin.</span><span class="diagram-label">METHU · simplified graph</span></div>
       <svg class="lineage-visual" viewBox="0 0 660 520" role="img" aria-labelledby="graph-title graph-desc">
         <title id="graph-title">The connections behind METHU</title>
-        <desc id="graph-desc">Funder ATLi funded creator 38PL, who created METHU. That funder also paid 71 other creators. The full recorded ring contains 72 creators and 72 coins, none graduated. Small branches are a schematic representation of the aggregate, not individual wallet records.</desc>
+        <desc id="graph-desc">Funder ATLi funded creator 38PL, who created METHU. That funder also paid 71 other creators. The full recorded ring contains 72 creators and 72 coins, none graduated. Small branches are a schematic representation of the aggregate, not individual wallet records. The exchange-like hub is schematic: it illustrates where the trail stops, rather than a recorded METHU connection.</desc>
         <defs>
           <radialGradient id="ember-field"><stop offset="0" stop-color="#ff6d29" stop-opacity=".12"/><stop offset="1" stop-color="#ff6d29" stop-opacity="0"/></radialGradient>
           <linearGradient id="edge-fade"><stop stop-color="#8d5a42" stop-opacity=".7"/><stop offset="1" stop-color="#765346" stop-opacity=".3"/></linearGradient>
@@ -134,28 +134,37 @@
         </g>
         <g class="evidence-path">
           <path d="M167 255 C224 255 258 274 329 274 L505 274" fill="none" stroke="#ff6d29" stroke-width="8" opacity=".2" filter="url(#soft-glow)"/>
-          <path class="trace-edge edge-funder" d="M185 255 C242 255 258 274 310 274"/>
-          <path class="trace-edge edge-creator" d="M349 274 L483 274"/>
+          <path class="trace-edge edge-funder" d="M310 274 C258 274 242 255 185 255"/>
+          <path class="trace-edge edge-creator" d="M483 274 L349 274"/>
           <path d="M304 270 L311 274 L304 278 M477 270 L484 274 L477 278" class="edge-arrows"/>
+        </g>
+        <path class="trace-edge edge-hub" d="M154 241 Q100 207 100 149"/>
+        <g class="trace-node hub-node">
+          <circle class="node-halo" cx="100" cy="125" r="32"/>
+          <path class="hub-core" d="M88 104H112L124 125L112 146H88L76 125Z"/>
+          <svg x="89" y="114" width="22" height="22" class="graph-icon"><use href="/static/brand/graph-icons.svg#hub"/></svg>
+          <text x="36" y="66" class="svg-title">Exchange-like hub</text>
+          <text x="36" y="85" class="svg-address">Dead end. Trail stops.</text>
+          <path class="hub-stop" d="M90 153H110"/>
         </g>
         <g class="trace-node funder-node">
           <circle class="node-halo" cx="167" cy="255" r="33"/>
           <circle class="node-core" cx="167" cy="255" r="18"/>
-          <circle cx="167" cy="255" r="5" fill="#ffac83"/>
+          <svg x="156" y="244" width="22" height="22" class="graph-icon"><use href="/static/brand/graph-icons.svg#funder"/></svg>
           <text x="164" y="299" class="svg-title" text-anchor="middle">Funder</text>
           <text x="164" y="319" class="svg-address" text-anchor="middle">ATLi…Cd2u</text>
         </g>
         <g class="trace-node creator-node">
           <circle class="node-halo" cx="329" cy="274" r="34"/>
           <circle class="node-core" cx="329" cy="274" r="19"/>
-          <circle cx="329" cy="274" r="5" fill="#e8e4e2"/>
-          <text x="329" y="319" class="svg-title" text-anchor="middle">Creator</text>
-          <text x="329" y="339" class="svg-address" text-anchor="middle">38PL…hp6q</text>
+          <svg x="318" y="263" width="22" height="22" class="graph-icon"><use href="/static/brand/graph-icons.svg#creator"/></svg>
+          <text x="329" y="230" class="svg-title" text-anchor="middle">Creator</text>
+          <text x="329" y="247" class="svg-address" text-anchor="middle">38PL…hp6q</text>
         </g>
         <g class="trace-node coin-node">
           <circle class="node-halo" cx="505" cy="274" r="38"/>
           <rect class="coin-core" x="483" y="252" width="44" height="44" rx="12"/>
-          <text x="505" y="280" text-anchor="middle" class="coin-letter">M</text>
+          <svg x="492" y="261" width="26" height="26" class="graph-icon"><use href="/static/brand/graph-icons.svg#coin"/></svg>
           <text x="505" y="321" class="svg-title" text-anchor="middle">METHU</text>
           <text x="505" y="341" class="svg-address" text-anchor="middle">The coin you asked about</text>
         </g>
@@ -165,13 +174,13 @@
       </svg>
       <div class="visual-bottomline">
         <div class="trace-controls" role="group" aria-label="Trace the graph">
-          <button type="button" data-trace="0" aria-pressed="true">Funder</button><span aria-hidden="true">→</span>
+          <button type="button" data-trace="0" aria-pressed="true">Coin</button><span aria-hidden="true">→</span>
           <button type="button" data-trace="1" aria-pressed="false">Creator</button><span aria-hidden="true">→</span>
-          <button type="button" data-trace="2" aria-pressed="false">Coin</button>
+          <button type="button" data-trace="2" aria-pressed="false">Funder</button>
         </div>
         <button class="pause-graph" id="pause-graph" type="button" aria-pressed="false">Pause</button>
       </div>
-    </div></div>
+    </div><p class="graph-trail-caption">Coin → creator → funder → funding ring. Exchange-like hubs stop the trail.</p></div>
   </section>
   <section class="story-chapter story-reverse container" aria-labelledby="hub-title">
     <div class="story-copy" data-reveal><div class="story-glyph" aria-hidden="true"><svg><use href="/static/brand/graph-icons.svg#hub"/></svg></div><h2 id="hub-title">Then we connected<br><span class="heading-muted">too much.</span></h2><p>Our first graph linked strangers through the exchange that funded them. A shared exchange doesn’t make two creators an operation.</p><p>We made exchange-like hubs dead ends. The useful trail is the one that knows where to stop.</p></div>

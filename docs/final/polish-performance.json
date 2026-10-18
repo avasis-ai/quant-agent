@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-18T17:57:20.932Z",
+  "environment": "Local headless Chromium; frame cadence is not a physical-device guarantee",
+  "results": [
+    {
+      "width": 1440,
+      "frames": 565,
+      "medianMs": 16.699999999999818,
+      "p95Ms": 16.799999999999272,
+      "framesOver34ms": 0,
+      "layoutShift": 0.00000469141830632716
+    },
+    {
+      "width": 390,
+      "frames": 565,
+      "medianMs": 16.699999999999818,
+      "p95Ms": 16.700000000000728,
+      "framesOver34ms": 0,
+      "layoutShift": 0.000021375961538461538
+    }
+  ]
+}

@@ -4,32 +4,129 @@
   const pause = document.getElementById('pause-graph');
   const traceButtons = [...document.querySelectorAll('[data-trace]')];
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
-  let phase = 0, timer = null, manuallyPaused = false, inspecting = false;
-  function setPhase(next) {
-    phase = next;
-    visual.dataset.phase = String(phase);
-    traceButtons.forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.trace) === phase)));
+  // Cache geometry once. Each frame only paints SVG attributes: no layout reads.
+  const svg = visual.querySelector('.lineage-visual');
+  const ns = 'http://www.w3.org/2000/svg';
+  const clamp = value => Math.max(0, Math.min(1, value));
+  const ease = value => value * value * (3 - 2 * value);
+  const branches = [...svg.querySelectorAll('.aggregate-branches path')];
+  const edges = [
+    { path: svg.querySelector('.edge-creator'), start: 650, duration: 1150 },
+    { path: svg.querySelector('.edge-funder'), start: 1950, duration: 1150 },
+    ...branches.map((path, index) => ({ path, start: 3350 + index * 230, duration: 850 })),
+    { path: svg.querySelector('.edge-hub'), start: 7550, duration: 1000 }
+  ];
+  const sparks = document.createElementNS(ns, 'g');
+  sparks.setAttribute('class', 'graph-sparks');
+  sparks.setAttribute('aria-hidden', 'true');
+  svg.append(sparks);
+  edges.forEach(edge => {
+    edge.length = edge.path.getTotalLength();
+    edge.path.classList.add('staged-edge');
+    edge.path.style.strokeDasharray = String(edge.length);
+    edge.particles = [0, 1, 2].map(index => {
+      const dot = document.createElementNS(ns, 'circle');
+      dot.setAttribute('r', index ? '1.6' : '3');
+      sparks.append(dot);
+      return dot;
+    });
+  });
+  const nodes = [
+    { element: svg.querySelector('.coin-node'), start: 0 },
+    { element: svg.querySelector('.creator-node'), start: 1800 },
+    { element: svg.querySelector('.funder-node'), start: 3100 },
+    { element: svg.querySelector('.hub-node'), start: 8550 }
+  ];
+  // Match the schematic ring nodes to their incoming edge, including mid-path forks.
+  svg.querySelectorAll('.aggregate-nodes > *').forEach(element => {
+    const x = Number(element.getAttribute('cx') ?? element.getAttribute('x')) + (element.tagName === 'rect' ? Number(element.getAttribute('width')) / 2 : 0);
+    const y = Number(element.getAttribute('cy') ?? element.getAttribute('y')) + (element.tagName === 'rect' ? Number(element.getAttribute('height')) / 2 : 0);
+    let arrival = 7300;
+    edges.slice(2, -1).forEach(edge => {
+      for (let step = 0; step <= 60; step++) {
+        const point = edge.path.getPointAtLength(edge.length * step / 60);
+        if (Math.hypot(point.x - x, point.y - y) < 10) arrival = Math.min(arrival, edge.start + edge.duration * step / 60);
+      }
+    });
+    nodes.push({ element, start: arrival });
+  });
+  let elapsed = 0, previous = null, frame = null, inView = false, manuallyPaused = false;
+  const end = 9300;
+  function paint(time) {
+    edges.forEach(edge => {
+      const progress = ease(clamp((time - edge.start) / edge.duration));
+      edge.path.style.strokeDashoffset = String(edge.length * (1 - progress));
+      edge.path.style.opacity = progress ? '1' : '0';
+      edge.path.style.filter = progress > 0 && progress < 1 ? 'drop-shadow(0 0 3px rgba(255,109,41,.65))' : 'none';
+      edge.particles.forEach((dot, index) => {
+        const trail = progress - index * .045;
+        const active = progress > 0 && progress < 1 && trail > 0;
+        dot.style.opacity = active ? String(1 - index * .3) : '0';
+        if (active) {
+          const point = edge.path.getPointAtLength(edge.length * trail);
+          dot.setAttribute('cx', point.x);
+          dot.setAttribute('cy', point.y);
+        }
+      });
+    });
+    nodes.forEach(({ element, start }) => {
+      const reached = ease(clamp((time - start) / 450));
+      element.style.setProperty('--reached', reached);
+      const halo = element.querySelector('.node-halo');
+      if (halo) {
+        const pulse = clamp((time - start) / 850);
+        halo.style.opacity = String(reached * (.1 + .22 * Math.sin(pulse * Math.PI)));
+        halo.setAttribute('transform', `translate(${halo.getAttribute('cx')} ${halo.getAttribute('cy')}) scale(${1 + .22 * Math.sin(pulse * Math.PI)}) translate(${-halo.getAttribute('cx')} ${-halo.getAttribute('cy')})`);
+      }
+    });
+    svg.querySelectorAll('.svg-edge').forEach((label, index) => {
+      label.style.opacity = String(ease(clamp((time - (index ? 1800 : 3100)) / 450)));
+    });
+    svg.querySelector('.ring-outline').style.opacity = String(.15 + .35 * ease(clamp((time - 3350) / 4000)));
+    svg.querySelector('.graph-annotation').parentElement.style.opacity = String(ease(clamp((time - 7200) / 700)));
+    visual.dataset.phase = time < 1800 ? '2' : time < 3100 ? '1' : '0';
+    traceButtons.forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.trace) === (time < 1800 ? 0 : time < 3100 ? 1 : 2))));
+  }
+  function tick(now) {
+    if (previous !== null) elapsed = Math.min(end, elapsed + now - previous);
+    previous = now;
+    paint(elapsed);
+    if (elapsed < end) frame = requestAnimationFrame(tick);
+    else { frame = null; syncAnimation(); }
   }
   function syncAnimation() {
-    clearInterval(timer);
+    cancelAnimationFrame(frame);
+    frame = null;
+    previous = null;
     const paused = manuallyPaused || motion.matches;
     pause.setAttribute('aria-pressed', String(paused));
     pause.disabled = motion.matches;
-    pause.textContent = motion.matches ? 'Motion off' : paused ? 'Play' : 'Pause';
-    if (!paused && !inspecting && !document.hidden) timer = setInterval(() => setPhase((phase + 1) % 3), 2400);
+    pause.textContent = motion.matches ? 'Motion off' : elapsed >= end ? 'Replay' : paused ? 'Play' : 'Pause';
+    visual.dataset.animation = motion.matches || elapsed >= end ? 'complete' : paused ? 'paused' : inView ? 'playing' : 'waiting';
+    if (motion.matches) paint(end);
+    else if (!paused && inView && !document.hidden && elapsed < end) frame = requestAnimationFrame(tick);
   }
   traceButtons.forEach(button => button.addEventListener('click', () => {
     manuallyPaused = true;
-    setPhase(Number(button.dataset.trace));
+    elapsed = [600, 1900, 3300][Number(button.dataset.trace)];
+    paint(elapsed);
     syncAnimation();
   }));
-  pause.addEventListener('click', () => { manuallyPaused = !manuallyPaused; syncAnimation(); });
-  motion.addEventListener('change', syncAnimation);
-  visual.addEventListener('pointerenter', () => { inspecting = true; syncAnimation(); });
-  visual.addEventListener('pointerleave', () => { inspecting = false; syncAnimation(); });
-  visual.addEventListener('focusin', () => { inspecting = true; syncAnimation(); });
-  visual.addEventListener('focusout', event => { if (!visual.contains(event.relatedTarget)) { inspecting = false; syncAnimation(); } });
+  pause.addEventListener('click', () => {
+    if (elapsed >= end) { elapsed = 0; manuallyPaused = false; paint(0); }
+    else manuallyPaused = !manuallyPaused;
+    syncAnimation();
+  });
+  motion.addEventListener('change', () => { paint(motion.matches ? end : elapsed); syncAnimation(); });
   document.addEventListener('visibilitychange', syncAnimation);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(entries => {
+      inView = entries[0].isIntersecting;
+      syncAnimation();
+    }, { threshold: .3 }).observe(visual);
+  } else inView = true;
+  visual.classList.add('graph-staged');
+  paint(motion.matches ? end : 0);
   syncAnimation();
 
   // Snapshot metrics have a single source. Keep unavailable distinct from zero.
@@ -123,6 +220,12 @@
   const button = document.getElementById('pause-flow');
   if (!flow || !button) return;
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
+  flow.querySelectorAll('.flow-trace-branch').forEach((path, index) => {
+    path.style.animationDelay = `${index * .15}s`;
+  });
+  flow.querySelectorAll('.flow-node-branch .flow-node-light').forEach((node, index) => {
+    node.style.animationDelay = `${index * .15}s`;
+  });
   let paused = false;
   const sync = () => {
     const stop = paused || motion.matches || document.hidden;

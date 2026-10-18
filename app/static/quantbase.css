@@ -524,3 +524,65 @@ input::placeholder, textarea::placeholder { color: var(--ink-4); }
   .footer-columns { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px 20px; }
   .footer-columns a { min-height: 44px; }
 }
+/* Landing polish: the v6 font families, a measured display scale and an 8px rhythm. */
+.qb-story-home { --landing-section-space: 112px; --landing-heading: clamp(34px,3.6vw,48px); }
+.qb-story-home h1, .qb-story-home h2, .qb-story-home h3 { text-wrap: balance; }
+.qb-story-home .showcase-hero h1 { font-size: clamp(48px,5.6vw,80px); font-weight: 500; line-height: 1.04; letter-spacing: -.03em; }
+.qb-story-home .showcase-hero h1 em { letter-spacing: -.025em; line-height: 1.1; }
+.qb-story-home .hero-description { max-width: 60ch; font-size: 18px; line-height: 1.6; text-wrap: pretty; }
+.qb-story-home .story-intro { max-width: 760px; margin-bottom: 40px; }
+.qb-story-home .story-intro h2, .qb-story-home .story-copy h2,
+.qb-story-home .section-intro h2, .qb-story-home .quantbase-copy h2,
+.qb-story-home .closing h2 { font-size: var(--landing-heading); font-weight: 500; line-height: 1.08; letter-spacing: -.03em; margin-bottom: 24px; }
+.qb-story-home .story-intro p, .qb-story-home .story-copy p,
+.qb-story-home .section-intro>p, .qb-story-home .quantbase-copy p,
+.qb-story-home .story-twist p, .qb-story-home .track-list p,
+.qb-story-home .falkor-details p, .qb-story-home .closing p { font-size: 18px; line-height: 1.6; max-width: 64ch; color: var(--ink-3); text-wrap: pretty; }
+.qb-story-home .story-copy p { margin-bottom: 16px; }
+.qb-story-home .story-chapter, .qb-story-home .story-ring-section,
+.qb-story-home .story-evidence, .qb-story-home .story-snapshot,
+.qb-story-home .developer-section, .qb-story-home .results-section { padding-top: var(--landing-section-space); }
+.qb-story-home .story-twist { padding-block: var(--landing-section-space) 80px; }
+.qb-story-home .story-twist h2 { letter-spacing: -.03em; line-height: 1.05; font-weight: 500; }
+.qb-story-home .eyebrow, .qb-story-home .story-side-note,
+.qb-story-home .feature-label, .qb-story-home .connection-label { font: 500 11px/1.5 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.qb-story-home .track-list h3, .qb-story-home .falkor-details h3 { font-size: 24px; line-height: 1.2; letter-spacing: -.02em; }
+/* SVG geometry stays fixed. Glows and moving particles only paint inside the reserved canvas. */
+.graph-icon { color: var(--qb-hi); fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.hub-core { fill: #30291e; stroke: var(--warn); stroke-width: 1.5; }
+.hub-stop { fill: none; stroke: var(--warn); stroke-width: 2.5; stroke-linecap: round; }
+.edge-hub { stroke: var(--warn); }
+.graph-staged .trace-node { --reached: 0; }
+.graph-staged .trace-node .svg-title, .graph-staged .trace-node .svg-address,
+.graph-staged .hub-stop { opacity: var(--reached); }
+.graph-staged .node-core, .graph-staged .coin-core { stroke: var(--qb-hi); stroke-opacity: calc(.3 + var(--reached) * .7); }
+.graph-staged .node-halo { transition: none; }
+.graph-staged .aggregate-branches { opacity: 1; }
+.graph-staged .aggregate-nodes { opacity: 1; }
+.graph-staged .aggregate-nodes>* { fill: rgba(255,109,41,.12); stroke: var(--qb-hi); opacity: calc(.2 + var(--reached,0) * .8); }
+.graph-staged .staged-edge { fill: none; stroke: var(--qb-ink); stroke-width: 1.5; stroke-linecap: round; transition: none; }
+.graph-staged .edge-hub { stroke: var(--warn); stroke-width: 1.8; }
+.graph-staged .edge-arrows, .graph-staged .evidence-path>path:first-child { display: none; }
+.graph-sparks { fill: #ffe5ce; filter: drop-shadow(0 0 4px #ff6d29); pointer-events: none; }
+.graph-staged .hub-node .node-halo { fill: var(--warn); }
+@media (max-width: 768px) {
+  .qb-story-home { --landing-section-space: 72px; --landing-heading: 34px; }
+  .qb-story-home .showcase-hero h1 { font-size: clamp(36px,9.4vw,58px); line-height: 1.06; }
+  .qb-story-home .hero-description, .qb-story-home .story-intro p,
+  .qb-story-home .story-copy p, .qb-story-home .section-intro>p,
+  .qb-story-home .quantbase-copy p, .qb-story-home .story-twist p,
+  .qb-story-home .track-list p, .qb-story-home .falkor-details p,
+  .qb-story-home .closing p { font-size: 17px; line-height: 1.6; }
+  .qb-story-home .story-intro h2, .qb-story-home .story-copy h2,
+  .qb-story-home .section-intro h2, .qb-story-home .quantbase-copy h2,
+  .qb-story-home .closing h2 { margin-bottom: 20px; }
+  .qb-story-home .story-twist { padding-bottom: 56px; }
+}
+@media (prefers-reduced-motion: reduce) { .graph-sparks { display: none; } }
+.graph-staged .hub-core { stroke-opacity: calc(.25 + var(--reached) * .75); }
+.graph-staged .trace-node .graph-icon { opacity: calc(.4 + var(--reached) * .6); }
+.graph-trail-caption { margin: 16px 0 0; color: var(--ink-3); font-size: 13px; line-height: 1.6; text-wrap: pretty; text-align: center; }
+/* The first schematic uses the same ember treatment, with a stagger across its ring. */
+.flow-trace { filter: drop-shadow(0 0 3px rgba(255,109,41,.4)); }
+.flow-node-light { filter: drop-shadow(0 0 5px rgba(255,109,41,.3)); }
+.graph-staged .pause-graph { min-width: 64px; text-align: right; }

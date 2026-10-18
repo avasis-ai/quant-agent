@@ -1,0 +1,1 @@
+PASS real SSE steps are visible before the verdict at 1440 and 390 px.

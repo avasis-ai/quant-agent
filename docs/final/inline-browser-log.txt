@@ -1,0 +1,20 @@
+PASS Inline METHU at 1440: dossier, citations, graph, full link, no navigation
+PASS Inline Subprime Cat at 1440: dossier, citations, graph, full link, no navigation
+PASS Inline Women in Finance at 1440: dossier, citations, graph, full link, no navigation
+PASS Inline Higher at 1440: dossier, citations, graph, full link, no navigation
+PASS Inline Agent Alley at 1440: dossier, citations, graph, full link, no navigation
+PASS Inline Chill House Vrax at 1440: dossier, citations, graph, full link, no navigation
+PASS Hero question resolves a coin and preserves the question at 1440
+PASS /app?q= resolves a new coin after METHU in the same session at 1440
+PASS Unknown coin is explicit on both pages and sends no /api/ask at 1440
+PASS Inline Subprime Cat at 390: dossier, citations, graph, full link, no navigation
+PASS Inline Women in Finance at 390: dossier, citations, graph, full link, no navigation
+PASS Inline Higher at 390: dossier, citations, graph, full link, no navigation
+PASS Hero question resolves a coin and preserves the question at 390
+PASS /app?q= resolves a new coin after METHU in the same session at 390
+PASS Unknown coin is explicit on both pages and sends no /api/ask at 390
+PASS Reduced motion, ticker and mint entry, rate-limit error and retry
+PASS Ambiguous ticker exposes a mint picker and changes the investigated coin
+PASS Rapid chip switching cancels the previous request
+PASS AI verdict mode renders clickable E citations without a key prompt
+PASS 20 checks, 16 accessibility scans, 0 page errors.

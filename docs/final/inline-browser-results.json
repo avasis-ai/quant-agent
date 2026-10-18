@@ -1,0 +1,144 @@
+{
+  "generated": "2026-10-18T17:36:14.226Z",
+  "base": "http://127.0.0.1:8080",
+  "checks": [
+    "All six suggestion mints return real snapshot dossiers",
+    "Inline METHU at 1440: dossier, citations, graph, full link, no navigation",
+    "Inline Subprime Cat at 1440: dossier, citations, graph, full link, no navigation",
+    "Inline Women in Finance at 1440: dossier, citations, graph, full link, no navigation",
+    "Inline Higher at 1440: dossier, citations, graph, full link, no navigation",
+    "Inline Agent Alley at 1440: dossier, citations, graph, full link, no navigation",
+    "Inline Chill House Vrax at 1440: dossier, citations, graph, full link, no navigation",
+    "Hero question resolves a coin and preserves the question at 1440",
+    "/app?q= resolves a new coin after METHU in the same session at 1440",
+    "Unknown coin is explicit on both pages and sends no /api/ask at 1440",
+    "Inline Subprime Cat at 390: dossier, citations, graph, full link, no navigation",
+    "Inline Women in Finance at 390: dossier, citations, graph, full link, no navigation",
+    "Inline Higher at 390: dossier, citations, graph, full link, no navigation",
+    "Hero question resolves a coin and preserves the question at 390",
+    "/app?q= resolves a new coin after METHU in the same session at 390",
+    "Unknown coin is explicit on both pages and sends no /api/ask at 390",
+    "Reduced motion, ticker and mint entry, rate-limit error and retry",
+    "Ambiguous ticker exposes a mint picker and changes the investigated coin",
+    "Rapid chip switching cancels the previous request",
+    "AI verdict mode renders clickable E citations without a key prompt"
+  ],
+  "errors": [],
+  "accessibility": [
+    {
+      "name": "home-1440",
+      "violations": []
+    },
+    {
+      "name": "METHU-1440",
+      "violations": []
+    },
+    {
+      "name": "Subprime Cat-1440",
+      "violations": []
+    },
+    {
+      "name": "Women in Finance-1440",
+      "violations": []
+    },
+    {
+      "name": "Higher-1440",
+      "violations": []
+    },
+    {
+      "name": "Agent Alley-1440",
+      "violations": []
+    },
+    {
+      "name": "Chill House Vrax-1440",
+      "violations": []
+    },
+    {
+      "name": "app-q-1440",
+      "violations": []
+    },
+    {
+      "name": "unknown-1440",
+      "violations": []
+    },
+    {
+      "name": "home-390",
+      "violations": []
+    },
+    {
+      "name": "Subprime Cat-390",
+      "violations": []
+    },
+    {
+      "name": "Women in Finance-390",
+      "violations": []
+    },
+    {
+      "name": "Higher-390",
+      "violations": []
+    },
+    {
+      "name": "app-q-390",
+      "violations": []
+    },
+    {
+      "name": "unknown-390",
+      "violations": []
+    },
+    {
+      "name": "reduced-motion",
+      "violations": []
+    }
+  ],
+  "dossiers": [
+    {
+      "name": "METHU",
+      "mint": "3LaVxn1Pp5gDjJZgGrpbQ8gRKj7GxgPE8cjF62Svpump",
+      "evidence": 5,
+      "ring": 72,
+      "graduated": false,
+      "funder": "Wallet"
+    },
+    {
+      "name": "Subprime Cat",
+      "mint": "2f6jt6sR7CcuJ9sxWcqhXHBgE5r8kS3gXBJvaUWtpump",
+      "evidence": 5,
+      "ring": 943,
+      "graduated": false,
+      "funder": "Wallet"
+    },
+    {
+      "name": "Women in Finance",
+      "mint": "95JVHQQhHAPTJDVjw37ViiEwehstLEeX61Gbf13Upump",
+      "evidence": 5,
+      "ring": null,
+      "graduated": false,
+      "funder": "Wallet"
+    },
+    {
+      "name": "Higher",
+      "mint": "wV46Y351erjX7CiAyRRvzJgeWdtqpHXXBmv9LVzpump",
+      "evidence": 5,
+      "ring": 16,
+      "graduated": true,
+      "funder": "Wallet"
+    },
+    {
+      "name": "Agent Alley",
+      "mint": "251ndGnv5tN45Fr4jpBtSeuvfyEZCN6Jk7K9u9pgpump",
+      "evidence": 5,
+      "ring": 943,
+      "graduated": false,
+      "funder": "Wallet"
+    },
+    {
+      "name": "Chill House Vrax",
+      "mint": "b1U8BazMzFbrCpD2rLmVTbiJSdHUh7mUWy3dn5Spump",
+      "evidence": 4,
+      "ring": null,
+      "graduated": true,
+      "funder": "Hub"
+    }
+  ],
+  "ai_note": "No local owner key configured. Real graph/dossier streaming tested. AI display uses a mocked agent-mode stream; shared-owner tool calls, citations and caps are separately covered by pytest."
+}

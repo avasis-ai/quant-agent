@@ -1,0 +1,17 @@
+{
+  "generated": "2026-10-18T17:35:53.891Z",
+  "upstream": "http://127.0.0.1:8080",
+  "note": "Actual /api/ask SSE events relayed locally with 300ms per event. No event or graph content mocked.",
+  "results": [
+    {
+      "width": 1440,
+      "stepsBeforeVerdict": 2,
+      "completed": true
+    },
+    {
+      "width": 390,
+      "stepsBeforeVerdict": 2,
+      "completed": true
+    }
+  ]
+}

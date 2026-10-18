@@ -236,13 +236,37 @@ def test_ask_route_is_rate_limited(client):
 
 def test_app_page_and_lookups(client):
     r = client.get("/")
-    assert r.status_code == 200 and "Sniff any coin" in r.text and "/api/ask" in r.text
-    old = client.get("/app?mint=abc", follow_redirects=False)
-    assert old.status_code == 301 and old.headers["location"] == "/?mint=abc"
+    assert r.status_code == 200 and "Sniff any coin" in r.text and 'href="/app"' in r.text
+    workspace = client.get("/app?mint=" + MINT, follow_redirects=False)
+    assert workspace.status_code == 200 and 'id="graph"' in workspace.text and 'id="verdict"' in workspace.text
+    old = client.get("/", params={"mint": MINT}, follow_redirects=False)
+    assert old.status_code == 302 and old.headers["location"] == "/app?mint=" + MINT
     d = client.get("/api/dossier", params={"mint": MINT}).json()
     assert d["coin_dossier"]["found"] and d["siblings"]["rows"] and d["evidence"] and d["base"]["coins"] == 1000
     assert client.get("/api/dossier", params={"mint": "nope"}).status_code == 400
     assert client.get("/api/search", params={"q": MINT}).json()["rows"][0]["mint"] == MINT
+
+
+def test_pages_assets_and_legacy_waitlist_keep_their_routes(client, tmp_path):
+    assert client.get("/settings").status_code == 200
+    assert client.get("/settings").headers["cache-control"] == "no-store"
+    for asset in ("shared.css", "tokens.css", "home.js", "investigate.js", "graph.js", "settings.js",
+                  "fonts/host-grotesk.woff2", "vendor/cytoscape-3.33.1.min.js"):
+        assert client.get("/static/" + asset).status_code == 200, asset
+    snapshot = client.get("/static/snapshot.json").json()
+    assert snapshot["coins"] == 632339 and snapshot["rings"] == 6556
+    assert client.get("/waitlist", follow_redirects=False).headers["location"] == "/"
+    (tmp_path / "index.html").write_text("<h1>Existing waitlist</h1>")
+    assert "Existing waitlist" in client.get("/waitlist").text
+    # These paths belong to the existing edge services, not this app.
+    assert client.get("/admin").status_code == 404
+    assert client.post("/api/waitlist", json={"email": "test@example.com"}).status_code == 404
+
+
+def test_home_question_handoff_keeps_encoded_query(client):
+    response = client.get("/", params={"q": "Who funded METHU?"}, follow_redirects=False)
+    assert response.status_code == 302
+    assert response.headers["location"] == "/app?q=Who+funded+METHU%3F"
 
 
 def test_compact_counts_are_whole_numbers():

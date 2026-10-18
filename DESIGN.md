@@ -45,7 +45,9 @@ Three primitives: a single entrance, graph evidence transitions and button press
 feedback. The landing graph cycles through the recorded funder → creator → coin
 path to explain the traversal; pause is available. No moving background or
 scroll hijacking. Graph positions animate when evidence changes. Reduced motion
-removes spatial animation and pauses automatic graph focus. Reduced transparency
+removes spatial animation and pauses automatic graph focus. Evidence paths use
+deterministic columns on desktop and vertical ranks on phones, so labels remain
+readable without a force layout spreading a small graph across a huge area. Reduced transparency
 uses opaque surfaces. Every control has a visible, immediate keyboard focus ring.
 Copy actions confirm in place. Errors stay close to their task. Search supports
 arrow keys, Enter, Escape, and screen-reader combobox semantics.

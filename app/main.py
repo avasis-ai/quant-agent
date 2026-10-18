@@ -15,6 +15,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from . import agent, ai, tools
@@ -45,10 +46,10 @@ async def lifespan(_app):
 
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
+app.mount("/static", StaticFiles(directory=STATIC), name="static")
 app.router.add_route(sniff_mcp.PATH, sniff_mcp.Limited(), methods=["GET", "POST", "DELETE"],
                      include_in_schema=False)  # MCP: the agent's graph tools for any MCP client
 if os.environ.get("SNIFF_MEDIA_DIR"):  # local dev only: in production Caddy serves /media
-    from fastapi.staticfiles import StaticFiles
     app.mount("/media", StaticFiles(directory=os.environ["SNIFF_MEDIA_DIR"]), name="media")
 
 login_limit = Limiter(5, 15 * 60)
@@ -145,15 +146,16 @@ async def _headers(req: Request, call_next):
 # ---- pages -----------------------------------------------------------------------
 
 @app.get("/", response_class=HTMLResponse)
-def app_page():
+def app_page(req: Request):
+    # Coin links from the original single-page UI and demo keep opening the investigation.
+    if req.query_params.get("mint") or req.query_params.get("q"):
+        return RedirectResponse("/app?" + req.url.query, status_code=302)
+    return FileResponse(STATIC / "home.html", headers={"Cache-Control": "no-cache"})
+
+
+@app.get("/app", response_class=HTMLResponse)
+def investigation_page():
     return FileResponse(STATIC / "app.html", headers={"Cache-Control": "no-cache"})
-
-
-@app.get("/app")
-def app_redirect(req: Request):
-    """The app used to live here; old links (and the demo video) keep working."""
-    q = req.url.query
-    return RedirectResponse("/" + (f"?{q}" if q else ""), status_code=301)
 
 
 @app.get("/waitlist", response_class=HTMLResponse)

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Sniff by QuantBase · Follow the coin. Find the connections.</title>
+  <meta name="description" content="Sniff any coin before you buy. Trace pump.fun creators, funders and connected launches in a FalkorDB graph, with evidence behind every answer.">
+  <meta name="theme-color" content="#161316">
+  <meta property="og:title" content="Sniff any coin before you buy">
+  <meta property="og:description" content="The coin is only the beginning. Follow its creator, funder and connected launches with Sniff by QuantBase.">
+  <meta property="og:image" content="https://sniff.quantbase.live/media/og.png?v=2">
+  <link rel="icon" href="/static/brand/tile-32.png">
+  <link rel="preload" href="/static/fonts/host-grotesk.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/shared.css">
+  <link rel="stylesheet" href="/static/home.css">
+  <script src="/static/home.js" defer></script>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<div class="landing-ambient" aria-hidden="true"></div>
+<header class="site-header container">
+  <a class="wordmark" href="/" aria-label="Sniff home"><img class="brand-mark" src="/static/brand/mark.svg" alt="">sniff<span class="brand-by">by QuantBase</span></a>
+  <nav class="site-nav" aria-label="Main navigation">
+    <a class="desktop-link" href="#how">The graph</a>
+    <a class="desktop-link" href="#quantbase">QuantBase</a>
+    <a class="desktop-link" href="#developers">For agents</a>
+    <a href="/app" class="button primary small">Open Sniff <span class="arrow" aria-hidden="true">↗</span></a>
+  </nav>
+</header>
+<main id="main">
+  <section class="hero container" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <div class="eyebrow">Graph intelligence for pump.fun</div>
+      <h1 id="hero-title">Sniff any coin<br><em>before you buy.</em></h1>
+      <p class="hero-description">Follow the money behind the meme. Find its creator, their funder, and the launches that connect them.</p>
+      <form class="hero-ask glass" action="/app" method="get">
+        <label for="home-question">Which coin are you looking into?</label>
+        <div class="hero-input-row">
+          <input id="home-question" name="q" placeholder="Paste a coin address or ask a question" maxlength="500" required autocomplete="off" spellcheck="false">
+          <button class="button primary" type="submit" aria-label="Investigate this coin"><span aria-hidden="true">↗</span></button>
+        </div>
+      </form>
+      <a class="example-link" href="/app?mint=3LaVxn1Pp5gDjJZgGrpbQ8gRKj7GxgPE8cjF62Svpump">Try METHU <span class="example-context">one funder, 72 creators</span> <span aria-hidden="true">↗</span></a>
+    </div>
+
+    <div class="hero-visual" data-phase="0" id="hero-visual">
+      <div class="visual-topline"><span class="mono">A coin is never just a coin.</span><span class="diagram-label">METHU · simplified graph</span></div>
+      <svg class="lineage-visual" viewBox="0 0 660 520" role="img" aria-labelledby="graph-title graph-desc">
+        <title id="graph-title">The connections behind METHU</title>
+        <desc id="graph-desc">Funder ATLi funded creator 38PL, who created METHU. That funder also paid 71 other creators. The full recorded ring contains 72 creators and 72 coins, none graduated. Small branches are a schematic representation of the aggregate, not individual wallet records.</desc>
+        <defs>
+          <radialGradient id="ember-field"><stop offset="0" stop-color="#ff6d29" stop-opacity=".12"/><stop offset="1" stop-color="#ff6d29" stop-opacity="0"/></radialGradient>
+          <linearGradient id="edge-fade"><stop stop-color="#8d5a42" stop-opacity=".7"/><stop offset="1" stop-color="#765346" stop-opacity=".3"/></linearGradient>
+          <filter id="soft-glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="5"/></filter>
+          <pattern id="graph-dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".7" fill="#b7a39b" opacity=".16"/></pattern>
+        </defs>
+        <rect width="660" height="520" fill="url(#graph-dots)"/>
+        <ellipse cx="355" cy="272" rx="280" ry="230" fill="url(#ember-field)"/>
+        <ellipse cx="404" cy="268" rx="205" ry="192" class="ring-outline"/>
+        <text x="416" y="76" class="svg-meta">FUNDING RING 17653</text>
+        <g class="aggregate-branches" fill="none" stroke="url(#edge-fade)" stroke-width="1.2">
+          <path d="M167 255 C220 255 215 132 290 132 L349 98"/><path d="M290 132 L369 146"/>
+          <path d="M167 255 C235 255 235 192 329 192 L422 166"/><path d="M329 192 L421 215"/>
+          <path d="M167 255 C227 255 220 342 298 342 L374 326"/><path d="M298 342 L349 383"/>
+          <path d="M167 255 C207 255 205 410 281 410 L318 458"/><path d="M281 410 L387 431"/>
+          <path d="M167 255 C225 255 228 70 285 62"/>
+          <path d="M421 215 L491 186"/><path d="M421 215 L504 241"/>
+          <path d="M374 326 L459 363"/><path d="M387 431 L463 433"/>
+          <path d="M349 98 L432 114"/><path d="M504 241 L552 280"/>
+        </g>
+        <g class="aggregate-nodes">
+          <circle cx="290" cy="132" r="8"/><circle cx="329" cy="192" r="9"/>
+          <circle cx="298" cy="342" r="9"/><circle cx="281" cy="410" r="8"/>
+          <circle cx="285" cy="62" r="6"/><circle cx="421" cy="215" r="6"/>
+          <rect x="344" y="93" width="10" height="10" rx="2"/><rect x="363" y="140" width="12" height="12" rx="3"/>
+          <rect x="417" y="161" width="10" height="10" rx="2"/><rect x="369" y="321" width="10" height="10" rx="2"/>
+          <rect x="344" y="378" width="10" height="10" rx="2"/><rect x="313" y="453" width="10" height="10" rx="2"/>
+          <rect x="382" y="426" width="10" height="10" rx="2"/><rect x="486" y="181" width="10" height="10" rx="2"/>
+          <rect x="499" y="236" width="10" height="10" rx="2"/><rect x="454" y="358" width="10" height="10" rx="2"/>
+          <rect x="458" y="428" width="10" height="10" rx="2"/><rect x="427" y="109" width="10" height="10" rx="2"/>
+          <rect x="547" y="275" width="10" height="10" rx="2"/>
+        </g>
+        <g class="evidence-path">
+          <path d="M167 255 C224 255 258 274 329 274 L505 274" fill="none" stroke="#ff6d29" stroke-width="8" opacity=".2" filter="url(#soft-glow)"/>
+          <path class="trace-edge edge-funder" d="M185 255 C242 255 258 274 310 274"/>
+          <path class="trace-edge edge-creator" d="M349 274 L483 274"/>
+          <path d="M304 270 L311 274 L304 278 M477 270 L484 274 L477 278" class="edge-arrows"/>
+        </g>
+        <g class="trace-node funder-node">
+          <circle class="node-halo" cx="167" cy="255" r="33"/>
+          <circle class="node-core" cx="167" cy="255" r="18"/>
+          <circle cx="167" cy="255" r="5" fill="#ffac83"/>
+          <text x="164" y="299" class="svg-title" text-anchor="middle">Funder</text>
+          <text x="164" y="319" class="svg-address" text-anchor="middle">ATLi…Cd2u</text>
+        </g>
+        <g class="trace-node creator-node">
+          <circle class="node-halo" cx="329" cy="274" r="34"/>
+          <circle class="node-core" cx="329" cy="274" r="19"/>
+          <circle cx="329" cy="274" r="5" fill="#e8e4e2"/>
+          <text x="329" y="319" class="svg-title" text-anchor="middle">Creator</text>
+          <text x="329" y="339" class="svg-address" text-anchor="middle">38PL…hp6q</text>
+        </g>
+        <g class="trace-node coin-node">
+          <circle class="node-halo" cx="505" cy="274" r="38"/>
+          <rect class="coin-core" x="483" y="252" width="44" height="44" rx="12"/>
+          <text x="505" y="280" text-anchor="middle" class="coin-letter">M</text>
+          <text x="505" y="321" class="svg-title" text-anchor="middle">METHU</text>
+          <text x="505" y="341" class="svg-address" text-anchor="middle">The coin you asked about</text>
+        </g>
+        <text x="241" y="245" class="svg-edge" text-anchor="middle">FUNDED</text>
+        <text x="418" y="257" class="svg-edge" text-anchor="middle">CREATED</text>
+        <g transform="translate(374 383)"><rect width="186" height="44" rx="10" class="graph-annotation"/><text x="16" y="27" class="svg-address">+ 71 other creators</text></g>
+      </svg>
+      <div class="visual-bottomline">
+        <div class="trace-controls" role="group" aria-label="Trace the graph">
+          <button type="button" data-trace="0" aria-pressed="true">Funder</button><span aria-hidden="true">→</span>
+          <button type="button" data-trace="1" aria-pressed="false">Creator</button><span aria-hidden="true">→</span>
+          <button type="button" data-trace="2" aria-pressed="false">Coin</button>
+        </div>
+        <button class="pause-graph" id="pause-graph" type="button" aria-pressed="false">Pause</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="project-line container"><span>Built for WeMakeDevs × FalkorDB Graph Hacks</span><span>Track 01 <span class="project-line-detail">· Agents that act on connected data</span></span></div>
+
+  <section class="graph-story container" id="how" aria-labelledby="how-title">
+    <div class="section-intro">
+      <h2 id="how-title">The chart shows a coin.<br><span class="heading-muted">The graph shows the people.</span></h2>
+      <p>A new wallet can have a very old story. Sniff follows the connections that a price chart leaves out.</p>
+    </div>
+    <div class="stats" aria-label="Graph snapshot" id="snapshot-stats">
+      <div><strong data-stat="coins">…</strong><span>pump.fun coins</span></div>
+      <div><strong data-stat="wallets">…</strong><span>connected wallets</span></div>
+      <div><strong data-stat="rings">…</strong><span>funding rings</span></div>
+      <div><strong data-stat="links">…</strong><span>links to follow</span></div>
+    </div>
+    <p class="snapshot-date" id="snapshot-date">Snapshot recorded through 14 October 2026, 18:45 UTC.</p>
+    <div class="graph-methods">
+      <article class="method-primary glass">
+        <div class="mini-flow" aria-label="Funder funds creator, creator makes coin"><span class="flow-wallet"></span><span class="flow-line">funded</span><span class="flow-wallet"></span><span class="flow-line">created</span><span class="flow-coin"></span></div>
+        <h3>Follow the money, hop by hop.</h3>
+        <p>Start at a coin. Find who created it, who funded that wallet, and what else the same payer made possible. Every answer cites the nodes and edges behind it.</p>
+        <a class="text-link" href="/app?mint=3LaVxn1Pp5gDjJZgGrpbQ8gRKj7GxgPE8cjF62Svpump">Explore a real funding trail <span class="arrow" aria-hidden="true">↗</span></a>
+      </article>
+      <div class="method-details">
+        <article><div class="method-symbol hub-symbol" aria-hidden="true"></div><div><h3>Some connections should stop.</h3><p>Exchange-like hubs fund hundreds of wallets. We treat them as dead ends, so unrelated creators don’t become one big “network.”</p></div></article>
+        <article><div class="method-symbol ring-symbol" aria-hidden="true"></div><div><h3>Find the bigger operation.</h3><p>Weakly connected components, computed with <code>algo.WCC</code>, group funding and creation trails into rings, with hubs excluded.</p></div></article>
+        <article><div class="method-symbol path-symbol" aria-hidden="true">↗</div><div><h3>Ask how two things connect.</h3><p><code>algo.SPpaths</code> finds shortest paths between coins and wallets. Hubs and platform-sized handles are filtered out.</p></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="quantbase-section" id="quantbase" aria-labelledby="quantbase-title">
+    <div class="quantbase-inner container">
+      <div class="quantbase-copy">
+        <div class="eyebrow">Part of QuantBase</div>
+        <a href="https://quantbase.live" class="quantbase-wordmark"><img src="/static/brand/mark.svg" alt="" width="32" height="32">QuantBase</a>
+        <h2 id="quantbase-title">A graph hack.<br><em>A bigger future.</em></h2>
+        <p>We’re building a serious product. This hackathon graph is becoming a core feature of the QuantBase dashboard, where Sniff is the trading agent.</p>
+        <p>Graph intelligence brings the creator, funding trail and connected launches into the same place you research the market.</p>
+        <div class="quantbase-actions"><a class="button primary" href="https://app.quantbase.live">Explore the dashboard <span class="arrow" aria-hidden="true">↗</span></a><a class="text-link" href="https://quantbase.live">Meet QuantBase <span class="arrow" aria-hidden="true">↗</span></a></div>
+      </div>
+      <div class="product-connection glass" aria-label="Sniff graph intelligence is becoming part of the QuantBase dashboard">
+        <div class="connection-top"><img src="/static/brand/mark-mono.svg" alt="" width="22" height="22"><span>QuantBase dashboard</span><span class="connection-state">In development</span></div>
+        <div class="connection-body"><span class="connection-label">Your trading agent</span><strong>Meet <span>Sniff.</span></strong><p>The market has a story.<br>Follow the connections behind it.</p><div class="connection-graph" aria-hidden="true"><span></span><i></i><span></span><i></i><span></span></div></div>
+        <div class="connection-bottom"><span>Graph intelligence</span><span>Becoming a core feature ↗</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="developer-section container" id="developers" aria-labelledby="developer-title">
+    <div class="section-intro"><div class="eyebrow">Powered by FalkorDB</div><h2 id="developer-title">Connected context.<br><span class="heading-muted">For your agent, too.</span></h2><p>The same nine read-only graph tools are available over MCP. No AI key required to query the graph.</p></div>
+    <div class="developer-grid">
+      <div class="falkor-details">
+        <article><span class="feature-label">Load & index</span><h3>Built to traverse.</h3><p>The FalkorDB bulk loader imports the graph in 30 seconds. Range indexes find addresses; full-text indexes find coin names and symbols.</p></article>
+        <article><span class="feature-label">Algorithms & access</span><h3>A bounded graph, by design.</h3><p><code>algo.WCC</code> builds the rings. <code>algo.SPpaths</code> traces connections. Fixed, parameterized Cypher runs through <code>GRAPH.RO_QUERY</code> with per-query timeouts capped at 15 seconds.</p></article>
+        <a class="text-link" href="https://github.com/avasis-ai/quant-agent/blob/main/docs/GRAPH.md">Read the graph model <span class="arrow" aria-hidden="true">↗</span></a>
+      </div>
+      <div class="mcp-card glass">
+        <div class="code-heading"><span class="mono">Connect your agent</span><span class="tag">MCP / HTTP</span></div>
+        <p>Add Sniff to Claude Code:</p>
+        <div class="code-block"><code id="mcp-command">claude mcp add --transport http sniff https://sniff.quantbase.live/mcp</code><button class="copy-button" type="button" data-copy="mcp-command">Copy command</button></div>
+        <p class="mcp-prompt">Then ask: <span>“Use sniff to check who is behind this coin.”</span></p>
+        <div class="mcp-tools"><span>Funding trails</span><span>Creator history</span><span>Shared socials</span><span>Funding rings</span><span>Shortest paths</span><span>+ 4 graph tools</span></div>
+        <a class="endpoint" href="/mcp"><span>Endpoint</span><code>sniff.quantbase.live/mcp</code><span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="results-section container" id="results" aria-labelledby="eval-title">
+    <div class="section-intro"><h2 id="eval-title">Evidence, including<br><span class="heading-muted">our own.</span></h2><p>We evaluate tool selection, valid citations and refusal to give trading advice. Here’s what we tested, and what still needs work.</p></div>
+    <div class="eval-wrap" role="region" aria-label="Evaluation results, scroll horizontally for all columns" tabindex="0"><table class="eval-table"><caption>Evaluation results · 17 October 2026 · snapshot 20261014T1845Z</caption><thead><tr><th scope="col">Run</th><th scope="col">Questions</th><th scope="col">Right tools</th><th scope="col">Valid citations</th><th scope="col">No advice</th><th scope="col">All three</th><th scope="col">≤ 5 sentences</th></tr></thead><tbody><tr><th scope="row">Scripted Claude <span>Live graph · CI</span></th><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td></tr><tr><th scope="row">Live Claude <span>Site key · Sonnet 5.5</span></th><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td class="eval-caveat">5</td></tr></tbody></table></div>
+    <p class="table-scroll-hint">Swipe the table to compare all results →</p>
+    <div class="eval-notes"><p>The scripted run checks the tool and evidence pipeline, not Claude’s judgment. Only 5 of 10 live answers met the length target; answers are now capped at five cited sentences plus the closing line.</p><a class="text-link" href="https://github.com/avasis-ai/quant-agent/blob/main/docs/EVAL.md">Method & full results <span class="arrow" aria-hidden="true">↗</span></a></div>
+    <div class="limits"><h3>What the graph can’t tell you.</h3><div class="limit-copy"><p><strong>History, not a prediction.</strong> The graph signals added no predictive value once early trading was known (AUC change within ±0.01). Sniff explains who is behind a coin, not what its price will do.</p><p><strong>A snapshot, with gaps.</strong> Newer launches aren’t included. A missing funder can mean missing coverage. Early-buyer data starts on 8 October. Nothing here is financial advice.</p></div></div>
+  </section>
+
+  <section class="closing container" aria-labelledby="closing-title"><div><h2 id="closing-title">Before the next coin,<br><span class="heading-muted">follow the connections.</span></h2><p>A question. A graph. Evidence you can inspect.</p></div><a class="button primary" href="/app">Start an investigation <span class="arrow" aria-hidden="true">↗</span></a></section>
+</main>
+<footer class="site-footer container"><div class="footer-brand"><a class="wordmark" href="/" aria-label="Sniff home"><img class="brand-mark" src="/static/brand/mark.svg" alt="">sniff</a><p>Graph intelligence by QuantBase.<br>Built on FalkorDB. Becoming part of QuantBase.</p></div><div class="footer-links"><a href="https://github.com/avasis-ai/quant-agent">GitHub ↗</a><a href="https://youtu.be/YMQKpynEsI0">Watch the demo ↗</a><a href="https://dev.to/quantbase/who-is-behind-this-meme-coin-building-sniff-on-a-graph-4nnc">Read the build ↗</a><a href="/settings">Settings</a><a href="/waitlist#join">Get updates</a></div></footer>
+</body>
+</html>

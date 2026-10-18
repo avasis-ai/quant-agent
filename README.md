@@ -7,6 +7,12 @@ evidence of the matching kind; the server rejects answers that don't. This check
 compatibility, not whether every claim is true. Server-owned context and refusal text are explicit exceptions.
 Sniff shows history, not predictions.
 
+> **Try it in 2 minutes**
+> 1. On [sniff.quantbase.live](https://sniff.quantbase.live), click the **METHU** chip under the search box: one funder, 72 coins, every sentence cited, and the graph shows the path (Track 01).
+> 2. Open **Memory → See METHU**: saved findings plus a second agent's note (Track 02).
+> 3. Open **Brain** and ask "How does QuantBase handle paper vs live?": answers cite their sources (Track 03).
+
+
 Entry for WeMakeDevs × FalkorDB **Graph Hacks: Context for AI Agents**, Tracks 01, 02 and 03.
 
 The full production version of this agent lives in [QuantBase](https://quantbase.live). QuantBase began as a research platform for manual algorithmic trading; we've rebuilt it around Sniff as an autonomous meme-coin trading platform. Paper trading is live today; live trading on your own wallet is opening soon.

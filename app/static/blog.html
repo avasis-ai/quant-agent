@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sniff: four days, one graph, and an honest answer about meme coins · QuantBase</title>
+<meta name="description" content="How team QuantBase built Sniff on FalkorDB: a graph of 632,339 pump.fun launches, an agent whose every sentence must cite the graph, and the test that told us what Sniff can&#x27;t do.">
+<meta property="og:title" content="Sniff: four days, one graph, and an honest answer about meme coins">
+<meta property="og:description" content="How team QuantBase built Sniff on FalkorDB: a graph of 632,339 pump.fun launches, an agent whose every sentence must cite the graph, and the test that told us what Sniff can&#x27;t do.">
+<meta property="og:image" content="https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/01-hero.jpg">
+<meta name="theme-color" content="#161316">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{--ink:#161316;--ink2:#1D1719;--ink3:#241C1D;--choc:#453027;--ember:#FF6D29;--ember2:#FF8A52;--ember3:#C9531E;--grey:#BABABA;--grey2:#8F8888;--cream:#FFE7D6;--hair:rgba(255,255,255,.1);
+--font:"Host Grotesk","Inter Tight",system-ui,-apple-system,sans-serif;--serif:"Instrument Serif",Georgia,serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;color-scheme:dark}
+*{box-sizing:border-box}html{background:var(--ink);scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:#fff;font-family:var(--font);font-size:19px;line-height:1.7;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(60% 55% at -8% 105%,rgba(255,109,41,.16),transparent 70%),radial-gradient(50% 45% at 108% -5%,rgba(69,48,39,.5),transparent 70%)}
+::selection{background:var(--ember);color:var(--ink)}
+a{color:var(--ember2);text-underline-offset:3px}a:hover{color:var(--cream)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--ember);outline-offset:3px;border-radius:4px}
+.skip{position:absolute;left:-999px;top:8px;background:#fff;color:var(--ink);padding:8px 14px;border-radius:999px;z-index:20}.skip:focus{left:12px}
+.bar{position:fixed;top:0;left:0;height:3px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--ember3),var(--ember),#FF9F75);z-index:10}
+nav.pill{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:9;display:flex;gap:18px;align-items:center;padding:8px 10px 8px 18px;border:1px solid var(--hair);border-radius:999px;background:rgba(22,19,22,.72);backdrop-filter:blur(12px);font-size:15px;white-space:nowrap}
+nav.pill b{font-weight:600}nav.pill b i{font-style:normal;color:var(--ember)}nav.pill a{color:var(--grey);text-decoration:none}nav.pill a.go{background:#fff;color:var(--ink);padding:6px 14px;border-radius:999px;font-weight:600}
+header.hero{position:relative;min-height:100vh;display:flex;align-items:flex-end;overflow:hidden}
+header.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.06);animation:drift 18s ease-out forwards}
+header.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(22,19,22,.15) 0%,rgba(22,19,22,.2) 45%,rgba(22,19,22,.92) 85%,var(--ink) 100%)}
+@keyframes drift{to{transform:scale(1)}}
+.hero-copy{position:relative;z-index:1;max-width:1040px;margin:0 auto;padding:0 28px 9vh;width:100%}
+.k{font:600 13px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--ember)}
+h1{font-size:clamp(40px,6.4vw,84px);line-height:1.02;letter-spacing:-.04em;font-weight:600;margin:14px 0 18px;max-width:15ch}
+h1 em,h2 em{font-family:var(--serif);font-weight:400;font-style:italic;color:var(--cream);letter-spacing:-.01em}
+.lede{font-size:clamp(18px,2vw,22px);color:#D9D2CE;max-width:60ch;margin:0}
+.meta{margin-top:22px;font:500 13px var(--mono);color:var(--grey2);letter-spacing:.06em}
+.hero-cap{position:absolute;right:28px;bottom:22px;z-index:1;font:13px var(--mono);color:var(--grey2);max-width:42ch;text-align:right}
+main{max-width:720px;margin:0 auto;padding:40px 24px 60px}
+h2{font-size:clamp(28px,3.6vw,42px);line-height:1.12;letter-spacing:-.035em;font-weight:600;margin:96px 0 22px;scroll-margin-top:90px}
+h2 .n{display:block;font:600 13px var(--mono);letter-spacing:.2em;color:var(--ember);margin-bottom:12px}
+p{margin:0 0 22px;color:#E9E3DF}strong{color:#fff;font-weight:650}em{color:var(--cream)}
+ul{margin:0 0 26px;padding:0;list-style:none}li{position:relative;padding-left:26px;margin:0 0 12px;color:#E9E3DF}
+li::before{content:"";position:absolute;left:4px;top:.72em;width:8px;height:8px;border-radius:50%;background:var(--ember);box-shadow:0 0 12px rgba(255,109,41,.7)}
+code{font:.86em var(--mono);overflow-wrap:anywhere;background:rgba(255,255,255,.07);border:1px solid var(--hair);border-radius:6px;padding:.08em .38em;color:var(--cream)}
+pre{background:var(--ink2);border:1px solid var(--hair);border-radius:16px;padding:18px 20px;overflow-x:auto;margin:0 0 26px}pre code{overflow-wrap:normal;background:none;border:0;padding:0;font-size:15px}
+figure{margin:44px -12vw 48px;max-width:none}
+@media (max-width:1100px){figure{margin:40px -24px 44px}}
+figure img{display:block;width:100%;height:auto;border-radius:22px;border:1px solid var(--hair);box-shadow:0 30px 80px -30px rgba(0,0,0,.8),0 0 0 1px rgba(255,109,41,.05)}
+figure.art img{border-radius:26px;box-shadow:0 40px 120px -40px rgba(255,109,41,.35)}
+figcaption{font-size:15px;line-height:1.5;color:var(--grey);margin:14px 4px 0;padding-left:14px;border-left:2px solid var(--ember)}
+figcaption em{color:var(--grey)}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+figure.rv{transform:translateY(40px) scale(.985)}figure.rv.in{transform:none}
+footer{border-top:1px solid var(--hair);padding:40px 24px 60px;text-align:center;color:var(--grey2);font-size:14px}
+footer b{color:#fff}
+@media (max-width:640px){body{font-size:17.5px}nav.pill a:not(.go){display:none}.hero-cap{display:none}h2{margin-top:72px}}
+@media (prefers-reduced-motion:reduce){.rv,figure.rv{opacity:1;transform:none;transition:none}header.hero img{animation:none;transform:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<a class="skip" href="#story">Skip to the story</a>
+<div class="bar" aria-hidden="true"></div>
+<nav class="pill" aria-label="Site"><b>Sniff <i>by</i> QuantBase</b><a href="#the-twist-it-explains-it-doesn-t-predict">The twist</a><a href="#what-falkordb-made-possible">FalkorDB</a><a class="go" href="/">Try Sniff</a></nav>
+<header class="hero">
+<img src="https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/01-hero.jpg" alt="A small brown dog on a dark ridge, nose to the ground, following glowing threads that link hundreds of coins across a valley" fetchpriority="high">
+<div class="hero-copy">
+<div class="k">Graph Hacks · Team QuantBase</div>
+<h1>Four days, one graph, <em>and an honest answer.</em></h1>
+<p class="lede">How we built Sniff on FalkorDB: 632,339 pump.fun launches, an agent whose every sentence must cite the graph, and the test that told us what Sniff can't do.</p>
+<div class="meta">WeMakeDevs × FalkorDB Graph Hacks · October 2026 · ~12 min read</div>
+</div>
+<p class="hero-cap">Every coin leaves a trail. The trick is knowing which threads to follow.</p>
+</header>
+<main id="story">
+<h2 class="rv" id="a-coin-graduates-you-have-seconds"><span class="n">01</span>A coin graduates. You have seconds.</h2>
+<p class="rv">It's late. A pump.fun coin you've never heard of has just "graduated": it filled its bonding curve and moved to a real trading pool. The chart is climbing. A chat window is full of rocket emojis. Your thumb is over the buy button.</p>
+<p class="rv">You have one real question, and it isn't "will it go up?" Nobody can answer that honestly. The question is: <strong>who is behind this?</strong> Who made it, and what happened to the last things they made?</p>
+<p class="rv">You click the creator's wallet. It's brand new. One coin, this one. It looks clean.</p>
+<p class="rv">It almost never is that simple. And by the time you've found out why, the moment has passed.</p>
+<h2 class="rv" id="the-problem-the-truth-is-two-hops-away"><span class="n">02</span>The problem: the truth is two hops away</h2>
+<p class="rv">On the day we wrote this, our recorder saw <strong>24,606 new pump.fun coins in 24 hours</strong>. That's normal: about 25,000 a day, and only a few in every hundred ever graduate.</p>
+<p class="rv">The wallet that launches a coin is usually made for that one launch. It tells you nothing. The story lives one or two steps further out:</p>
+<ul class="rv"><li><strong>Who paid that wallet</strong> the few cents of SOL it needed to launch?</li><li><strong>Who else did that payer fund</strong>, and what did <em>those</em> wallets launch?</li><li>Did the coin reuse a <strong>Twitter account</strong> from another coin? Did the <strong>same early buyers</strong> show up at the start of other launches?</li></ul>
+<p class="rv">Every one of those questions is a path: wallet to wallet to coin to outcome. We had months of this data in Postgres, recorded by our own QuantBase collector since September. Every question we asked of it turned into a tower of self-joins that took minutes and still missed things.</p>
+<p class="rv">Paths are what graph databases are for. So for Graph Hacks, we gave ourselves four days to put that history into FalkorDB and build an agent on top of it. We called it <strong>Sniff</strong>.</p>
+<h2 class="rv" id="day-1-the-snapshot-the-graph-and-the-hub"><span class="n">03</span>Day 1: the snapshot, the graph, and the hub surprise</h2>
+<p class="rv">We took one snapshot from the collector and kept only true pump.fun launches. (Older rows held other launchpads and even some long-established tokens that had been "reported as new". One famous coin showed a fake launch date in September. Out it went.)</p>
+<p class="rv">What was left: <strong>632,339 coins, 424,007 wallets, and about 1.5 million relationships.</strong> The FalkorDB bulk loader took them in <strong>30 seconds</strong>. The graph used 521 MB of memory.</p>
+<figure class="rv"><img src="https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/02-graph-schema.png" alt="The lineage graph schema: Wallet CREATED Coin, Wallet FUNDED Wallet, Wallet SNIPED Coin, Coin LINKS Handle, Wallet IN_RING Ring, with Hub as a dashed dead end" width="2800" height="1560" loading="lazy" decoding="async"><figcaption>The <code>lineage</code> graph. Five kinds of thing, five kinds of link. The questions that had been painful in SQL became one Cypher pattern each.</figcaption></figure>
+<p class="rv">The first query we ran end to end was the one we'd wanted for weeks: start at a coin, walk back to the creator, back to whoever paid them, and out to everyone else that payer funded. It came back instantly.</p>
+<p class="rv">Then we asked how two random coins were connected, and the graph said: <strong>everything is connected to everything, within four hops.</strong></p>
+<p class="rv">True. And useless.</p>
+<p class="rv">The cause was exchanges. When a creator withdraws SOL from an exchange, the exchange's hot wallet shows up as their "funder". One such wallet had funded 33,747 of the wallets we knew about. Walk through it and every stranger becomes your neighbour.</p>
+<p class="rv">We call these wallets <strong>hubs</strong>: any wallet that funded more than 200 others. There were 89. We gave them their own label, cut their incoming funding edges, and made a hard rule: <strong>no query walks through a hub.</strong> A trail that reaches one stops and says so: "this came from an exchange-like wallet, which tells us nothing about who is behind it."</p>
+<figure class="rv"><img src="https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/03-hub-dead-end.png" alt="Before and after: on the left, one glowing hub connects seven groups of wallets; on the right, the hub is a dashed box and every trail stops at it, leaving the groups separate" width="2800" height="1560" loading="lazy" decoding="async"><figcaption>Day 1's biggest lesson. A hub is a bridge to nowhere, so we turned it into a wall.</figcaption></figure>
+<p class="rv">We tried to be cleverer, telling exchanges apart from big launch farms by what share of their wallets went on to make coins. It didn't work: our funding data only covered wallets that had made coins, so even the biggest exchange looked 80% "creator". We kept the simple rule, wrote down why, and moved on.</p>
+<p class="rv">With hubs out of the way, <code>algo.WCC</code> found <strong>6,556 rings</strong>: groups of wallets and coins joined by funding and creation. We checked them against the clusters our collector had found by other means. 3,824 of its 3,900 multi-creator clusters fell entirely inside a single ring. The graph and the old method agreed.</p>
+<h2 class="rv" id="day-2-an-agent-that-has-to-show-its-rece"><span class="n">04</span>Day 2: an agent that has to show its receipts</h2>
+<p class="rv">An AI model writing about wallets and money is exactly where you don't want made-up facts. So we built the agent around one rule: <strong>every sentence has to prove itself.</strong></p>
+<p class="rv">Claude gets nine tools: coin lookup, funding trail, sibling creators, shared early buyers, shared socials, rings, shortest connection, top operators, and search. Each tool is a fixed, read-only Cypher query. The model picks which ones to call, up to eight times, and writes the answer. It never writes Cypher itself.</p>
+<p class="rv">Every tool result carries <strong>evidence ids</strong>: E1, E2, and so on, each naming the exact nodes and edges behind it. The answer must end each sentence with the id that proves it. Then a citation checker reads the answer before anyone sees it:</p>
+<ul class="rv"><li>An id the tools never returned is removed.</li><li>An id from the wrong kind of tool is removed. A sentence about reused socials can't cite the funding tool.</li><li>A sentence left with no valid id is <strong>deleted</strong>. A shorter answer beats an unsupported one.</li></ul>
+<figure class="rv"><img src="https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/04-agent-loop.png" alt="The agent loop: a question goes to Claude, which calls nine read-only tools, drafts an answer with evidence ids, passes a citation check, and reaches the app; a fixed dossier is the fallback" width="2800" height="1560" loading="lazy" decoding="async"><figcaption>The model chooses the tools and the words. The graph decides what's true.</figcaption></figure>
+<p class="rv">If there's no AI key, or the AI call fails, the same tools produce a fixed summary instead. The facts never depend on the model.</p>
+<p class="rv">That evening we asked about a coin called <strong>METHU</strong>. Its creator had launched exactly one coin, which on its own looks like a first-timer. One hop back told a different story. The wallet that paid METHU's creator 0.009 SOL had paid <strong>71 other brand-new wallets</strong>. Each launched exactly one coin. <strong>None of the 72 coins graduated.</strong></p>
+<p class="rv">That was the moment the project made sense to us. The creator alone looks clean; the payer is the story. And you only see it when the data is shaped like the question.</p>
+<p class="rv">We scored the agent on 30 questions, six of which it should refuse ("will this pump?", "is it safe?", addresses that aren't pump.fun coins). On the live site, all 10 questions we spent real calls on picked the right tools, cited valid evidence and stayed within the no-advice rule. What failed was length: half the answers ran past five sentences. Now they're capped at five.</p>
+<h2 class="rv" id="day-3-a-map-that-lights-up-the-proof"><span class="n">05</span>Day 3: a map that lights up the proof</h2>
+<p class="rv">A citation is only useful if you can check it. So on Day 3 we built the part people actually see: paste a coin, watch Sniff's steps stream in ("checking who made the coin and who paid them", "checking who else the same payer funded"), and read the answer next to a map of the graph.</p>
+<p class="rv">Tap <strong>E4</strong> in the answer and the map dims everything except the wallets and coins that sentence stands on.</p>
+<figure class="rv"><img src="https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/05-methu-evidence.jpg" alt="The Sniff app on METHU: the coin card on the left shows one payer who also paid 71 other creators, none graduated; on the right the map highlights the payer and the 71 other creators for evidence E4" width="1706" height="1040" loading="lazy" decoding="async"><figcaption>METHU, with evidence E4 selected: one payer, 71 other creators, 0 graduations. (Wallet addresses blurred for this post.)</figcaption></figure>
+<p class="rv">Exchange-like wallets show as dashed boxes, so you can see where a trail stops and why. The coin card on the left needs no AI at all. It's the same graph, read directly. It works on a phone too, and the same nine tools are served over MCP, so any agent can use Sniff:</p>
+<pre class="rv"><code>claude mcp add --transport http sniff https://sniff.quantbase.live/mcp</code></pre>
+<h2 class="rv" id="day-4-memory-and-a-company-brain"><span class="n">06</span>Day 4: memory, and a company brain</h2>
+<p class="rv">On the last day we're adding two more graphs beside <code>lineage</code>. As we write this, they're being built and tested on the same branch, so here's what they are designed to do.</p>
+<p class="rv"><strong>Memory (Track 02).</strong> Every investigation writes a small subgraph: a session (an anonymous id, never a person) asked a question, found evidence, about a coin or wallet. Before querying again, the agent calls <code>memory_recall</code> to see what it already learned and when. A follow-up in the same session reuses that evidence. Because <code>memory_recall</code> and <code>memory_note</code> are also on the MCP endpoint, a second agent, such as our own trading agent, can read Sniff's findings and add a note of its own, with its name on it. Two agents coordinate through the graph instead of through chat logs.</p>
+<p class="rv"><strong>Company brain (Track 03).</strong> A third graph holds QuantBase's own <em>public</em> knowledge: our docs, the public pages of quantbase.live, our claims policy, and the research findings we've already published. It stores documents, sections, decisions, findings and policies, with links like "supports" and "contradicts". Ask "how does QuantBase handle paper vs live?" and <code>brain_ask</code> answers with <strong>[B#]</strong> citations to the source sections, the same contract as the E ids. Before anything is loaded, a scan looks for keys, emails, IP addresses and account ids, and refuses the file if it finds one.</p>
+<figure class="rv"><img src="https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/06-memory-brain.png" alt="Two small graphs: on the left, Session ASKED Question FOUND Evidence ABOUT Coin or Wallet, with a Note from another agent; on the right, Doc, Section, Decision and Finding linked by PART_OF, MENTIONS and SUPPORTS" width="2800" height="1560" loading="lazy" decoding="async"><figcaption>Day 4: the agent remembers what it found, and can look up its own company's rules, with citations either way.</figcaption></figure>
+<h2 class="rv" id="the-twist-it-explains-it-doesn-t-predict"><span class="n">07</span>The twist: it explains, it doesn't predict</h2>
+<p class="rv">We also run trading research on this same data, so we had to ask the uncomfortable question: <strong>do these graph signals predict which coins do well after graduating?</strong></p>
+<p class="rv">We built the features only from what was known at the moment each coin graduated: how many other creators the payer funded, two-hop funding, reused socials, shared early buyers. We tested them on 23,408 graduated coins, training on the older ones and testing on the newest third.</p>
+<p class="rv">On their own, the signals mean something. Coins whose social account had already been used on another creator's coin were <strong>18 points less likely</strong> to still be alive an hour later.</p>
+<p class="rv">But once you add what anyone can already see in a coin's first couple of minutes of trading, the graph adds <strong>nothing measurable</strong>. The change in predictive accuracy was within ±0.01. Whatever the graph knows has already shown up in the price.</p>
+<figure class="rv art"><img src="https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/07-lantern.jpg" alt="A small dog carrying a lantern on a mountain path at dusk; the light shows the footprints and coins behind it clearly while the path ahead disappears into fog" width="1536" height="1024" loading="lazy" decoding="async"><figcaption>Sniff can light up where a coin came from. It can't see through the fog ahead, and it doesn't pretend to.</figcaption></figure>
+<p class="rv">We could have hidden that result. It would have been easy to ship a "risk score" and let people believe it. But this is a product people use next to their own money, and a confident wrong answer about money does real harm.</p>
+<p class="rv">So Sniff never says "safe" or "scam", and it never says buy or sell. It tells you who is behind a coin and what their other coins did, with receipts, and every answer ends the same way: <em>history, not a prediction.</em> We think that's the honest version of this product, and the useful one. Knowing that a payer funded 72 launches and none of them graduated won't tell you the future. It does tell you what you're looking at.</p>
+<h2 class="rv" id="the-bigger-product-sniff-inside-quantbas"><span class="n">08</span>The bigger product: Sniff inside QuantBase</h2>
+<p class="rv">Sniff started as a hackathon entry. By the end of the week it had become the agent inside <strong>QuantBase</strong> (<a href="https://quantbase.live">quantbase.live</a>), where people describe a strategy in plain words, Sniff turns it into a rule, and they test it on real history before anything else.</p>
+<p class="rv">The first thing you meet there is <strong>paper mode</strong>. We describe it as <em>incognito, for money</em>: a chat with play money where you can try anything, and nothing in it can touch a wallet. Every paper result is labelled paper.</p>
+<figure class="rv"><img src="https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/09-paper-mode.jpg" alt="The quantbase.live paper mode section: &quot;Paper mode is incognito, for money,&quot; beside a painting of a dog on a jetty watching paper boats carry glowing coins" width="1440" height="810" loading="lazy" decoding="async"><figcaption>Paper first. Try the idea with play money, see it lose or win on paper, then decide.</figcaption></figure>
+<p class="rv">The second thing is <strong>the race</strong>. When a coin graduates, a person has to notice it, open it, check it and tap. We show that as a typical, illustrative minute: about 55 seconds. Then we run Sniff on the same clock using numbers we measured on our own systems: <strong>about 1 second</strong> to hear a graduation on chain (across 1,371 graduations), and a <strong>76 ms median</strong> to sign and send an order (across 92 sends). About 1.08 seconds in all.</p>
+<figure class="rv"><img src="https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/08-race.jpg" alt="The quantbase.live race: &quot;A coin graduates. Watch the clock.&quot; A price curve over 60 seconds, with a person&#x27;s steps marked first" width="1440" height="810" loading="lazy" decoding="async"><figcaption>The race on quantbase.live. The person's timeline is an illustration; Sniff's times are measured.</figcaption></figure>
+<p class="rv">Speed only helps a good rule. It can't fix a bad one, and most meme coins still lose, so the site says that too.</p>
+<p class="rv">And the graph is a core feature, not a side project. Step two of "how Sniff decides" on quantbase.live is <em>checks who made it</em>: the creator's past coins, their wallet, who funded them. That is exactly the question this graph was built to answer.</p>
+<h2 class="rv" id="what-falkordb-made-possible"><span class="n">09</span>What FalkorDB made possible</h2>
+<p class="rv">We used FalkorDB 6.0.2, and these were the parts that mattered:</p>
+<ul class="rv"><li><strong>The bulk loader</strong> (<code>falkordb-bulk-insert</code>). 1.09 million nodes and 1.5 million edges in 30 seconds made it cheap to rebuild the graph whenever we changed a rule, and we changed rules a lot on Day 1.</li><li><strong>Range indexes</strong> on coin, wallet, hub, handle and ring keys, plus a <strong>full-text index</strong> on coin names and symbols for search.</li><li><strong><code>algo.WCC</code></strong> for rings, in 2.9 seconds over the whole graph.</li><li><strong><code>algo.SPpaths</code></strong> for "how are these two connected?", with hubs and platform-sized handles filtered out.</li><li><strong>Read-only queries</strong> (<code>GRAPH.RO_QUERY</code>) with per-query timeouts, so a curious agent can't write to the graph or run forever.</li><li><strong>MCP</strong>, so the same tools work from Claude, from our own agent, or from yours.</li></ul>
+<p class="rv">A few things in the docs didn't match the running server. Here's what we hit, so you don't have to:</p>
+<ul class="rv"><li><strong>Procedure names</strong> differ between doc pages. On 6.0.2 they're <code>algo.WCC</code>, <code>algo.BFS</code>, <code>algo.pageRank</code>, <code>algo.labelPropagation</code>, <code>algo.SPpaths</code>. <code>CALL dbms.procedures()</code> is the source of truth.</li><li><strong>Full-text index:</strong> the documented <code>db.idx.fulltext.createNodeIndex('Coin','name','symbol')</code> is refused. <code>CREATE FULLTEXT INDEX FOR (c:Coin) ON (c.name, c.symbol)</code> works.</li><li><strong><code>WITH</code> projections</strong> need an <code>AS</code> alias.</li><li><strong>Timeouts</strong> can't go above the server's <code>TIMEOUT_MAX</code> (15 s by default).</li><li><strong><code>sum()</code></strong> comes back as a float, so we cast counts to integers.</li><li><strong>The bulk loader's</strong> default escape character is a backslash, and some meme coins are literally named <code>\</code>. Pass <code>-x none</code>.</li></ul>
+<p class="rv">Our feedback, kindly meant: one generated reference page for procedure names per version would have saved us an hour; the full-text docs should lead with the <code>CREATE FULLTEXT INDEX</code> syntax; and the bulk loader could warn when a field is a lone escape character instead of failing mid-load. None of these slowed us down for long, and the speed of the core made up for all of it.</p>
+<h2 class="rv" id="from-a-pixel-dog-to-a-product"><span class="n">10</span>From a pixel dog to a product</h2>
+<p class="rv">The day before the event began, sniff.quantbase.live was a coming-soon page with one thing on it: a small animated pixel dog, sniffing a coin, on a 3.2-second loop.</p>
+<p class="rv">Four days later, behind that dog there is a graph of 632,339 launches, an agent that can't state a fact it can't prove, a map that lights up the proof, and a test we ran on ourselves that told us what not to promise. And the dog has a job: it's the agent inside QuantBase.</p>
+<figure class="rv art"><img src="https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/10-close.jpg" alt="A small dog sitting on a cliff at sunrise, looking over a valley with a lit town, while ember sparks draw a pixel-art dog in the sky" width="1536" height="1024" loading="lazy" decoding="async"><figcaption>From a pixel dog on a coming-soon page to a product. History, not a prediction.</figcaption></figure>
+<h2 class="rv" id="try-it"><span class="n">11</span>Try it</h2>
+<ul class="rv"><li><strong>App:</strong> <a href="https://sniff.quantbase.live">sniff.quantbase.live</a>. Try the METHU example.</li><li><strong>Your own agent:</strong> <code>claude mcp add --transport http sniff https://sniff.quantbase.live/mcp</code></li><li><strong>QuantBase:</strong> <a href="https://quantbase.live">quantbase.live</a></li><li><strong>Code:</strong> <a href="https://github.com/avasis-ai/quant-agent">github.com/avasis-ai/quant-agent</a></li></ul>
+<p class="rv">Built in four days by team QuantBase, on FalkorDB, Claude and a lot of pump.fun history. Nothing here is financial advice.</p>
+</main>
+<footer><b>Sniff</b> by QuantBase · built on FalkorDB and Claude · History, not a prediction. Nothing here is financial advice.</footer>
+<script>
+(function(){var els=[].slice.call(document.querySelectorAll('.rv'));
+if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion: reduce)').matches){els.forEach(function(e){e.classList.add('in')});}
+else{var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{rootMargin:'0px 0px -8% 0px',threshold:.08});els.forEach(function(e){io.observe(e)});}
+var bar=document.querySelector('.bar');function f(){var h=document.documentElement,m=h.scrollHeight-h.clientHeight;bar.style.transform='scaleX('+(m>0?h.scrollTop/m:0)+')';}
+addEventListener('scroll',f,{passive:true});f();})();
+</script>
+</body>
+</html>

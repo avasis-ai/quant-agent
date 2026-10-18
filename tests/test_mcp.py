@@ -11,7 +11,7 @@ from tests.test_agent import MINT, fake_graph  # noqa: F401 - fixture
 
 H = {"accept": "application/json, text/event-stream", "content-type": "application/json"}
 EXPECTED = {"search_coins", "coin_dossier", "funding_trail", "siblings", "shared_snipers", "shared_handles",
-            "ring", "connect", "top_operators"}
+            "ring", "connect", "top_operators", "memory_recall", "memory_note", "brain_ask"}
 
 
 def rpc(c, method, params=None, i=1):
@@ -39,7 +39,7 @@ def client(tmp_path, monkeypatch):
         yield c
 
 
-def test_mcp_lists_the_nine_read_only_tools(client):
+def test_mcp_lists_lineage_memory_and_brain_tools(client):
     assert init(client)["result"]["serverInfo"]["name"] == "sniff"
     listed = rpc(client, "tools/list", i=2)["result"]["tools"]
     assert {t["name"] for t in listed} == EXPECTED

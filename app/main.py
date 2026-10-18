@@ -17,7 +17,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, StreamingResponse
 from pydantic import BaseModel
 
-from . import agent, ai, tools
+from . import agent, ai, tools, memory
 from . import mcp as sniff_mcp
 from .limits import Limiter
 from .secrets import check_passcode, install_log_masking, read_env, write_env
@@ -272,6 +272,7 @@ async def ping(req: Request):
 class Ask(BaseModel):
     question: str
     mint: str | None = None
+    session_id: str | None = None
 
 
 @app.post("/api/ask")
@@ -297,13 +298,23 @@ async def ask(body: Ask, req: Request):
     else:
         limited(ask_dossier_limit, who_ip)
 
-    events = agent.investigate(question, mint, vkey)
+    try:
+        sid = memory.session_id(body.session_id or req.cookies.get("sniff_session") or None)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc))
+    events = agent.investigate(question, mint, vkey, session_id=sid)
+
+    def with_session(res):
+        res.set_cookie("sniff_session", sid, httponly=True, samesite="lax", path="/",
+                       secure=req.url.scheme == "https" or req.headers.get("x-forwarded-proto") == "https",
+                       max_age=30 * 24 * 3600)
+        return res
     if "text/event-stream" in req.headers.get("accept", ""):
         async def sse():
             async for e in events:
                 yield f"event: {e['type']}\ndata: {json.dumps(e, default=str)}\n\n"
-        return StreamingResponse(sse(), media_type="text/event-stream",
-                                 headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"})
+        return with_session(StreamingResponse(sse(), media_type="text/event-stream",
+                                 headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"}))
     out: dict = {"steps": [], "evidence": [], "verdict": None}
     async for e in events:
         if e["type"] == "step":
@@ -316,7 +327,7 @@ async def ask(body: Ask, req: Request):
             out.update({k: v for k, v in e.items() if k != "type"})
         elif e["type"] == "notice":
             out.setdefault("notices", []).append(e["text"])
-    return out
+    return with_session(JSONResponse(out, headers={"Cache-Control": "no-store"}))
 
 
 # ---- lookups for the app page (no AI) --------------------------------------------------------
@@ -350,3 +361,8 @@ async def dossier_card(mint: str, req: Request):
     out["base"] = tools.base_rate()
     out["evidence"] = ev.items
     return out
+
+
+# New track pages and APIs are isolated from the concurrently restyled app.
+from .track_routes import router as track_router  # noqa: E402
+app.include_router(track_router)

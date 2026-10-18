@@ -4,7 +4,7 @@ set -euo pipefail
 HOST=${SNIFF_HOST:-ec2-user@3.219.133.78}
 KEY=${SNIFF_SSH_KEY:-$HOME/.ssh/quant-mcp-key.pem}
 cd "$(dirname "$0")/.."
-PATHS=(); for p in app requirements.txt deploy build queries; do [ -e "$p" ] && PATHS+=("$p"); done
+PATHS=(); for p in app requirements.txt deploy build queries README.md docs; do [ -e "$p" ] && PATHS+=("$p"); done
 rsync -az --delete -e "ssh -i $KEY" --exclude __pycache__ --exclude out "${PATHS[@]}" "$HOST":/opt/lineage/app/src/
 ssh -i "$KEY" "$HOST" 'set -e
   cd /opt/lineage/app

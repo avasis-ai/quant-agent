@@ -18,20 +18,27 @@ import re
 import time
 from typing import Any, AsyncIterator
 
-from . import ai, tools
+from . import ai, tools, memory
 
 log = logging.getLogger("sniff.agent")
 
 MAX_TOOL_TURNS = 8
 MAX_TOKENS = 1200
-CITE = re.compile(r"\[(E\d+)\]")
+CITE = re.compile(r"\[([EB]\d+)\]")
 MINT_IN_TEXT = re.compile(r"\b[1-9A-HJ-NP-Za-km-z]{32,44}\b")
+COMPANY_QUESTION = re.compile(r"\b(quantbase|paper\s+(?:vs|versus|and)|company\s+(?:brain|polic)|privacy\s+polic)\b", re.I)
 
 SYSTEM = """You are Sniff, an investigator for pump.fun meme coins on Solana. You answer from a graph of
 public on-chain history: coins, the wallets that created them, who funded those wallets, early buyers
 (snipers), shared socials, and funding rings. Use the tools; never guess a fact the tools did not return.
 
 How to work:
+- Memory is recalled before this turn. Reuse same-session evidence before querying lineage again;
+  memory_recall(entity='coin:<mint>' or 'wallet:<address>') shows anonymised findings from others.
+  Agent notes are unverified observations with self-declared provenance, never established facts.
+- For questions about QuantBase's products, policies, research or paper vs live, use brain_ask.
+  Quote its source excerpt exactly and cite [B1], [B2], etc. B citations must match the source text.
+  They describe public knowledge, not coin lineage.
 - Given a coin, start with coin_dossier. Then follow the strongest lead: siblings (same funder),
   shared_handles, shared_snipers, ring, funding_trail. Use search_coins when you only have a name.
 - A hub (a funder of more than 200 wallets, likely an exchange) proves nothing. Never treat two things
@@ -60,7 +67,7 @@ def base_line() -> str:
 
 
 def _ids_in(result: Any) -> list[str]:
-    found = re.findall(r'"(E\d+)"', json.dumps(result, default=str))
+    found = re.findall(r'"([EB]\d+)"', json.dumps(result, default=str))
     return list(dict.fromkeys(found))
 
 
@@ -93,6 +100,7 @@ def check_citations(text: str, ev: tools.Evidence) -> tuple[str, list[str], list
     "no reused socials" sentence) are removed too, and a sentence left with no citation at all is dropped:
     an unsupported claim is worse than a shorter answer. Bullets become plain sentences."""
     known = {i["id"]: i["tool"] for i in ev.items}
+    by_id = {i["id"]: i for i in ev.items}
     text = BULLET.sub("", text.replace("**", "")).replace("\n", " ")
     text = re.sub(r"\s+", " ", text).strip()
     cited, unknown, mismatched, kept = [], [], [], []
@@ -106,7 +114,15 @@ def check_citations(text: str, ev: tools.Evidence) -> tuple[str, list[str], list
         for eid in ids:
             if eid not in known:
                 unknown.append(eid)
-            elif ok_tools is not None and known[eid] not in ok_tools:
+            elif eid.startswith("B") and (
+                known[eid] != "brain_ask" or not by_id[eid].get("source", {}).get("url")
+                or re.sub(r"\s+", " ", CITE.sub("", sent)).strip(" .") not in
+                   re.sub(r"\s+", " ", by_id[eid].get("section", ""))
+            ):
+                mismatched.append(eid)
+            elif (eid.startswith("B") and known[eid] != "brain_ask") or (
+                eid.startswith("E") and ok_tools is not None and known[eid] not in ok_tools
+            ):
                 mismatched.append(eid)
             else:
                 good.append(eid)
@@ -122,9 +138,9 @@ def check_citations(text: str, ev: tools.Evidence) -> tuple[str, list[str], list
 
 # ---- dossier fallback --------------------------------------------------------------------------
 
-async def dossier(question: str, mint: str | None) -> AsyncIterator[dict]:
+async def dossier(question: str, mint: str | None, ev: tools.Evidence | None = None) -> AsyncIterator[dict]:
     """Fixed tools, fixed sentences. Used when no AI key is active or the AI call fails."""
-    ev = tools.Evidence()
+    ev = ev if ev is not None else tools.Evidence()
     mint = mint or _mint_from(question)
     if not mint:
         name = question.strip()
@@ -185,19 +201,59 @@ def _dossier_text(r: dict[str, dict]) -> str:
 
 # ---- the agent -------------------------------------------------------------------------------
 
-async def investigate(question: str, mint: str | None = None, visitor_key: str | None = None) -> AsyncIterator[dict]:
+async def investigate(question: str, mint: str | None = None, visitor_key: str | None = None,
+                      session_id: str | None = None) -> AsyncIterator[dict]:
+    """Every investigation records safe tool evidence; a graph outage is visible to the caller."""
+    ctx = await asyncio.to_thread(memory.begin, session_id, "investigation", "coin:" + mint if mint else None)
+    recalled = {}
+    if ctx.available:
+        try:
+            recalled = await asyncio.to_thread(memory.recall, session=ctx.sid)
+            if not mint and not _mint_from(question) and not COMPANY_QUESTION.search(question):
+                subject = await asyncio.to_thread(memory.latest_entity, ctx.sid)
+                if subject and subject.startswith("coin:"):
+                    mint = subject.split(":", 1)[1]
+        except Exception as exc:
+            ctx.error = type(exc).__name__
+    ev = tools.Evidence(memory=ctx)
+    async for event in _investigate(question, mint, visitor_key, ev, recalled):
+        if event["type"] == "start":
+            event = {**event, "session_id": ctx.sid, "memory_available": ctx.available}
+        if event["type"] == "done":
+            if ctx.error:
+                text = ("A privacy check refused to save some public evidence to shared memory." if ctx.error == "PrivacyError"
+                        else "Shared memory is unavailable; this investigation may not appear in memory.")
+                yield {"type": "notice", "text": text, "memory_error": ctx.error}
+            event = {**event, "session_id": ctx.sid, "memory_available": ctx.available and not ctx.error}
+        yield event
+
+
+async def _investigate(question: str, mint: str | None, visitor_key: str | None,
+                       ev: tools.Evidence, recalled: dict) -> AsyncIterator[dict]:
     t0 = time.monotonic()
+    if not mint and COMPANY_QUESTION.search(question):
+        # Public company retrieval is useful with or without an AI key.
+        yield {"type": "start", "mode": "brain", "model": None, "using": "none"}
+        res, ok = await _step_call(ev, "brain_ask", {"question": question})
+        yield _step("brain_ask", {"question": question}, ok, res)
+        yield {"type": "evidence", "items": ev.items}
+        text = res.get("answer", "The company brain is unavailable right now. Please try again later.")
+        yield {"type": "verdict", "text": text, "cited": res.get("cited", []), "unknown_cited": [],
+               "mismatched_cited": [], "mode": "brain", "sources": res.get("sources", []), "graph": res.get("graph", {})}
+        yield {"type": "done", "ms": int(1000 * (time.monotonic() - t0))}
+        return
     client, model, who = ai.client_for(visitor_key)
     if not client:
         yield {"type": "start", "mode": "dossier", "model": None, "using": "none"}
-        async for e in dossier(question, mint):
+        async for e in dossier(question, mint, ev):
             yield e
         yield {"type": "done", "ms": int(1000 * (time.monotonic() - t0))}
         return
 
     yield {"type": "start", "mode": "agent", "model": model, "using": who}
-    ev = tools.Evidence()
     user = question.strip() + (f"\n\nCoin (mint): {mint}" if mint else "")
+    if recalled.get("rows"):
+        user += "\n\nPreviously recorded public evidence (tool results will reuse these if unchanged):\n" + tools.cap({"rows": recalled["rows"][:12]}, 6000)
     messages: list[dict] = [{"role": "user", "content": user}]
     system = [{"type": "text", "text": SYSTEM.format(base_line=base_line()), "cache_control": {"type": "ephemeral"}}]
     tool_defs = tools.claude_tools()
@@ -224,7 +280,7 @@ async def investigate(question: str, mint: str | None = None, visitor_key: str |
     except Exception as e:  # noqa: BLE001 - never the message: it can echo request data
         log.warning("agent AI call failed: %s; falling back to the dossier", type(e).__name__)
         yield {"type": "notice", "text": f"The AI call failed ({type(e).__name__}); showing the fixed dossier instead."}
-        async for e2 in dossier(question, mint):
+        async for e2 in dossier(question, mint, ev):
             yield e2
         yield {"type": "done", "ms": int(1000 * (time.monotonic() - t0))}
         return

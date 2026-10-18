@@ -1,5 +1,5 @@
 ---
-title: "Sniff: four days, one graph, and an honest answer about meme coins"
+title: "METHU had one creator. Its funder had paid 71 more."
 published: false
 description: "How team QuantBase built Sniff on FalkorDB: a graph of 632,339 pump.fun launches, an agent with citation checks, and the test that told us what Sniff can't do."
 tags: falkordb, graphdatabase, ai, agents
@@ -11,29 +11,13 @@ cover_image: https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/b
 ![A small brown dog on a dark ridge, nose to the ground, following glowing threads that link hundreds of coins across a valley](https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/01-hero.jpg)
 *Every coin leaves a trail. The trick is knowing which threads to follow.*
 
-## A coin graduates. You have seconds.
+## One creator, 72 connected launches
 
-It's late. A pump.fun coin you've never heard of has just "graduated": it filled its bonding curve and moved to a real trading pool. The chart is climbing. A chat window is full of rocket emojis. Your thumb is over the buy button.
+METHU's creator had launched one coin. That looked like a first attempt until we followed the payment that funded the wallet: the same payer had funded 71 other creators. Each had launched one coin. None of those 72 coins had graduated to a trading pool in our snapshot.
 
-You have one real question, and it isn't "will it go up?" Nobody can answer that honestly. The question is: **who is behind this?** Who made it, and what happened to the last things they made?
+During Graph Hacks, we built Sniff around history our QuantBase collector had already recorded. You can ask about a coin, follow its connections and inspect the evidence. The FalkorDB graph contains 632,339 pump.fun launches and 424,007 wallets, recorded through 14 October 2026, 18:45 UTC.
 
-You click the creator's wallet. It's brand new. One coin, this one. It looks clean.
-
-It almost never is that simple. And by the time you've found out why, the moment has passed.
-
-## The problem: the truth is two hops away
-
-On the day we wrote this, our recorder saw **24,606 new pump.fun coins in 24 hours**. That's normal: about 25,000 a day, and only a few in every hundred ever graduate.
-
-The wallet that launches a coin is usually made for that one launch. It tells you nothing. The story lives one or two steps further out:
-
-- **Who paid that wallet** the few cents of SOL it needed to launch?
-- **Who else did that payer fund**, and what did *those* wallets launch?
-- Did the coin reuse a **Twitter account** from another coin? Did the **same early buyers** show up at the start of other launches?
-
-Every one of those questions is a path: wallet to wallet to coin to outcome. We had months of this data in Postgres, recorded by our own QuantBase collector since September. Every question we asked of it turned into a tower of self-joins that took minutes and still missed things.
-
-Paths are what graph databases are for. So for Graph Hacks, we gave ourselves four days to put that history into FalkorDB and build an agent on top of it. We called it **Sniff**.
+The hard part was deciding which connections meant anything. One exchange-like wallet had funded 33,747 wallets in our data. If we let the agent walk through it, unrelated creators looked connected. That mistake shaped the rest of the build.
 
 ## Day 1: the snapshot, the graph, and the hub surprise
 
@@ -104,28 +88,11 @@ claude mcp add --transport http sniff https://sniff.quantbase.live/mcp
 
 ## Day 4: memory, and a company brain
 
-On the last day we added two more graphs beside `lineage`, in the same FalkorDB instance. Track 01 was the agent acting on connected data. These two are Tracks 02 and 03.
+We added two more FalkorDB graphs on the last day: one for saved investigations, one for QuantBase's public documents.
 
-**Memory (Track 02).** Sniff used to forget everything the moment an answer was done. Now every investigation leaves a small trail in a graph called `memory`: a session asked a question, the question found evidence, and the evidence is about a coin or a wallet. The session is a random 32-character id, never a person, and the privacy gate checks every write.
+On [/memory](https://sniff.quantbase.live/memory?entity=coin:3LaVxn1Pp5gDjJZgGrpbQ8gRKj7GxgPE8cjF62Svpump), you can see four METHU findings and a dated note under the name quantbase-research-agent. Follow-ups reuse recent results from the same session. Other agents can read findings across sessions through MCP and add observations. Each finding keeps its source tool and timestamp. Agent names are self-declared, and notes remain unverified.
 
-The useful part is what happens next. Before Sniff calls a tool, it checks whether this session already made the same call, using a `call_key` index on the evidence. If it did, Sniff reuses the answer instead of hitting the big graph again. A follow-up like "and who funded that wallet?" starts from what it already knows.
-
-Memory is also how agents work together. `memory_recall` and `memory_note` sit on the same MCP endpoint as the investigation tools. Another agent, for example the QuantBase trading agent, can ask "what has anyone found about this coin?" Sniff answers with every session's evidence about that coin, anonymised and with timestamps. That agent can then attach its own note with its name on it. The two agents never chat: they coordinate through the graph, and every note says who wrote it. The `/memory` page draws that trail for any coin or session.
-
-**Company brain (Track 03).** The loaded `brain` is a **source-only corpus of 12 public documents**, with zero AI requests and zero extracted entity-to-entity relationships. Public repository docs and quantbase.live pages become sections with literal anchors for products, features, policies, decisions, findings and metrics. The live graph connects them through **`MENTIONS` and `PART_OF`**. This is source retrieval, not a demonstrated semantic decision graph.
-
-The optional AI builder uses the existing cheap-model client with explicit request, token and cost caps. It can add `SUPPORTS`, `CONTRADICTS` and `DECIDED_ON` edges only when names and supporting quotes occur in the source. Those richer edges are a builder capability; they are **not shown in the loaded live corpus**.
-
-Ask "how does QuantBase handle paper vs live?" on `/brain`, or through `brain_ask`, and it runs graph retrieval alongside FalkorDB full-text retrieval:
-
-- it finds literal entity anchors matching the question;
-- the query permits up to two typed entity hops when extracted relationships exist; the current source-only corpus has none;
-- it retrieves the exact sections mentioning those entities;
-- full-text search runs on every question alongside the graph query, and both result sets are ranked together.
-
-Answers quote source excerpts with **[B#]** citations. Each excerpt must occur in its own cited section; this verifies attribution, not whether the public source is true. The expanded section preserves the original source text. Repository links point at published `main`; reloading the reviewed corpus retires old documents and sections, including records under the previous branch URLs.
-
-The privacy gate runs before loading. It checks for emails, API keys, AWS ids, private keys, seed phrases and wallet key arrays, and never prints matched values. A privacy match in a local/repository source fails the build. A web source with a match is refused in full; other accepted sources can still be loaded. The build fails if a required web source is missing or refused.
+For the company brain, we loaded 12 public documents. Ask "How does QuantBase handle paper vs live?" on [/brain](https://sniff.quantbase.live/brain), then open a [B#] citation to read the source section. We combine graph lookup with full-text search. Today's graph connects documents, sections and named products or policies; it contains no extracted relationships between entities. Reloading changed sources retires old sections. Our [graph documentation](https://github.com/avasis-ai/quant-agent/blob/main/docs/GRAPH.md) covers the privacy checks and the optional richer builder.
 
 ![Two small graphs: on the left, Session ASKED Question FOUND Evidence ABOUT Coin or Wallet, with a Note from another agent; on the right, Doc, Section, Decision and Finding linked by PART_OF, MENTIONS and SUPPORTS](https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/06-memory-brain.png)
 *Day 4 architecture: the live brain uses MENTIONS/PART_OF; SUPPORTS in this illustration is an optional AI-builder capability. Agent notes are attributed observations, labelled "agent note · not verified".*
@@ -138,32 +105,18 @@ We built the features only from what was known at the moment each coin graduated
 
 On their own, the signals mean something. Coins whose social account had already been used on another creator's coin were **18 points less likely** to still be alive an hour later.
 
-But once you add what anyone can already see in a coin's first couple of minutes of trading, the graph adds **nothing measurable**. The change in predictive accuracy was within ±0.01. Whatever the graph knows has already shown up in the price.
+But once you add what anyone can already see in a coin's first couple of minutes of trading, the graph adds **nothing measurable**. The change in predictive accuracy was within ±0.01. In this test, the graph features added no measurable predictive value once we included the first minutes of trading.
 
 ![A small dog carrying a lantern on a mountain path at dusk; the light shows the footprints and coins behind it clearly while the path ahead disappears into fog](https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/07-lantern.jpg)
 *Sniff can light up where a coin came from. It can't see through the fog ahead, and it doesn't pretend to.*
 
-We could have hidden that result. It would have been easy to ship a "risk score" and let people believe it. But this is a product people use next to their own money, and a confident wrong answer about money does real harm.
+It would have been easy to ship a "risk score" and let people believe it. But this is a product people use next to their own money, and a confident wrong answer about money does real harm.
 
 So Sniff never says "safe" or "scam", and it never says buy or sell. It tells you who is behind a coin and what their other coins did, with receipts, and every answer ends the same way: *history, not a prediction.* We think that's the honest version of this product, and the useful one. Knowing that a payer funded 72 launches and none of them graduated won't tell you the future. It does tell you what you're looking at.
 
-## The bigger product: Sniff inside QuantBase
+## Where this goes next
 
-Sniff started as a hackathon entry. By the end of the week it had become the agent inside **QuantBase** ([quantbase.live](https://quantbase.live)), where people describe a strategy in plain words, Sniff turns it into a rule, and they test it on real history before anything else.
-
-The first thing you meet there is **paper mode**. We describe it as *incognito, for money*: a chat with play money where you can try anything, and nothing in it can touch a wallet. Every paper result is labelled paper.
-
-![The quantbase.live paper mode section: "Paper mode is incognito, for money," beside a painting of a dog on a jetty watching paper boats carry glowing coins](https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/09-paper-mode.jpg)
-*Paper first. Try the idea with play money, see it lose or win on paper, then decide.*
-
-The second thing is **the race**. When a coin graduates, a person has to notice it, open it, check it and tap. We show that as a typical, illustrative minute: about 55 seconds. Then we run Sniff on the same clock using numbers we measured on our own systems: **about 1 second** to hear a graduation on chain (across 1,371 graduations), and a **76 ms median** to sign and send an order (across 92 sends). About 1.08 seconds in all.
-
-![The quantbase.live race: "A coin graduates. Watch the clock." A price curve over 60 seconds, with a person's steps marked first](https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/08-race.jpg)
-*The race on quantbase.live. The person's timeline is an illustration; Sniff's times are measured.*
-
-Speed only helps a good rule. It can't fix a bad one, and most meme coins still lose, so the site says that too.
-
-And the graph is a core feature, not a side project. Step two of "how Sniff decides" on quantbase.live is *checks who made it*: the creator's past coins, their wallet, who funded them. That is exactly the question this graph was built to answer.
+We're building this research into QuantBase, where users can try trading strategies with play money. The graph demo is live at [sniff.quantbase.live](https://sniff.quantbase.live); the homepage still describes the dashboard integration as in development. Try METHU, inspect its evidence, then open the memory page to see the findings another agent can use.
 
 ## What FalkorDB made possible
 

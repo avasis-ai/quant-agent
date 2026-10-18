@@ -1,4 +1,4 @@
-# Sniff, by Quant Agent
+# Sniff, by QuantBase
 
 **Sniff any coin before you buy.** Paste a pump.fun meme coin and Sniff tells you who made it, who paid the
 wallet that made it, what else those people launched, and how those coins ended. It walks a FalkorDB graph of
@@ -6,11 +6,12 @@ wallet that made it, what else those people launched, and how those coins ended.
 part of the graph that proves it. Sniff shows history, not predictions.
 
 Entry for WeMakeDevs × FalkorDB **Graph Hacks: Context for AI Agents**, Track 01 (Agents That Act on Connected
-Data). Team **Quant Agent**. Built during the event window, Oct 15–18, 2026 (IST).
+Data). Team **QuantBase**. Built during the event window, Oct 15–18, 2026 (IST).
 
 | | |
 |---|---|
-| **App** | https://sniff.quantbase.live |
+| **Home** | https://sniff.quantbase.live |
+| **Investigation workspace** | https://sniff.quantbase.live/app |
 | **Demo video** | https://youtu.be/YMQKpynEsI0 |
 | **Blog post** | https://dev.to/quantbase/who-is-behind-this-meme-coin-building-sniff-on-a-graph-4nnc |
 | **Bring your own Claude key** | https://sniff.quantbase.live/settings |
@@ -18,7 +19,7 @@ Data). Team **Quant Agent**. Built during the event window, Oct 15–18, 2026 (I
 
 | Ask | Evidence on the map | Phone |
 |---|---|---|
-| ![Live steps](docs/shots/02-streaming-steps.jpg) | ![Evidence highlight](docs/shots/04-evidence-highlight.jpg) | ![Mobile](docs/shots/06-mobile-answer.png) |
+| ![Live steps](docs/final/shots/app-streaming-1440.png) | ![Evidence highlight](docs/final/shots/app-evidence-1440.png) | ![Mobile](docs/final/shots/app-investigation-390.png) |
 
 Try the **METHU** example: one wallet paid 72 brand-new creators, each launched exactly one coin, and none of
 the 72 coins graduated.
@@ -164,10 +165,23 @@ falkordb-bulk-insert lineage --enforce-schema --id-type STRING -x none \
   -R CREATED CREATED.csv -R FUNDED FUNDED.csv -R SNIPED SNIPED.csv -R LINKS LINKS.csv   # 30 s
 python -m build.indexes && python -m build.rings                  # indexes, then WCC rings
 uvicorn app.main:app --port 8080
-pytest tests                                                      # live-graph tests need FALKORDB_PORT / FALKORDB_PASSWORD_FILE
+python -m pytest tests                                            # live-graph tests need FALKORDB_PORT / FALKORDB_PASSWORD_FILE
 ```
 
 Details and the snapshot's columns are in [`docs/GRAPH.md`](docs/GRAPH.md).
+
+## Premium interface
+
+The landing page (`/`), investigation workspace (`/app`) and settings (`/settings`) share the
+QuantBase Ember design system. All fonts and the graph renderer are served locally. The
+landing metrics come from `app/static/snapshot.json`; `DESIGN.md` documents the visual system.
+Old `/?mint=...` links open the workspace. `/waitlist` retains its existing external-page
+handoff; `/mcp` and the API contracts are unchanged.
+
+The graph intelligence built here is becoming a core feature of the [QuantBase dashboard](https://app.quantbase.live),
+where Sniff is the trading agent. Learn more at [quantbase.live](https://quantbase.live).
+
+Final screenshots, reproducible browser checks and validation are in [`docs/final/RESULT.md`](docs/final/RESULT.md).
 
 ## What existed before the event
 
@@ -184,6 +198,10 @@ the product, supplied the data from our own pump.fun collector, decided the grap
 not a prediction"), and reviewed the work, including checking every core query against independent
 DuckDB ground truth (`tests/test_queries.py`). The commit history shows the work as it happened during
 the event. At runtime, Sniff's answers are written by Claude from the graph's evidence, as described above.
+
+The final QuantBase Ember landing page, investigation workspace, settings interface and browser QA
+were rebuilt with OpenAI Codex on October 18. The final screenshots use the repository's full graph
+snapshot locally; the validation details are in `docs/final/RESULT.md`.
 
 ## License
 

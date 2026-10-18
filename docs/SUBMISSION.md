@@ -7,7 +7,7 @@ Deadline: **Oct 18, 2026, 23:59 IST**. Our own target: submitted by **18:00 IST*
 | Field | Value |
 |---|---|
 | Project name | Sniff |
-| Team | Quant Agent (code F92P7R) |
+| Team | QuantBase (code F92P7R) |
 | Track | 01: Agents That Act on Connected Data |
 | Repository | https://github.com/avasis-ai/quant-agent |
 | Live demo | https://sniff.quantbase.live |

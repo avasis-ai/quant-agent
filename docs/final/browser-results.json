@@ -1,0 +1,73 @@
+{
+  "generated": "2026-10-18T13:57:48.689Z",
+  "base": "http://127.0.0.1:8080",
+  "checks": [
+    "Landing, snapshot and MCP at 1440",
+    "Home ask box hands mint to workspace at 1440",
+    "Empty investigation at 1440",
+    "Search keyboard selection and real graph at 1440",
+    "Settings and existing waitlist fallback at 1440",
+    "Landing, snapshot and MCP at 390",
+    "Home ask box hands mint to workspace at 390",
+    "Empty investigation at 390",
+    "Search keyboard selection and real graph at 390",
+    "Settings and existing waitlist fallback at 390",
+    "Responsive sweep from 320 to 1920, including laptop fold",
+    "Recorded ring, shared-social and graduated examples",
+    "Unknown coin has an honest empty graph",
+    "Partial SSE chunks, streaming steps and CRLF boundaries",
+    "API error recovers and stale search suggestions cannot select a different coin",
+    "Visitor and owner settings lifecycle with local browser fixtures"
+  ],
+  "browserErrors": [],
+  "expectedHttpErrors": [
+    "Failed to load resource: the server responded with a status of 429 (Too Many Requests)",
+    "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+  ],
+  "accessibility": [
+    {
+      "page": "home-1440",
+      "violations": []
+    },
+    {
+      "page": "app-empty-1440",
+      "violations": []
+    },
+    {
+      "page": "app-investigation-1440",
+      "violations": []
+    },
+    {
+      "page": "settings-1440",
+      "violations": []
+    },
+    {
+      "page": "home-390",
+      "violations": []
+    },
+    {
+      "page": "app-empty-390",
+      "violations": []
+    },
+    {
+      "page": "app-investigation-390",
+      "violations": []
+    },
+    {
+      "page": "settings-390",
+      "violations": []
+    },
+    {
+      "page": "app-ring-1440",
+      "violations": []
+    },
+    {
+      "page": "app-socials-1440",
+      "violations": []
+    },
+    {
+      "page": "app-graduated-1440",
+      "violations": []
+    }
+  ]
+}

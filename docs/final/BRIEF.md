@@ -41,3 +41,5 @@ hackathon reviewers that this is a serious product: the graph intelligence is be
 - Take Playwright screenshots of every page at 1440 and 390 into docs/final/shots/ (run the app locally against fixtures
   or the live API read-only).
 - Finish with docs/final/RESULT.md.
+
+## UPDATE (18 Oct ~19:00 IST): the TEAM NAME IS NOW "QuantBase" (changed on the hackathon page). Everywhere you would write "Quant Agent" or "by Quant Agent", write "QuantBase" / "by QuantBase" (including the video credits: "Built by QuantBase on FalkorDB").

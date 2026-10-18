@@ -1,4 +1,4 @@
-*By team Quant Agent, for WeMakeDevs × FalkorDB Graph Hacks, October 2026*
+*By team QuantBase, for WeMakeDevs × FalkorDB Graph Hacks, October 2026*
 
 More than ten thousand meme coins launch on pump.fun every day. Almost all of them die within hours. When a new one shows up on your screen, the question people actually ask isn't "will it go up?", because nobody can answer that honestly. It's simpler: **who made this, and what happened to the last things they made?**
 

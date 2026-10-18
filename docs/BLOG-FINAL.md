@@ -101,14 +101,28 @@ claude mcp add --transport http sniff https://sniff.quantbase.live/mcp
 
 ## Day 4: memory, and a company brain
 
-On the last day we're adding two more graphs beside `lineage`. As we write this, they're being built and tested on the same branch, so here's what they are designed to do.
+On the last day we added two more graphs beside `lineage`, in the same FalkorDB instance. Track 01 was the agent acting on connected data. These two are Tracks 02 and 03.
 
-**Memory (Track 02).** Every investigation writes a small subgraph: a session (an anonymous id, never a person) asked a question, found evidence, about a coin or wallet. Before querying again, the agent calls `memory_recall` to see what it already learned and when. A follow-up in the same session reuses that evidence. Because `memory_recall` and `memory_note` are also on the MCP endpoint, a second agent, such as our own trading agent, can read Sniff's findings and add a note of its own, with its name on it. Two agents coordinate through the graph instead of through chat logs.
+**Memory (Track 02).** Sniff used to forget everything the moment an answer was done. Now every investigation leaves a small trail in a graph called `memory`: a session asked a question, the question found evidence, and the evidence is about a coin or a wallet. The session is a random 32-character id, never a person, and the privacy gate checks every write.
 
-**Company brain (Track 03).** A third graph holds QuantBase's own *public* knowledge: our docs, the public pages of quantbase.live, our claims policy, and the research findings we've already published. It stores documents, sections, decisions, findings and policies, with links like "supports" and "contradicts". Ask "how does QuantBase handle paper vs live?" and `brain_ask` answers with **[B#]** citations to the source sections, the same contract as the E ids. Before anything is loaded, a scan looks for keys, emails, IP addresses and account ids, and refuses the file if it finds one.
+The useful part is what happens next. Before Sniff calls a tool, it checks whether this session already made the same call, using a `call_key` index on the evidence. If it did, Sniff reuses the answer instead of hitting the big graph again. A follow-up like "and who funded that wallet?" starts from what it already knows.
+
+Memory is also how agents work together. `memory_recall` and `memory_note` sit on the same MCP endpoint as the investigation tools. Another agent, for example the QuantBase trading agent, can ask "what has anyone found about this coin?" Sniff answers with every session's evidence about that coin, anonymised and with timestamps. That agent can then attach its own note with its name on it. The two agents never chat: they coordinate through the graph, and every note says who wrote it. The `/memory` page draws that trail for any coin or session.
+
+**Company brain (Track 03).** The third graph, `brain`, holds what QuantBase itself knows, from public sources only: this repo's docs, the public pages of quantbase.live, and the findings we've already published. A build script cuts each source into sections and pulls out the decisions, findings, metrics, products, features and policies in them. It then links them with `MENTIONS`, `SUPPORTS`, `CONTRADICTS`, `PART_OF` and `DECIDED_ON`.
+
+Ask "how does QuantBase handle paper vs live?" on the `/brain` page, or through `brain_ask`, and it runs a real graph retrieval:
+- it finds the entities you named;
+- it walks up to two typed hops out from them;
+- it finds the exact sections that mention what it reached;
+- it falls back to a FalkorDB full-text index over section text when the words don't match an entity.
+
+The answer cites those sections as **[B#]**, the same contract as the E ids on Day 2: no citation, no claim.
+
+The privacy gate runs before anything is loaded. It looks for emails, API keys, AWS ids, private keys, seed phrases and wallet key arrays, and a single match fails the whole build. It never prints what it found.
 
 ![Two small graphs: on the left, Session ASKED Question FOUND Evidence ABOUT Coin or Wallet, with a Note from another agent; on the right, Doc, Section, Decision and Finding linked by PART_OF, MENTIONS and SUPPORTS](https://raw.githubusercontent.com/avasis-ai/quant-agent/main/docs/blog/06-memory-brain.png)
-*Day 4: the agent remembers what it found, and can look up its own company's rules, with citations either way.*
+*Day 4: the agent remembers what it found, shares it with other agents, and looks up its own company's rules, with citations either way.*
 
 ## The twist: it explains, it doesn't predict
 
